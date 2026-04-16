@@ -20,6 +20,8 @@ som kombineras med uppgifter.
 
 [Installera om allting ifall något går sönder](#installera-om-allting-ifall-något-går-sönder)
 
+[Textverktyget wiki](https://github.com/regionstockholm/textverktyget/wiki)
+
 ## Hur det funkar
 
 Verktyget använder sig av Google Gemini 2.5 Flash API för att bearbeta texter.
