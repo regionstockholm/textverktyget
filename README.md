@@ -4,11 +4,49 @@ Textverktyget är ett webbverktyg för att bearbeta texter med fördefinerade
 promptar. I grunden finns det alltid en klarspråksprompt och avsändarprompt
 som kombineras med uppgifter.
 
+## Hoppa till sektion
+
+[Hur det funkar](#hur-det-funkar)
+
+[Var vi står i dag](#var-vi-står-i-dag)
+
+[Quick-start](#quick-start)
+
+[Förberedelser](#förberedelser)
+
+[Installera verktyget](#installera-verktyget)
+
+[Starta textverktyget](#starta-textverktyget)
+
+[Installera om allting ifall något går sönder](#installera-om-allting-ifall-något-går-sönder)
+
 ## Hur det funkar
 
 Verktyget använder sig av Google Gemini 2.5 Flash API för att bearbeta texter.
 Målet är inte att ersätta klarspråksskrivande, utan hjälpa till att göra
 processen snabbare och underlätta att göra andra repetetiva uppgifter.
+
+### Funktioner
+
+- Klarspråksprompt i grunden i alla textbearbetningar.
+- Bryter ned texten och lägger det viktigaste i texten först för vald målgrupp.
+- Kvalitetsgranskning av texten med self-healing innan texten presenteras.
+- Målgruppsanpassning: skapa egna målgrupper och lyft fram vad som är viktigt
+  för målgruppen.
+- Bygg egna uppgifter anpassade för era behov.
+- Inget behov att skriva egna promptar: lägg in en text, få tillbaka en
+  bearbetad text.
+- Webscraper som kan plocka ut textdelar från webbsida (just nu endast för
+  [regionstockholm.se](https://www.regionstockholm.se)).
+- Få ut texten anpassad för Word och hur den formaterar text (exempelvis
+  korrekta radbrytningar för en text omskriven till lättläst svenska).
+
+### På gång
+
+- Förbättring av klarspråkspromptar för bättre resultat.
+- Förbättring av omskriving av text till lättläst.
+- Justeringar av användargränsnittet i adminläget.
+- Få hjälp av GenAI att skriva promptar (adminläget).
 
 ## Var vi står i dag
 
@@ -77,7 +115,7 @@ Om du inte är van med Git eller Github, klicka på knappen `Code` och sedan på
 <details>
 <summary>Installera i Windows</summary>
 
-1. Packa upp filen på direkt på lokala disk, exempelvis under C:\Textverktyg
+1. Packa upp filen på direkt på lokala disk, exempelvis under `C:\Textverktyg`
    (detta för att det kan bli problem för Docker att köras om det ligger på en
    plats som backupas av en server).
 2. Se till att Docker är installerat och igång i bakgrunden.
@@ -123,19 +161,30 @@ container. Det är inte svårt men annorlunda första gången. Se till att docke
    `C:\textverktyget\` så öppnar du katalogen med kommandot:
    `cd c:\textverktyget` och sen Enter.
    I korta drag betyder det `change directory -> c:\textverktyget.`
-4. När du är i rätt katalog så startar du verktyget med: `docker compose up -d --build`
-   vilket betyder att docker ska bygga och starta verktyget.
+4. När du är i rätt katalog så startar du verktyget med:
+   ```text
+   docker compose up -d --build
+   ```
 5. Efter installationen (om allt gått som det ska) startar du verktyget i
-   webbläsaren på adress: `localhost:3000`, eller `localhost:3000/admin-ui` för
-   administratörsläget.
-6. Lösenordet för admin-läget är satt till: `admin`
+   webbläsaren på adress:
+   ```text
+   localhost:3000
+   ```
+6. För administratörsläget öppnar du nedan adress:
+   ```text
+   localhost:3000/admin-ui
+   ```
+7. Lösenordet för admin-läget är satt till:
+   ```text
+   admin
+   ```
 
 </details>
 
 <details>
-<section>Starta på Mac</section>
+<summary>Starta på Mac</summary>
 
-1. Öppna terminalen (exempelvis genom att söka fram den med `⌘(Cmd)+mellanslag`).
+1. Öppna terminalen (exempelvis genom att söka fram den med <kbd>⌘ + Space</kbd>).
 2. Leta fram katalogen där du packade upp textverktyget. Om du packade upp det
    under hemkatalogen och `textverktyget\` så öppnar du katalogen med
    kommandot: `cd textverktyget` och sen Enter.
@@ -148,26 +197,50 @@ container. Det är inte svårt men annorlunda första gången. Se till att docke
 
 </details>
 
+<details>
+<summary>Efter första körningen</summary>
+Om du startar om datorn eller stänger Docker kan du behöva starta om textverktyget. Använd nedan kommando i katalogen där textverktyget finns:
+
+```text
+docker compose up -d
+```
+
+Detta gör att verktyget startar igen.
+
+För att stänga ned verktyget kan du använda:
+
+```text
+docker compose down
+```
+
+</details>
+
 ### Admin-läget
 
 1. Öppna adminläget via webbläsare:
-   `http://localhost:3000/admin-ui`
+
+```text
+http://localhost:3000/admin-ui
+```
+
 2. I fältet högst upp skriver du in `admin` som lösenord, sedan klickar du på
    `Hämta`.
 3. Rekommenderat är att hämta en backup av allting direkt via Backup-fliken.
    Det finns även en standard-config i katalogen `config` i textverktygets
    katalog.
 
-## Installera om allting om något går sönder
+## Installera om allting ifall något går sönder
 
 Om av någon anledning allt går sönder går det att installera om allting med
 nedan kommando:
 
-`docker compose down -v && docker compose build --no-cache && docker compose up -d`
+```text
+docker compose down -v && docker compose build --no-cache && docker compose up -d
+```
 
 Det som händer är att Docker-imagen som skapas raderas och byggs om från
 grunden. Det är endast i nödfall man behöver göra detta.
 
 ## Förslag och utveckling
 
-Förslag och utvecklingsfrågor kan skickas till [marcus.g.pettersson@regionstockholm.se](mailto:marcus.g.pettersson@regionstockholms.se)
+Förslag och utvecklingsfrågor kan skickas till <marcus.g.pettersson@regionstockholm.se>
