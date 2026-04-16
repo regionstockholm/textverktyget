@@ -1,0 +1,101 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PromptTemplate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  content   String
+  version   Int
+  isActive  Boolean  @default(false) @map("is_active")
+  updatedAt DateTime @default(now()) @map("updated_at")
+  updatedBy String?  @map("updated_by")
+
+  @@unique([name, version])
+  @@index([name, isActive])
+  @@map("prompt_templates")
+}
+
+model ProviderConfig {
+  provider        String   @id
+  model           String
+  temperature     Float
+  maxOutputTokens Int      @map("max_output_tokens")
+  useWebSearch    Boolean  @default(false) @map("use_web_search")
+  useThinking     Boolean  @default(true) @map("use_thinking")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("provider_configs")
+}
+
+model GlobalConfig {
+  configKey         String   @id @map("config_key")
+  provider          String
+  retryCount        Int      @default(2) @map("retry_count")
+  rewritePlanTasks  Json?    @map("rewrite_plan_tasks")
+  runtimeSettings   Json?    @map("runtime_settings")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  updatedBy         String?  @map("updated_by")
+
+  @@map("global_config")
+}
+
+model TaskDefinition {
+  id                   Int      @id @default(autoincrement())
+  key                  String   @unique @map("task_key")
+  label                String
+  description          String?
+  enabled              Boolean  @default(true)
+  sortOrder            Int      @map("sort_order")
+  outputMode           String   @default("rewrite") @map("output_mode")
+  bulletCount          Int?     @map("bullet_count")
+  maxChars             Int?     @map("max_chars")
+  targetAudienceEnabled Boolean @default(true) @map("target_audience_enabled")
+  rewritePlanEnabled   Boolean  @default(true) @map("rewrite_plan_enabled")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@index([enabled, sortOrder])
+  @@index([sortOrder])
+  @@map("task_definitions")
+}
+
+model OrdlistaEntry {
+  id        Int      @id @default(autoincrement())
+  fromWord  String   @map("from_word")
+  toWord    String   @map("to_word")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedBy String?  @map("updated_by")
+
+  @@unique([fromWord])
+  @@map("ordlista_entries")
+}
+
+model Secret {
+  name       String   @id
+  cipherText String   @map("cipher_text")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  updatedBy  String?  @map("updated_by")
+
+  @@map("secrets")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  actor     String?
+  entity    String
+  entityId  String?  @map("entity_id")
+  diff      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("audit_log")
+}

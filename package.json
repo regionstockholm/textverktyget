@@ -1,0 +1,82 @@
+{
+  "name": "textverktyg",
+  "version": "0.1.0",
+  "description": "Tool for processing text with GenAI",
+  "main": "server.js",
+  "type": "module",
+  "packageManager": "pnpm@10.29.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma"
+    ]
+  },
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "build": "NODE_ENV=${NODE_ENV:-production} pnpm exec tsc && node build.mjs",
+    "dev": "pnpm run build && pnpm start",
+    "dev:watch": "pnpm exec tsc --watch",
+    "build:local": "NODE_ENV=development pnpm exec tsc && node build.mjs",
+    "build:local:win": "set NODE_ENV=development&& pnpm exec tsc && node build.mjs",
+    "dev:local": "node local-dev/local-server.js",
+    "clean": "rm -rf dist && rm -rf public/script/*.js public/script/*.map",
+    "admin:e2e": "node scripts/admin-e2e.mjs",
+    "benchmark:summarize": "node scripts/summarize-load-gate.mjs",
+    "benchmark:summarize:stress": "SUMMARIZE_TOTAL_REQUESTS=120 SUMMARIZE_CONCURRENCY=50 SUMMARIZE_IP_POOL_SIZE=50 SUMMARIZE_RETRY_ON_BUSY=true SUMMARIZE_MAX_BUSY_RETRIES=2 LOAD_GATE_MIN_SUCCESS_RATE=0.99 LOAD_GATE_MAX_BUSY_RATE=0.05 LOAD_GATE_MAX_P95_MS=45000 LOAD_GATE_MAX_P99_MS=60000 LOAD_GATE_MIN_AVG_QUALITY=0 node scripts/summarize-load-gate.mjs",
+    "canary:snapshot": "node scripts/canary-telemetry-snapshot.mjs",
+    "runtime:profile:stress": "node scripts/apply-stress-profile.mjs",
+    "runtime:profile:auto": "node scripts/apply-auto-profile-defaults.mjs",
+    "benchmark:auto-profile:transition": "node scripts/auto-profile-transition-gate.mjs",
+    "benchmark:auto-profile:leader-check": "node scripts/auto-profile-leader-check.mjs",
+    "test": "set -a && . ./.env && set +a && DATABASE_URL=${TEST_DATABASE_URL:-$DATABASE_URL} pnpm exec prisma generate && DATABASE_URL=${TEST_DATABASE_URL:-$DATABASE_URL} pnpm exec prisma migrate deploy && pnpm exec tsc && DATABASE_URL=${TEST_DATABASE_URL:-$DATABASE_URL} node --test --test-concurrency=1 dist/tests",
+    "test:nodb": "pnpm exec tsc && DATABASE_URL= node --test --test-concurrency=1 dist/tests",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "postinstall": "prisma generate"
+  },
+  "keywords": [
+    "text",
+    "summarization"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "6.19.2",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
+    "office-text-extractor": "^3.0.3",
+    "pg": "^8.13.1",
+    "prisma": "6.19.2",
+    "redis": "^5.11.0",
+    "sass": "^1.93.2",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^22.18.6",
+    "@types/pg": "^8.11.10",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "dotenv": "^16.6.1",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.21.0",
+    "glob": "^11.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

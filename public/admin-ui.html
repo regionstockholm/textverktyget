@@ -1,0 +1,1604 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Adminpanel - Textverktyg</title>
+
+    <link rel="preload" href="css/app-main.css" as="style" />
+    <link
+      rel="preload"
+      href="fonts/InterRSVariableVF.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="css/app-main.css" />
+    <link rel="stylesheet" href="css/admin-ui.css" />
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon" sizes="16x16" />
+  </head>
+
+  <body>
+    <header class="flex flex-row flex-justify-content-center relative">
+      <div
+        class="container flex flex-row flex-space-between flex-align-items-center"
+      >
+        <div class="flex flex-column flex-justify-content-center">
+          <a href="https://www.regionstockholm.se/">
+            <img
+              class="logo-header relative"
+              src="img/region-stockholm-logo-black.svg"
+              alt="Region Stockholm logotyp"
+              width="200"
+              height="45"
+            />
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="flex flex-row flex-justify-content-center">
+        <div class="container flex flex-column gap-6">
+          <div class="pi-16 flex flex-column gap-4">
+            <h1>Adminpanel</h1>
+            <p>
+              Ange din admin-nyckel för att kunna läsa och uppdatera
+              inställningar.
+            </p>
+          </div>
+
+          <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+            <div class="flex flex-column gap-2">
+              <label class="textarea-label" for="admin-token">
+                Admin API key
+              </label>
+              <input
+                id="admin-token"
+                class="modal-input"
+                type="password"
+                placeholder="Klistra in ADMIN_API_KEY"
+              />
+            </div>
+
+            <div class="flex flex-row flex-wrap gap-2">
+              <button
+                id="check-config"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-lg filled-blue outline-blue large-button"
+              >
+                Hämta konfiguration
+              </button>
+            </div>
+
+            <div class="flex flex-column gap-2">
+              <p id="admin-status" class="text-base">Status: Väntar.</p>
+              <p
+                id="admin-hint"
+                class="text-base"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </div>
+          </div>
+
+          <nav
+            class="flex flex-row flex-wrap gap-2"
+            aria-label="Admin navigation"
+          >
+            <div
+              class="flex flex-row flex-wrap gap-2"
+              role="radiogroup"
+              aria-label="Visa adminvy"
+            >
+              <label for="admin-view-prompts" class="first-pick-radio relative">
+                <input
+                  type="radio"
+                  id="admin-view-prompts"
+                  name="admin-view"
+                  value="prompts"
+                  data-view-target="prompts"
+                  checked
+                />
+                <span>Prompter</span>
+              </label>
+              <label
+                for="admin-view-easy-to-read"
+                class="hidden first-pick-radio relative"
+              >
+                <input
+                  type="radio"
+                  id="admin-view-easy-to-read"
+                  name="admin-view"
+                  value="easy-to-read"
+                  data-view-target="easy-to-read"
+                />
+                <span>Lättläst</span>
+              </label>
+              <label
+                for="admin-view-target-audiences"
+                class="first-pick-radio relative"
+              >
+                <input
+                  type="radio"
+                  id="admin-view-target-audiences"
+                  name="admin-view"
+                  value="target-audiences"
+                  data-view-target="target-audiences"
+                />
+                <span>Målgrupper</span>
+              </label>
+              <label for="admin-view-genai" class="first-pick-radio relative">
+                <input
+                  type="radio"
+                  id="admin-view-genai"
+                  name="admin-view"
+                  value="genai"
+                  data-view-target="genai"
+                />
+                <span>GenAI</span>
+              </label>
+              <label
+                for="admin-view-api-keys"
+                class="hidden first-pick-radio relative"
+              >
+                <input
+                  type="radio"
+                  id="admin-view-api-keys"
+                  name="admin-view"
+                  value="api-keys"
+                  data-view-target="api-keys"
+                />
+                <span>API-nycklar</span>
+              </label>
+              <label
+                for="admin-view-ordlista"
+                class="first-pick-radio relative"
+              >
+                <input
+                  type="radio"
+                  id="admin-view-ordlista"
+                  name="admin-view"
+                  value="ordlista"
+                  data-view-target="ordlista"
+                />
+                <span>Ordlista</span>
+              </label>
+              <label for="admin-view-backup" class="first-pick-radio relative">
+                <input
+                  type="radio"
+                  id="admin-view-backup"
+                  name="admin-view"
+                  value="backup"
+                  data-view-target="backup"
+                />
+                <span>Backup</span>
+              </label>
+            </div>
+          </nav>
+
+          <section
+            id="view-prompts"
+            data-view="prompts"
+            class="flex flex-column gap-6"
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Prompter</h2>
+              <p>Uppdatera globala promptar (sparas i databasen).</p>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Basregler (klarspråk)</h3>
+                  <label class="textarea-label" for="prompt-importantRules">
+                    Basregler (klarspråk)
+                  </label>
+                  <p>
+                    Justera prompt för klarspråksregler. Denna prompt används
+                    som bas för alla uppgifter.
+                  </p>
+                  <textarea id="prompt-importantRules" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-prompt-save="importantRules"
+                  >
+                    Spara basregler
+                  </button>
+                </div>
+              </section>
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Systemroll</h3>
+                  <label class="textarea-label" for="prompt-role">
+                    Systemroll
+                  </label>
+                  <p>
+                    Beskriv vem du är som avsändare med dina språkregler,
+                    målgrupp och hhur din verksamhet fungerar.
+                  </p>
+                  <textarea id="prompt-role" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-prompt-save="role"
+                  >
+                    Spara systemroll
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Avsändarens intention</h3>
+                  <label class="textarea-label" for="prompt-senderIntent">
+                    Avsändarens intention (GenAI)
+                  </label>
+                  <p>
+                    Beskriv varför texten skrivs om och vilket syfte Region
+                    Stockholm har med kommunikationen till invånare.
+                  </p>
+                  <textarea id="prompt-senderIntent" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-prompt-save="senderIntent"
+                  >
+                    Spara avsändarintention
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <section>
+                  <div class="flex flex-column gap-2">
+                    <h3>Uppgifter</h3>
+                    <p>
+                      Välj vilken uppgift du vill justera och hur uppgiften ska
+                      genomföras.
+                    </p>
+                    <label class="textarea-label" for="task-prompt-select">
+                      Välj uppgift
+                    </label>
+                    <select
+                      id="task-prompt-select"
+                      class="modal-input"
+                    ></select>
+                  </div>
+                </section>
+
+                <section>
+                  <div class="flex flex-column gap-3">
+                    <h4>Hantera uppgifter</h4>
+                    <div class="flex flex-column gap-2">
+                      <label class="admin-label" for="task-def-label">
+                        Visningsnamn
+                      </label>
+                      <input
+                        id="task-def-label"
+                        class="modal-input"
+                        type="text"
+                      />
+                    </div>
+                    <div class="flex flex-column gap-2">
+                      <label class="admin-label" for="task-def-description">
+                        Beskrivning
+                      </label>
+                      <input
+                        id="task-def-description"
+                        class="modal-input"
+                        type="text"
+                      />
+                    </div>
+
+                    <div class="flex flex-row flex-wrap gap-3">
+                      <label class="first-pick-radio relative">
+                        <input id="task-def-enabled" type="checkbox" checked />
+                        <span>Aktiv för användare</span>
+                      </label>
+                      <label class="first-pick-radio relative">
+                        <input
+                          id="task-def-target-audience-enabled"
+                          type="checkbox"
+                          checked
+                        />
+                        <span>Visa målgrupp</span>
+                      </label>
+                      <label class="first-pick-radio relative">
+                        <input
+                          id="task-def-rewrite-plan-enabled"
+                          type="checkbox"
+                          checked
+                        />
+                        <span>Tillåt omskrivningsutkast</span>
+                      </label>
+                    </div>
+
+                    <div class="flex flex-row flex-wrap gap-2">
+                      <button
+                        id="task-def-create"
+                        class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                      >
+                        Skapa ny
+                      </button>
+                      <button
+                        id="task-def-delete"
+                        class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                      >
+                        Ta bort
+                      </button>
+                      <button
+                        id="task-def-move-up"
+                        class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                      >
+                        Flytta upp
+                      </button>
+                      <button
+                        id="task-def-move-down"
+                        class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                      >
+                        Flytta ned
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="flex flex-column gap-3">
+                  <label
+                    id="task-prompt-label"
+                    class="admin-label"
+                    for="task-prompt-content"
+                  >
+                    Prompt för vald uppgift
+                  </label>
+                  <textarea id="task-prompt-content" rows="6"></textarea>
+                  <button
+                    id="save-task-prompt"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                  >
+                    Spara uppgift
+                  </button>
+                </div>
+              </section>
+
+              <div class="flex flex-column gap-3">
+                <h3>Omskrivningsplan</h3>
+                <label class="textarea-label" for="prompt-rewritePlan">
+                  Omskrivningsplan
+                </label>
+                <p>
+                  Prompt hur texten ska förbearbetas innan uppgiften genomförs.
+                </p>
+                <textarea id="prompt-rewritePlan" rows="6"></textarea>
+                <button
+                  class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                  data-prompt-save="rewritePlan"
+                >
+                  Spara omskrivningsplan
+                </button>
+              </div>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Kvalitetsutvärdering</h3>
+                  <label class="textarea-label" for="prompt-qualityEvaluation">
+                    Kvalitetsutvärdering
+                  </label>
+                  <textarea id="prompt-qualityEvaluation" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-prompt-save="qualityEvaluation"
+                  >
+                    Spara kvalitetsutvärdering
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="view-easy-to-read"
+            data-view="easy-to-read"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Lättläst</h2>
+              <p>
+                Styr lättläst-funktionen för användare och redigera alla
+                promptar som påverkar lättläst-flödet.
+              </p>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Funktion och workflow</h3>
+                  <label class="checkbox-option" for="easy-read-task-enabled">
+                    <input id="easy-read-task-enabled" type="checkbox" />
+                    <span>Aktivera lättläst för slutanvändare</span>
+                  </label>
+                  <label
+                    class="checkbox-option"
+                    for="easy-read-workflow-enabled"
+                  >
+                    <input id="easy-read-workflow-enabled" type="checkbox" />
+                    <span>Aktivera tvåpass-workflow för lättläst</span>
+                  </label>
+                  <label
+                    class="checkbox-option"
+                    for="easy-read-workflow-use-rewrite-draft"
+                  >
+                    <input
+                      id="easy-read-workflow-use-rewrite-draft"
+                      type="checkbox"
+                    />
+                    <span>Använd omskrivningsutkast i lättläst-workflow</span>
+                  </label>
+                  <button
+                    id="save-easy-read-settings"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                  >
+                    Spara lättläst-inställningar
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: lättläst uppgift</h3>
+                  <label class="textarea-label" for="easy-read-prompt-task">
+                    task:easyToRead
+                  </label>
+                  <textarea id="easy-read-prompt-task" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="task:easyToRead"
+                    data-easy-read-prompt-field="easy-read-prompt-task"
+                  >
+                    Spara lättläst-uppgift
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: basregler (importantRules)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-importantRules"
+                  >
+                    importantRules
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-importantRules"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="importantRules"
+                    data-easy-read-prompt-field="easy-read-prompt-importantRules"
+                  >
+                    Spara basregler
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: systemroll (role)</h3>
+                  <label class="textarea-label" for="easy-read-prompt-role">
+                    role
+                  </label>
+                  <textarea id="easy-read-prompt-role" rows="6"></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="role"
+                    data-easy-read-prompt-field="easy-read-prompt-role"
+                  >
+                    Spara systemroll
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: avsändarens intention (senderIntent)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-senderIntent"
+                  >
+                    senderIntent
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-senderIntent"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="senderIntent"
+                    data-easy-read-prompt-field="easy-read-prompt-senderIntent"
+                  >
+                    Spara avsändarintention
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: omskrivningsplan (rewritePlan)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-rewritePlan"
+                  >
+                    rewritePlan
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-rewritePlan"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="rewritePlan"
+                    data-easy-read-prompt-field="easy-read-prompt-rewritePlan"
+                  >
+                    Spara omskrivningsplan
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: kvalitetsutvärdering (qualityEvaluation)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-qualityEvaluation"
+                  >
+                    qualityEvaluation
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-qualityEvaluation"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="qualityEvaluation"
+                    data-easy-read-prompt-field="easy-read-prompt-qualityEvaluation"
+                  >
+                    Spara kvalitetsutvärdering
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: ordlista-användning (wordListUsage)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-wordListUsage"
+                  >
+                    wordListUsage
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-wordListUsage"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="wordListUsage"
+                    data-easy-read-prompt-field="easy-read-prompt-wordListUsage"
+                  >
+                    Spara ordlista-användning
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: omskrivningsfallback (rewriteFallback)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-rewriteFallback"
+                  >
+                    rewriteFallback
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-rewriteFallback"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="rewriteFallback"
+                    data-easy-read-prompt-field="easy-read-prompt-rewriteFallback"
+                  >
+                    Spara omskrivningsfallback
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: målgrupp fallback (targetAudience)</h3>
+                  <label
+                    class="textarea-label"
+                    for="easy-read-prompt-targetAudience-fallback"
+                  >
+                    targetAudience
+                  </label>
+                  <textarea
+                    id="easy-read-prompt-targetAudience-fallback"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                    data-easy-read-prompt-save="targetAudience"
+                    data-easy-read-prompt-field="easy-read-prompt-targetAudience-fallback"
+                  >
+                    Spara målgrupp fallback
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-3">
+                  <h3>Prompt: målgruppsspecifik</h3>
+                  <label
+                    class="admin-label"
+                    for="easy-read-target-audience-select"
+                  >
+                    Välj målgrupp
+                  </label>
+                  <select
+                    id="easy-read-target-audience-select"
+                    class="modal-input"
+                  ></select>
+                  <p id="easy-read-target-audience-group" class="text-sm"></p>
+                  <label
+                    id="easy-read-target-audience-prompt-label"
+                    class="admin-label"
+                    for="easy-read-target-audience-prompt"
+                  >
+                    Prompt för vald målgrupp
+                  </label>
+                  <textarea
+                    id="easy-read-target-audience-prompt"
+                    rows="6"
+                  ></textarea>
+                  <button
+                    id="save-easy-read-target-audience"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                  >
+                    Spara målgruppsprompt
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="view-target-audiences"
+            data-view="target-audiences"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Målgrupper</h2>
+              <p>Välj målgrupp att uppdatera. Varje målgrupp sparas separat.</p>
+              <p>
+                För att skapa en ny kategori eller målgrupp, klicka på knappen
+                Skapa kategori respektive Skapa målgrupp.
+              </p>
+              <div class="flex flex-column gap-2">
+                <h3>Kategorier</h3>
+                <label
+                  class="admin-label"
+                  for="target-audience-category-select"
+                >
+                  Välj kategori
+                </label>
+                <select
+                  id="target-audience-category-select"
+                  class="modal-input"
+                ></select>
+                <label class="admin-label" for="target-audience-category-name">
+                  Kategorinamn
+                </label>
+                <input
+                  id="target-audience-category-name"
+                  class="modal-input"
+                  type="text"
+                  placeholder="Ny kategori"
+                />
+                <div class="flex flex-row gap-2 flex-wrap">
+                  <button
+                    id="target-audience-category-create"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Skapa ny kategori
+                  </button>
+                  <button
+                    id="target-audience-category-save"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Byt namn
+                  </button>
+                  <button
+                    id="target-audience-category-delete"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Ta bort
+                  </button>
+                  <button
+                    id="target-audience-category-up"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Flytta upp
+                  </button>
+                  <button
+                    id="target-audience-category-down"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Flytta ned
+                  </button>
+                </div>
+              </div>
+              <div class="flex flex-column gap-2">
+                <h3>Målgrupper</h3>
+                <label class="admin-label" for="target-audience-select">
+                  Välj målgrupp
+                </label>
+                <select
+                  id="target-audience-select"
+                  class="modal-input"
+                ></select>
+                <p id="target-audience-group" class="text-sm"></p>
+                <label
+                  class="admin-label"
+                  for="target-audience-category-for-item"
+                >
+                  Kategori för målgrupp
+                </label>
+                <select
+                  id="target-audience-category-for-item"
+                  class="modal-input"
+                ></select>
+                <label class="textarea-label" for="target-audience-label-input">
+                  Målgruppsnamn
+                </label>
+                <input
+                  id="target-audience-label-input"
+                  class="modal-input"
+                  type="text"
+                  placeholder="Ny målgrupp"
+                />
+                <div class="flex flex-row gap-2 flex-wrap">
+                  <button
+                    id="target-audience-create"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-sm filled-white outline-blue small-admin-button"
+                  >
+                    Skapa målgrupp
+                  </button>
+                  <button
+                    id="target-audience-delete"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                  >
+                    Ta bort målgrupp
+                  </button>
+                  <button
+                    id="target-audience-up"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                  >
+                    Flytta upp
+                  </button>
+                  <button
+                    id="target-audience-down"
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue small-admin-button"
+                  >
+                    Flytta ned
+                  </button>
+                </div>
+              </div>
+              <div class="flex flex-column gap-3">
+                <label
+                  id="target-audience-prompt-label"
+                  class="admin-label"
+                  for="target-audience-prompt"
+                >
+                  Prompt för vald målgrupp
+                </label>
+                <textarea id="target-audience-prompt" rows="6"></textarea>
+                <button
+                  id="save-target-audience"
+                  class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                >
+                  Spara målgrupp
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="view-genai"
+            data-view="genai"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Global AI-konfiguration</h2>
+              <p>
+                Styr vald AI-provider och alla försök innan systemet ger upp.
+              </p>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="global-provider">
+                  AI-provider (global)
+                </label>
+                <select id="global-provider" class="modal-input">
+                  <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                  <option value="openai">OpenAI</option>
+                </select>
+              </div>
+              <div class="flex flex-column gap-2">
+                <p class="text-sm">
+                  Gäller antal återförsök för alla AI-anrop.
+                </p>
+                <label class="textarea-label" for="global-retry">
+                  AI-anrop: max återförsök per anrop
+                </label>
+                <input
+                  id="global-retry"
+                  class="modal-input slider"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value="5"
+                />
+                <p id="global-retry-selected" class="text-sm">Vald: 5</p>
+                <p id="global-retry-current" class="text-sm">Nuvarande: -</p>
+              </div>
+              <div class="flex flex-column gap-2">
+                <p class="text-sm">
+                  Totalt antal kvalitetsförsök innan systemet ger upp och visar
+                  senaste versionen.
+                </p>
+                <label class="textarea-label" for="global-quality-attempts">
+                  Kvalitetsvarv: max totalförsök
+                </label>
+                <input
+                  id="global-quality-attempts"
+                  class="modal-input slider"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value="5"
+                />
+                <p id="global-quality-attempts-selected" class="text-sm">
+                  Vald: 5
+                </p>
+                <p id="global-quality-attempts-current" class="text-sm">
+                  Nuvarande: -
+                </p>
+              </div>
+              <div class="flex flex-column gap-2">
+                <p class="text-sm">
+                  Hur många extra poleringar som får göras inom varje
+                  kvalitetsvarv.
+                </p>
+                <label class="textarea-label" for="global-repair-budget">
+                  Polering per varv (repair budget)
+                </label>
+                <input
+                  id="global-repair-budget"
+                  class="modal-input slider"
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value="1"
+                />
+                <p id="global-repair-budget-selected" class="text-sm">
+                  Vald: 1
+                </p>
+                <p id="global-repair-budget-current" class="text-sm">
+                  Nuvarande: -
+                </p>
+              </div>
+              <button
+                id="save-global"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+              >
+                Spara global konfiguration
+              </button>
+            </div>
+
+            <div
+              class="hidden blue-bg colored-bg-padding flex flex-column gap-4"
+            >
+              <h2>Runtime-inställningar</h2>
+              <p>
+                Här styr du främst kapacitet, köer och skyddsgränser. Ändringar
+                påverkar nya förfrågningar direkt efter att du sparat. Om du är
+                osäker: börja med "Snabbinställningar" nedan.
+              </p>
+              <div class="flex flex-column gap-3">
+                <h3>Snabbinställningar (för de flesta)</h3>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">AI-anrop per minut</p>
+                  <p class="text-sm">
+                    Begränsar hur många anrop varje AI-tjänst får göra per
+                    minut. Lägre värde ger lugnare drift men mer väntetid.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-provider-rpm-gemini"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Gemini RPM (providerRpm.gemini)"
+                    />
+                    <input
+                      id="runtime-provider-rpm-openai"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="OpenAI RPM (providerRpm.openai)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">Gemensam skyddsgräns för API</p>
+                  <p class="text-sm">
+                    Alla inkommande anrop räknas i samma tidsfönster. Bra för
+                    att skydda servern vid hög belastning.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-global-window-ms"
+                      class="modal-input"
+                      type="number"
+                      min="1000"
+                      step="1000"
+                      placeholder="Fönster i ms (globalRateLimit.windowMs)"
+                    />
+                    <input
+                      id="runtime-global-max"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Max anrop (globalRateLimit.max)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">Skyddsgräns per funktion</p>
+                  <p class="text-sm">
+                    Separata gränser för olika typer av anrop, till exempel
+                    sammanfattning och filuppladdning.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-api-window-ms"
+                      class="modal-input"
+                      type="number"
+                      min="1000"
+                      step="1000"
+                      placeholder="Fönster i ms (apiRateLimit.windowMs)"
+                    />
+                    <input
+                      id="runtime-api-standard"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Standard (apiRateLimit.standard)"
+                    />
+                    <input
+                      id="runtime-api-quality"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Quality (apiRateLimit.quality)"
+                    />
+                    <input
+                      id="runtime-api-summarize"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Summarize (apiRateLimit.summarize)"
+                    />
+                    <input
+                      id="runtime-api-upload"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Upload (apiRateLimit.fileUpload)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">Summarize-kö</p>
+                  <p class="text-sm">
+                    Styr hur många jobb som får köras samtidigt, hur stor kön
+                    får bli och hur länge ett jobb får vänta innan det avvisas.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-queue-concurrent"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Samtidiga jobb (summarizeQueue.maxConcurrentJobs)"
+                    />
+                    <input
+                      id="runtime-queue-size"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Köstorlek (summarizeQueue.maxQueueSize)"
+                    />
+                    <input
+                      id="runtime-queue-wait-ms"
+                      class="modal-input"
+                      type="number"
+                      min="1000"
+                      step="1000"
+                      placeholder="Max väntetid i ms (summarizeQueue.maxWaitMs)"
+                    />
+                    <input
+                      id="runtime-queue-retry-after"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Retry-After i sekunder (summarizeQueue.retryAfterSeconds)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <label
+                    class="textarea-label"
+                    for="runtime-upload-max-size-mb"
+                  >
+                    Max dokumentstorlek vid uppladdning (1-100 MB)
+                  </label>
+                  <p class="text-sm">
+                    Styr maximal filstorlek för dokument som laddas upp i appen.
+                    Gäller både vanlig uppladdning och base64-flödet.
+                  </p>
+                  <input
+                    id="runtime-upload-max-size-mb"
+                    class="modal-input slider"
+                    type="range"
+                    min="1"
+                    max="100"
+                    step="1"
+                    value="50"
+                  />
+                  <p id="runtime-upload-max-size-mb-selected" class="text-sm">
+                    Vald: 50 MB
+                  </p>
+                  <p id="runtime-upload-max-size-mb-current" class="text-sm">
+                    Nuvarande: 50 MB
+                  </p>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">Stage concurrency</p>
+                  <p class="text-sm">
+                    Max parallellism per pipelinesteg: analys, omskrivning och
+                    kvalitetskritik.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-stage-analysis"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Analys (stageConcurrency.analysis)"
+                    />
+                    <input
+                      id="runtime-stage-rewrite"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Omskrivning (stageConcurrency.rewrite)"
+                    />
+                    <input
+                      id="runtime-stage-critic"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Kvalitetskritik (stageConcurrency.critic)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">AI-anrop: återförsök</p>
+                  <p class="text-sm">
+                    Gäller enskilda AI-anrop (inte hela kvalitetsvarvet). Antal
+                    försök för kvalitetsvarv styrs i "Global AI-konfiguration"
+                    ovan.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-retry-provider-max"
+                      class="modal-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="Provider retries (retry.providerMaxRetries)"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <label
+                    class="textarea-label"
+                    for="runtime-repair-min-subscore"
+                  >
+                    Quality min subscore (1-10)
+                  </label>
+                  <p class="text-sm">
+                    Alla delbetyg maste vara minst detta varde for att texten
+                    ska godkannas. Lägre delbetyg triggar ny polering även om
+                    totalbetyget är högt.
+                  </p>
+                  <input
+                    id="runtime-repair-min-subscore"
+                    class="modal-input slider"
+                    type="range"
+                    min="1"
+                    max="10"
+                    step="1"
+                    value="8"
+                  />
+                  <p id="runtime-repair-min-subscore-selected" class="text-sm">
+                    Vald: 8
+                  </p>
+                  <p id="runtime-repair-min-subscore-current" class="text-sm">
+                    Nuvarande: 8
+                  </p>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                  <p class="text-sm">
+                    Automatisk profilväxling (quality/balanced/stress)
+                  </p>
+                  <p class="text-sm">
+                    Växlar profil efter belastning. Auto följer mätvärden,
+                    Manual låser vald profil. Dry run loggar förslag utan att
+                    tillämpa dem.
+                  </p>
+                  <p class="text-sm">
+                    <strong>1) Driftläge:</strong>
+                    Auto enabled slår på av/på hela funktionen. Mode styr om
+                    växling sker automatiskt eller manuellt. Manual profile
+                    används endast när Mode = manual. Dry run testar logik utan
+                    att ändra profil.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <label class="checkbox-option" for="runtime-auto-enabled">
+                      <input id="runtime-auto-enabled" type="checkbox" />
+                      <span>Auto enabled</span>
+                    </label>
+                    <label class="checkbox-option" for="runtime-auto-dry-run">
+                      <input id="runtime-auto-dry-run" type="checkbox" />
+                      <span>Dry run</span>
+                    </label>
+                    <select id="runtime-auto-mode" class="modal-input">
+                      <option value="auto">Auto</option>
+                      <option value="manual">Manual</option>
+                    </select>
+                    <select
+                      id="runtime-auto-manual-profile"
+                      class="modal-input"
+                    >
+                      <option value="quality">quality</option>
+                      <option value="balanced">balanced</option>
+                      <option value="stress">stress</option>
+                    </select>
+                  </div>
+
+                  <p class="text-sm">
+                    <strong>2) Utvärderingsintervall:</strong>
+                    Styr hur ofta systemet räknar på belastning och hur länge
+                    ett mätfönster är aktivt.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-auto-evaluate-seconds"
+                      class="modal-input"
+                      type="number"
+                      min="5"
+                      step="1"
+                      placeholder="Intervall i s (autoProfile.evaluateEverySeconds)"
+                    />
+                    <input
+                      id="runtime-auto-window-seconds"
+                      class="modal-input"
+                      type="number"
+                      min="10"
+                      step="1"
+                      placeholder="Fönster i s (autoProfile.windowSeconds)"
+                    />
+                    <input
+                      id="runtime-auto-min-dwell-seconds"
+                      class="modal-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="Min dwell i s (autoProfile.minDwellSeconds)"
+                    />
+                    <input
+                      id="runtime-auto-cooldown-seconds"
+                      class="modal-input"
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="Cooldown i s (autoProfile.cooldownSeconds)"
+                    />
+                  </div>
+
+                  <p class="text-sm">
+                    <strong>3) Växlingsregler:</strong>
+                    Definierar när profilbyte får ske baserat på antal
+                    mätpunkter och antal på varandra följande signaler.
+                  </p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <input
+                      id="runtime-auto-min-samples"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Min samples (autoProfile.windows.minSamples)"
+                    />
+                    <input
+                      id="runtime-auto-escalate-consecutive"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Escalate (autoProfile.windows.escalateConsecutive)"
+                    />
+                    <input
+                      id="runtime-auto-relax-consecutive"
+                      class="modal-input"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="Relax (autoProfile.windows.relaxConsecutive)"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  id="save-runtime-settings-fields"
+                  class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                >
+                  Spara nyckelinställningar
+                </button>
+              </div>
+
+              <label class="textarea-label" for="runtime-settings-json">
+                Runtime settings (JSON)
+              </label>
+              <textarea id="runtime-settings-json" rows="12"></textarea>
+              <button
+                id="save-runtime-settings"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+              >
+                Spara runtime-inställningar
+              </button>
+            </div>
+
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Gemini-konfiguration</h2>
+              <div class="flex flex-column gap-2">
+                <label class="admin-label" for="gemini-model">
+                  Gemini-model (whitelist)
+                </label>
+                <input id="gemini-model" class="modal-input" type="text" />
+              </div>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="gemini-temp">
+                  Temperature (0-1)
+                </label>
+                <p class="text-sm">
+                  Styr kreativitet. Lågt värde ger striktare svar, högre ger mer
+                  variation.
+                </p>
+                <input
+                  id="gemini-temp"
+                  class="modal-input slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value="0.7"
+                />
+                <p id="gemini-temp-selected" class="text-sm">Vald: 0.7</p>
+                <p id="gemini-temp-value" class="text-sm">Nuvarande: 0.7</p>
+              </div>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="gemini-qe-temp">
+                  QE temperature (0-1)
+                </label>
+                <p class="text-sm">
+                  Används endast för quality evaluation. Lägre värde ger jämnare
+                  bedömning.
+                </p>
+                <input
+                  id="gemini-qe-temp"
+                  class="modal-input slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value="0.3"
+                />
+                <p id="gemini-qe-temp-selected" class="text-sm">Vald: 0.3</p>
+                <p id="gemini-qe-temp-value" class="text-sm">Nuvarande: 0.3</p>
+              </div>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="gemini-max">
+                  Max output tokens
+                </label>
+                <p class="text-sm">
+                  Anger maxlängd på svaret. Högre värde kan ge längre svar men
+                  ta längre tid.
+                </p>
+                <input
+                  id="gemini-max"
+                  class="modal-input slider"
+                  type="number"
+                />
+              </div>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="gemini-use-search">
+                  Webbsökning
+                </label>
+                <div
+                  class="flex flex-row flex-wrap gap-2 flex-align-items-center"
+                >
+                  <input id="gemini-use-search" type="checkbox" />
+                  <span class="text-sm">Aktivera Google Search-grounding</span>
+                </div>
+              </div>
+              <div class="flex flex-column gap-2">
+                <label class="textarea-label" for="gemini-use-thinking">
+                  Thinking
+                </label>
+                <div
+                  class="flex flex-row flex-wrap gap-2 flex-align-items-center"
+                >
+                  <input id="gemini-use-thinking" type="checkbox" />
+                  <span class="text-sm">Tillåt modellen att resonera</span>
+                </div>
+              </div>
+              <button
+                id="save-gemini"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+              >
+                Spara Gemini-inställningar
+              </button>
+            </div>
+          </section>
+
+          <section
+            id="view-api-keys"
+            data-view="api-keys"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>API-nycklar</h2>
+              <p>
+                Spara nya nycklar (visas inte i klartext). När du sparar en ny
+                nyckel ersätter den tidigare nyckeln.
+              </p>
+
+              <section>
+                <div class="flex flex-column gap-2">
+                  <h3>Gemini</h3>
+                  <label class="textarea-label" for="secret-gemini">
+                    Gemini API key
+                  </label>
+                  <input
+                    id="secret-gemini"
+                    class="modal-input"
+                    type="password"
+                  />
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-secret-save="GEMINI_API_KEY"
+                  >
+                    Spara Gemini-nyckel
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-2">
+                  <h3>Gemini Quality Evaluation</h3>
+                  <label class="textarea-label" for="secret-gemini-qe">
+                    Gemini QE API key
+                  </label>
+                  <input
+                    id="secret-gemini-qe"
+                    class="modal-input"
+                    type="password"
+                  />
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-secret-save="GEMINI_QE_API_KEY"
+                  >
+                    Spara Gemini QE-nyckel
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-2">
+                  <h3>OpenAI</h3>
+                  <label class="textarea-label" for="secret-openai">
+                    OpenAI API key
+                  </label>
+                  <input
+                    id="secret-openai"
+                    class="modal-input"
+                    type="password"
+                  />
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-secret-save="OPENAI_API_KEY"
+                  >
+                    Spara OpenAI-nyckel
+                  </button>
+                </div>
+              </section>
+
+              <section>
+                <div class="flex flex-column gap-2">
+                  <h3>OpenAI Quality Evaluation</h3>
+                  <label class="textarea-label" for="secret-openai-qe">
+                    OpenAI QE API key
+                  </label>
+                  <input
+                    id="secret-openai-qe"
+                    class="modal-input"
+                    type="password"
+                  />
+                  <button
+                    class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                    data-secret-save="OPENAI_QE_API_KEY"
+                  >
+                    Spara OpenAI QE-nyckel
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section
+            id="view-ordlista"
+            data-view="ordlista"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Ordlista</h2>
+              <p>Definiera ord som alltid ska ersättas i sluttexten.</p>
+
+              <div class="flex flex-column gap-4">
+                <div class="flex flex-row gap-3">
+                  <div class="flex flex-column gap-3 flex-even">
+                    <h3>Från</h3>
+                    <label class="textarea-label" for="ordlista-from">
+                      Från
+                    </label>
+                    <input id="ordlista-from" class="modal-input" type="text" />
+                  </div>
+                  <div class="flex flex-align-self-center">
+                    <p>-></p>
+                  </div>
+                  <div class="flex flex-column gap-3 flex-even">
+                    <h3>Till</h3>
+                    <label class="textarea-label" for="ordlista-to">Till</label>
+                    <input id="ordlista-to" class="modal-input" type="text" />
+                  </div>
+                </div>
+              </div>
+              <button
+                id="ordlista-save"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button flex-align-self-end"
+              >
+                Spara ordpar
+              </button>
+
+              <div class="flex flex-column gap-2">
+                <div class="flex flex-row flex-wrap gap-2">
+                  <span class="text-base text-weight-bold flex-even">Från</span>
+                  <span class="text-base text-weight-bold flex-even">Till</span>
+                  <span class="text-base text-weight-bold flex-even">
+                    Åtgärder
+                  </span>
+                </div>
+                <div class="flex flex-column gap-2" id="ordlista-list"></div>
+                <p class="text-sm" id="ordlista-empty" hidden>
+                  Ordlistan är tom.
+                </p>
+              </div>
+
+              <button
+                id="ordlista-clear"
+                class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button flex-align-self-end"
+              >
+                Rensa ordlista
+              </button>
+            </div>
+          </section>
+
+          <section
+            id="view-backup"
+            data-view="backup"
+            class="flex flex-column gap-6"
+            hidden
+          >
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Backup</h2>
+              <p>
+                Ladda ner en JSON-fil med alla inställningar eller importera en
+                tidigare backup. Import ersätter befintliga inställningar.
+              </p>
+
+              <div class="flex flex-column gap-3">
+                <button
+                  id="backup-download"
+                  class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-blue outline-blue large-button"
+                >
+                  Ladda ner backup
+                </button>
+              </div>
+
+              <div class="flex flex-column gap-3">
+                <h3>Ladda in inställningar</h3>
+                <label class="admin-label" for="backup-upload">
+                  Välj fil att ladda in (JSON)
+                </label>
+                <input
+                  id="backup-upload"
+                  class="modal-input"
+                  type="file"
+                  accept=".json,application/json"
+                />
+                <button
+                  id="backup-import"
+                  class="flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button"
+                >
+                  Ladda in backup-fil
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="/script/admin-ui.js" nonce="__CSP_NONCE__"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+# Docker Compose for Textverktyg
+# Postgres-based setup
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: textverktyg
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # NODE_ENV for Node.js runtime optimizations only (application doesn't depend on it)
+      - NODE_ENV=production
+      - LOCAL_DEV=false
+      - HOST=0.0.0.0
+      - PORT=3000
+      - DATABASE_URL=postgresql://textverktyg:textverktyg@postgres:5432/textverktyg
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      # Create named volumes to avoid local directory creation
+      - textverktyg_data:/app/data
+      - textverktyg_uploads:/app/uploads
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: textverktyg-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=textverktyg
+      - POSTGRES_USER=textverktyg
+      - POSTGRES_PASSWORD=textverktyg
+    volumes:
+      - textverktyg_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U textverktyg -d textverktyg"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  textverktyg_data:
+    driver: local
+  textverktyg_uploads:
+    driver: local
+  textverktyg_postgres_data:
+    driver: local
