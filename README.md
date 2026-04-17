@@ -1,8 +1,9 @@
 # Textverktyget
 
 Textverktyget är ett webbverktyg för att bearbeta texter med fördefinerade
-promptar. I grunden finns det alltid en klarspråksprompt och avsändarprompt
-som kombineras med uppgifter.
+promptar. I grunden finns det alltid en klarspråksprompt och avsändarprompt som
+kombineras med uppgifter. Det ingår även ett användargränssnitt för att göra
+ändringar i verktyget.
 
 ## Hoppa till sektion
 
@@ -26,7 +27,7 @@ som kombineras med uppgifter.
 
 Verktyget använder sig av Google Gemini 2.5 Flash API för att bearbeta texter.
 Målet är inte att ersätta klarspråksskrivande, utan hjälpa till att göra
-processen snabbare och underlätta att göra andra repetetiva uppgifter.
+processen snabbare och underlätta att göra andra repetitiva uppgifter.
 
 ### Funktioner
 
@@ -246,3 +247,5 @@ grunden. Det är endast i nödfall man behöver göra detta.
 ## Förslag och utveckling
 
 Förslag och utvecklingsfrågor kan skickas till <marcus.g.pettersson@regionstockholm.se>
+
+## Vad är på gång
