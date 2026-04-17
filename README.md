@@ -249,3 +249,11 @@ grunden. Det är endast i nödfall man behöver göra detta.
 Förslag och utvecklingsfrågor kan skickas till <marcus.g.pettersson@regionstockholm.se>
 
 ## Vad är på gång
+
+- Förbättra klarspråksgrunden.
+- Förbättra bearbetning till lättläst.
+- Få hjälp av GenAI att skapa promptar.
+- Underlätta att använda webscraper för egen webb.
+- Dubbelkolla säkerhet och eventuella läckor.
+- Förbättra UI och UX i adminpanelen.
+- Mer kontroll över vilka dokument som kan laddas upp samt hur stora.
