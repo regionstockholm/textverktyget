@@ -5,6 +5,13 @@ promptar. I grunden finns det alltid en klarspråksprompt och avsändarprompt so
 kombineras med uppgifter. Det ingår även ett användargränssnitt för att göra
 ändringar i verktyget.
 
+## Features
+
+- Ett Google Translate men för klarspråk (och andra textuppgifter).
+- Slipp prompta själv och ha din avsändare och ditt sätt att uttrycka dig i en funktion.
+- Möjlighet att bearbeta dokument och stora texter (upp till 200 tusen tecken).
+- Enkelt användargränssnitt, både för slutanvändaren och admin.
+
 ## Hoppa till sektion
 
 [Hur det funkar](#hur-det-funkar)
@@ -120,6 +127,8 @@ Om du inte är van med Git eller Github, klicka på knappen `Code` och sedan på
 <details>
 <summary>Installera i Windows</summary>
 
+## Installera i Windows
+
 1. Packa upp filen på direkt på lokala disk, exempelvis under `C:\Textverktyg`
    (detta för att det kan bli problem för Docker att köras om det ligger på en
    plats som backupas av en server).
@@ -136,6 +145,8 @@ Om du inte är van med Git eller Github, klicka på knappen `Code` och sedan på
 
 <details>
 <summary>Installera på Mac</summary>
+
+## Installera på Mac
 
 1. Packa upp filen i din hemkatalog.
 2. Se till att Docker är installerat och igång i bakgrunden.
@@ -156,6 +167,8 @@ container. Det är inte svårt men annorlunda första gången. Se till att docke
 
 <details>
 <summary>Starta i Windows</summary>
+
+### Starta i Windows
 
 1. Rekommenderat är att du använder genvägarna `start-docker.bat` samt
    `stop-docker.bat` för att starta och stänga ned textverkyget.
@@ -189,6 +202,8 @@ container. Det är inte svårt men annorlunda första gången. Se till att docke
 <details>
 <summary>Starta på Mac</summary>
 
+### Starta på Mac
+
 1. Öppna terminalen (exempelvis genom att söka fram den med <kbd>⌘ + Space</kbd>).
 2. Leta fram katalogen där du packade upp textverktyget. Om du packade upp det
    under hemkatalogen och `textverktyget\` så öppnar du katalogen med
@@ -204,6 +219,9 @@ container. Det är inte svårt men annorlunda första gången. Se till att docke
 
 <details>
 <summary>Efter första körningen</summary>
+
+### Efter första körningen
+
 Om du startar om datorn eller stänger Docker kan du behöva starta om textverktyget. Använd nedan kommando i katalogen där textverktyget finns:
 
 ```text
@@ -243,8 +261,8 @@ nedan kommando:
 docker compose down -v && docker compose build --no-cache && docker compose up -d
 ```
 
-Det som händer är att Docker-imagen som skapas raderas och byggs om från
-grunden. Det är endast i nödfall man behöver göra detta.
+Det som händer är att Docker-imagen stängs ned och raderas, sedan byggs den om
+från grunden. Det är endast i nödfall man behöver göra detta.
 
 ## Förslag och utveckling
 
