@@ -28,7 +28,9 @@ kombineras med uppgifter. Det ingår även ett användargränssnitt för att gö
 
 [Installera om allting ifall något går sönder](#installera-om-allting-ifall-något-går-sönder)
 
-[Vad är på gång](vad-är-på-gång)
+[Förslag och utveckling](#förslag-och-utveckling)
+
+[Vad är på gång](#vad-är-på-gång)
 
 [Textverktyget wiki](https://github.com/regionstockholm/textverktyget/wiki)
 
