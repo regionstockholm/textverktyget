@@ -3,8 +3,7 @@
  * Handles communication with OpenAI API for text processing and summarization
  */
 
-import { getProviderConfig } from "../ai-config.js";
-import { getCurrentProvider } from "../ai-service-factory.js";
+import { AI_PROVIDERS, getProviderConfig } from "../ai-config.js";
 import { createRateLimiter } from "../../../utils/rate-limiter.js";
 import { createCircuitBreaker } from "../../../utils/circuit-breaker.js";
 import { assert } from "../../../utils/safety-utils.js";
@@ -14,8 +13,8 @@ import { listOrdlistaEntries } from "../../../services/ordlista/ordlista-service
 import { config as appConfig } from "../../app-config.js";
 import { preserveLineSeparatorTrim } from "../text-normalization.js";
 
-// Get the current provider configuration
-const config = getProviderConfig(getCurrentProvider());
+// Base provider configuration (static limits)
+const config = getProviderConfig(AI_PROVIDERS.OPENAI);
 
 // Replace the constants with config values
 const MODEL = config.MODEL;
@@ -23,35 +22,108 @@ const MAX_INPUT_TOKENS = config.MAX_INPUT_TOKENS;
 const MAX_OUTPUT_TOKENS = config.MAX_OUTPUT_TOKENS;
 const RETRY_DELAY = config.RETRY_DELAY;
 const RPM_LIMIT = config.RPM_LIMIT || 3500; // Default if not specified
-const DEFAULT_QUALITY_EVALUATION_TEMPERATURE = 0.3;
+const RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses";
+type OpenAIReasoningEffort = "none" | "low" | "medium" | "high" | "xhigh";
+type OpenAITextVerbosity = "low" | "medium" | "high";
+type OpenAISecretName = "OPENAI_API_KEY" | "OPENAI_QE_API_KEY";
 
-function normalizeTemperature(value: unknown, fallback: number): number {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
+const DEFAULT_REASONING_EFFORT: OpenAIReasoningEffort = "low";
+const DEFAULT_QUALITY_REASONING_EFFORT: OpenAIReasoningEffort = "low";
+const DEFAULT_TEXT_VERBOSITY: OpenAITextVerbosity = "medium";
+
+const OPENAI_REASONING_EFFORT = resolveReasoningEffort(
+  "OPENAI_REASONING_EFFORT",
+  DEFAULT_REASONING_EFFORT,
+);
+const OPENAI_QUALITY_REASONING_EFFORT = resolveReasoningEffort(
+  "OPENAI_QUALITY_REASONING_EFFORT",
+  DEFAULT_QUALITY_REASONING_EFFORT,
+);
+const OPENAI_TEXT_VERBOSITY = resolveTextVerbosity();
+
+function resolveReasoningEffort(
+  envKey: string,
+  fallback: OpenAIReasoningEffort,
+): OpenAIReasoningEffort {
+  const raw = process.env[envKey];
+  if (!raw || raw.trim().length === 0) {
     return fallback;
   }
 
-  const clamped = Math.min(1, Math.max(0, value));
-  return Number(clamped.toFixed(2));
+  const normalized = raw.trim().toLowerCase();
+  if (
+    normalized === "none" ||
+    normalized === "low" ||
+    normalized === "medium" ||
+    normalized === "high" ||
+    normalized === "xhigh"
+  ) {
+    return normalized;
+  }
+
+  logger.warn("provider.openai.reasoning_effort_invalid", {
+    processStatus: "running",
+    meta: { envKey, value: raw, fallback },
+  });
+  return fallback;
 }
 
-async function resolveQualityEvaluationTemperature(): Promise<number> {
-  try {
-    const runtimeSettings = await configService.getRuntimeSettings();
-    const qualitySettings = runtimeSettings.quality as
-      | Record<string, unknown>
-      | undefined;
-    return normalizeTemperature(
-      qualitySettings?.temperature,
-      DEFAULT_QUALITY_EVALUATION_TEMPERATURE,
-    );
-  } catch {
-    return DEFAULT_QUALITY_EVALUATION_TEMPERATURE;
+function resolveTextVerbosity(): OpenAITextVerbosity {
+  const raw = process.env.OPENAI_TEXT_VERBOSITY;
+  if (!raw || raw.trim().length === 0) {
+    return DEFAULT_TEXT_VERBOSITY;
   }
+
+  const normalized = raw.trim().toLowerCase();
+  if (
+    normalized === "low" ||
+    normalized === "medium" ||
+    normalized === "high"
+  ) {
+    return normalized;
+  }
+
+  logger.warn("provider.openai.text_verbosity_invalid", {
+    processStatus: "running",
+    meta: { value: raw, fallback: DEFAULT_TEXT_VERBOSITY },
+  });
+  return DEFAULT_TEXT_VERBOSITY;
+}
+
+function supportsReasoningParameters(): boolean {
+  const normalizedModel = MODEL.toLowerCase();
+  return (
+    normalizedModel.startsWith("gpt-5") ||
+    normalizedModel === "o1" ||
+    normalizedModel === "o3" ||
+    normalizedModel === "o4-mini" ||
+    normalizedModel.startsWith("o1-") ||
+    normalizedModel.startsWith("o3-") ||
+    normalizedModel.startsWith("o4-")
+  );
+}
+
+function supportsTextVerbosity(): boolean {
+  return MODEL.toLowerCase().startsWith("gpt-5");
+}
+
+function buildReasoningPayload(
+  effort: OpenAIReasoningEffort,
+): { effort: OpenAIReasoningEffort } | undefined {
+  if (!supportsReasoningParameters()) {
+    return undefined;
+  }
+
+  return { effort };
 }
 
 logger.debug("provider.openai.initialized", {
   processStatus: "running",
-  meta: { model: MODEL },
+  meta: {
+    model: MODEL,
+    reasoningEffort: OPENAI_REASONING_EFFORT,
+    qualityReasoningEffort: OPENAI_QUALITY_REASONING_EFFORT,
+  },
 });
 
 const rateLimiterCache = new Map<
@@ -201,27 +273,66 @@ interface ErrorHandlingResult {
 }
 
 /**
- * Message for OpenAI API
+ * OpenAI Responses API response
  */
-interface Message {
-  role: "system" | "user" | "assistant";
-  content: string;
+interface OpenAIResponsesContent {
+  type?: string;
+  text?: string;
 }
 
-/**
- * OpenAI API response
- */
-interface OpenAIResponse {
-  choices: {
-    message: {
-      content: string;
-    };
-  }[];
-  usage?: {
-    total_tokens: number;
-    prompt_tokens: number;
-    completion_tokens: number;
+interface OpenAIResponsesOutputItem {
+  type?: string;
+  content?: OpenAIResponsesContent[];
+}
+
+interface OpenAIResponsesResponse {
+  output_text?: string;
+  output?: OpenAIResponsesOutputItem[];
+  status?: string;
+  incomplete_details?: {
+    reason?: string;
   };
+  usage?: {
+    total_tokens?: number;
+    input_tokens?: number;
+    output_tokens?: number;
+    output_tokens_details?: {
+      reasoning_tokens?: number;
+    };
+  };
+}
+
+function extractResponseText(result: OpenAIResponsesResponse): string {
+  if (typeof result.output_text === "string" && result.output_text.length > 0) {
+    return result.output_text;
+  }
+
+  const parts: string[] = [];
+  for (const item of result.output ?? []) {
+    if (!Array.isArray(item.content)) {
+      continue;
+    }
+
+    for (const content of item.content) {
+      if (
+        (content.type === "output_text" || content.type === "text") &&
+        typeof content.text === "string"
+      ) {
+        parts.push(content.text);
+      }
+    }
+  }
+
+  return parts.join("");
+}
+
+function assertOpenAIResponseComplete(result: OpenAIResponsesResponse): void {
+  if (result.status !== "incomplete") {
+    return;
+  }
+
+  const reason = result.incomplete_details?.reason || "unknown";
+  throw new Error(`OpenAI response was incomplete: ${reason}`);
 }
 
 /**
@@ -230,19 +341,25 @@ interface OpenAIResponse {
  * @returns Formatted system message
  * @private
  */
-async function resolveOpenAiApiKey(): Promise<string> {
-  let apiKey = process.env.OPENAI_API_KEY || "";
+async function resolveOpenAiApiKey(
+  secretName: OpenAISecretName = "OPENAI_API_KEY",
+): Promise<string> {
+  let apiKey = process.env[secretName] || "";
 
   try {
-    const storedKey = await configService.getSecret("OPENAI_API_KEY");
+    const storedKey = await configService.getSecret(secretName);
     if (storedKey) {
       apiKey = storedKey;
     }
   } catch (error) {
     logger.warn("provider.openai.secret_load_failed", {
       processStatus: "running",
-      meta: { secret: "OPENAI_API_KEY" },
+      meta: { secret: secretName },
     });
+  }
+
+  if (!apiKey && secretName !== "OPENAI_API_KEY") {
+    return resolveOpenAiApiKey("OPENAI_API_KEY");
   }
 
   return apiKey;
@@ -432,7 +549,7 @@ function validateInputLength(text: string, systemMessage: string): string {
 async function makeApiCall(
   systemMessage: string,
   text: string,
-): Promise<OpenAIResponse> {
+): Promise<OpenAIResponsesResponse> {
   assert(typeof systemMessage === "string", "System message must be a string");
   assert(typeof text === "string", "Text must be a string");
 
@@ -443,28 +560,29 @@ async function makeApiCall(
     MAX_INPUT_TOKENS - estimatedPromptTokens,
   );
 
-  // Combine system message and user text as single user message
-  // This matches the expected prompt structure where system prompt ends with
-  // "Här är texten som ska skrivas om:" and user text follows
-  const fullPrompt = `${systemMessage}\n\n${text}`;
-
-  const messages: Message[] = [{ role: "user", content: fullPrompt }];
-
   const apiKey = await resolveOpenAiApiKey();
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const payload: Record<string, unknown> = {
+    model: MODEL,
+    instructions: systemMessage,
+    input: text,
+    max_output_tokens: maxResponseTokens,
+    store: false,
+  };
+  const reasoning = buildReasoningPayload(OPENAI_REASONING_EFFORT);
+  if (reasoning) {
+    payload.reasoning = reasoning;
+  }
+  if (supportsTextVerbosity()) {
+    payload.text = { verbosity: OPENAI_TEXT_VERBOSITY };
+  }
+
+  const response = await fetch(RESPONSES_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: messages,
-      max_tokens: maxResponseTokens,
-      n: 1,
-      stop: null,
-      temperature: 0.7,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -474,7 +592,9 @@ async function makeApiCall(
     );
   }
 
-  return (await response.json()) as OpenAIResponse;
+  const result = (await response.json()) as OpenAIResponsesResponse;
+  assertOpenAIResponseComplete(result);
+  return result;
 }
 
 /**
@@ -589,7 +709,7 @@ async function callOpenAI(
     const response = await makeApiCall(systemMessage, text);
 
     // Extract and return the summary
-    const summary = response.choices[0]?.message?.content || "";
+    const summary = extractResponseText(response);
 
     providerCircuitBreaker.recordSuccess();
 
@@ -635,14 +755,14 @@ async function callOpenAI(
 export const getSummary = async (
   text: string,
   options: ProcessingOptions,
-): Promise<string> => {
+): Promise<ProcessingResult> => {
   assert(typeof text === "string", "Text must be a string");
   assert(text.trim().length > 0, "Text cannot be empty");
   assert(options !== undefined && options !== null, "Options are required");
 
   try {
     const startTime = Date.now();
-    const { summary } = await callOpenAI(text, options);
+    const { summary, systemMessage } = await callOpenAI(text, options);
     logger.info("process.ai.responded", {
       requestId: options.requestId,
       processId: options.processId || options.requestId,
@@ -653,7 +773,10 @@ export const getSummary = async (
         latencyMs: Date.now() - startTime,
       },
     });
-    return preserveLineSeparatorTrim(summary);
+    return {
+      summary: preserveLineSeparatorTrim(summary),
+      systemMessage: preserveLineSeparatorTrim(systemMessage),
+    };
   } catch (error) {
     logger.error("process.failed", {
       requestId: options.requestId,
@@ -693,32 +816,24 @@ async function makeQualityEvaluationCall(
     MAX_INPUT_TOKENS - estimatedPromptTokens,
   );
 
-  // Create messages array
-  const messages: Message[] = [
-    {
-      role: "system",
-      content:
-        "You are a strict text quality evaluator. Follow the user instruction and return valid JSON only.",
-    },
-    { role: "user", content: evaluationPrompt },
-  ];
-
-  const apiKey = await resolveOpenAiApiKey();
-  const qualityTemperature = await resolveQualityEvaluationTemperature();
-  const endpoint = "https://api.openai.com/v1/chat/completions";
-  const basePayload = {
+  const apiKey = await resolveOpenAiApiKey("OPENAI_QE_API_KEY");
+  const basePayload: Record<string, unknown> = {
     model: MODEL,
-    messages,
-    max_tokens: maxResponseTokens,
-    n: 1,
-    stop: null,
-    temperature: qualityTemperature,
+    instructions:
+      "You are a strict text quality evaluator. Follow the user instruction and return valid JSON only.",
+    input: evaluationPrompt,
+    max_output_tokens: maxResponseTokens,
+    store: false,
   };
+  const reasoning = buildReasoningPayload(OPENAI_QUALITY_REASONING_EFFORT);
+  if (reasoning) {
+    basePayload.reasoning = reasoning;
+  }
 
   const requestWithFormat = async (
-    responseFormat: Record<string, unknown>,
+    textFormat: Record<string, unknown>,
   ): Promise<Response> => {
-    return fetch(endpoint, {
+    return fetch(RESPONSES_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -726,57 +841,55 @@ async function makeQualityEvaluationCall(
       },
       body: JSON.stringify({
         ...basePayload,
-        response_format: responseFormat,
+        text: { format: textFormat },
       }),
     });
   };
 
   const jsonSchemaFormat = {
     type: "json_schema",
-    json_schema: {
-      name: "quality_evaluation",
-      strict: true,
-      schema: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          overall: { type: "integer" },
-          subscores: {
+    name: "quality_evaluation",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        overall: { type: "integer" },
+        subscores: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            fidelity: { type: "integer" },
+            priorityOrder: { type: "integer" },
+            plainLanguage: { type: "integer" },
+            taskFit: { type: "integer" },
+            audienceFit: { type: "integer" },
+            intentFit: { type: "integer" },
+          },
+          required: [
+            "fidelity",
+            "priorityOrder",
+            "plainLanguage",
+            "taskFit",
+            "audienceFit",
+            "intentFit",
+          ],
+        },
+        failures: {
+          type: "array",
+          items: {
             type: "object",
             additionalProperties: false,
             properties: {
-              fidelity: { type: "integer" },
-              priorityOrder: { type: "integer" },
-              plainLanguage: { type: "integer" },
-              taskFit: { type: "integer" },
-              audienceFit: { type: "integer" },
-              intentFit: { type: "integer" },
+              sectionKey: { type: "string" },
+              dimension: { type: "string" },
+              reason: { type: "string" },
             },
-            required: [
-              "fidelity",
-              "priorityOrder",
-              "plainLanguage",
-              "taskFit",
-              "audienceFit",
-              "intentFit",
-            ],
-          },
-          failures: {
-            type: "array",
-            items: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                sectionKey: { type: "string" },
-                dimension: { type: "string" },
-                reason: { type: "string" },
-              },
-              required: ["sectionKey", "dimension", "reason"],
-            },
+            required: ["sectionKey", "dimension", "reason"],
           },
         },
-        required: ["overall", "subscores", "failures"],
       },
+      required: ["overall", "subscores", "failures"],
     },
   };
 
@@ -810,8 +923,9 @@ async function makeQualityEvaluationCall(
     }
   }
 
-  const result = (await response.json()) as OpenAIResponse;
-  return result.choices[0]?.message?.content || "";
+  const result = (await response.json()) as OpenAIResponsesResponse;
+  assertOpenAIResponseComplete(result);
+  return extractResponseText(result);
 }
 
 /**

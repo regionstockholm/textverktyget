@@ -63,13 +63,13 @@ export const AI_CONFIG: Readonly<Record<AIProvider, AIProviderConfig>> =
       USE_GOOGLE_SEARCH_GROUNDING: false, // Set to true to enable grounding with Google Search
     },
     openai: {
-      MODEL: "gpt-4o",
-      MAX_INPUT_TOKENS: 128000,
-      MAX_OUTPUT_TOKENS: 16384,
-      MAX_CHUNK_SIZE: 512000, // ~128K tokens (4 chars per token)
+      MODEL: process.env.OPENAI_MODEL?.trim() || "gpt-5.5",
+      MAX_INPUT_TOKENS: readPositiveIntEnv("OPENAI_MAX_INPUT_TOKENS", 1050000),
+      MAX_OUTPUT_TOKENS: readPositiveIntEnv("OPENAI_MAX_OUTPUT_TOKENS", 32768),
+      MAX_CHUNK_SIZE: readPositiveIntEnv("OPENAI_MAX_CHUNK_SIZE", 512000), // ~128K tokens (4 chars per token)
       MAX_RETRIES: 5,
       RETRY_DELAY: 15000,
-      RPM_LIMIT: readPositiveIntEnv("OPENAI_RPM_LIMIT", 1000),
+      RPM_LIMIT: readPositiveIntEnv("OPENAI_RPM_LIMIT", 500),
     },
   });
 

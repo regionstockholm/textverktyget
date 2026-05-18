@@ -5,6 +5,18 @@ AI_PROVIDER=gemini-2.5-flash
 
 # OpenAI Service Configuration
 OPENAI_API_KEY=[open_ai_api]
+# Optional separate key for quality evaluation; falls back to OPENAI_API_KEY.
+OPENAI_QE_API_KEY=
+OPENAI_MODEL=gpt-5.5
+# GPT-5.x reasoning effort: none, low, medium, high, or xhigh
+OPENAI_REASONING_EFFORT=high
+OPENAI_QUALITY_REASONING_EFFORT=high
+OPENAI_TEXT_VERBOSITY=medium
+# Conservative default to avoid very large GPT-5.5 responses/costs; raise if needed.
+OPENAI_MAX_OUTPUT_TOKENS=32768
+# Optional advanced limits; defaults are 1050000 input tokens and 512000 chars per chunk.
+# OPENAI_MAX_INPUT_TOKENS=1050000
+# OPENAI_MAX_CHUNK_SIZE=512000
 
 # Application Configuration
 PORT=3000
@@ -49,7 +61,7 @@ API_RATE_LIMIT_QUALITY_MAX=10
 API_RATE_LIMIT_FILE_UPLOAD_MAX=5
 # AI provider RPM limits
 GEMINI_RPM_LIMIT=10
-OPENAI_RPM_LIMIT=1000
+OPENAI_RPM_LIMIT=500
 # Summarization chunking and upload request limits
 MAX_TEXT_CHUNKS=10
 MAX_FILES_PER_UPLOAD=1

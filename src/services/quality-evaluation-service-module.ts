@@ -12,7 +12,10 @@ import { logger } from "../utils/logger.js";
  * Interface for OpenAI module with optional quality score function
  */
 interface OpenAIModule {
-  getSummary: (text: string, options: any) => Promise<string>;
+  getSummary: (
+    text: string,
+    options: any,
+  ) => Promise<string | { summary: string }>;
   getQualityScore?: (
     evaluationPrompt: string,
     trace?: { requestId?: string; processId?: string },
@@ -112,14 +115,15 @@ async function evaluateQualityWithOpenAI(
 
     // Use getSummary to evaluate quality
     const result = await openaiModule.getSummary(evaluationPrompt, options);
+    const resultText = typeof result === "string" ? result : result.summary;
 
     // Validate that the result is a number between 1 and 10
-    const score = parseInt(result.trim(), 10);
+    const score = parseInt(resultText.trim(), 10);
     if (isNaN(score) || score < 1 || score > 10) {
-      throw new Error(`Invalid quality score received from OpenAI: ${result}`);
+      throw new Error(`Invalid quality score received from OpenAI: ${resultText}`);
     }
 
-    return result.trim();
+    return resultText.trim();
   } catch (error) {
     logger.error("process.failed", {
       requestId: trace?.requestId,

@@ -103,11 +103,7 @@ async function runSummaryWithProvider(
 
   if (provider === AI_PROVIDERS.OPENAI) {
     const { getSummary } = await import("./providers/openai.js");
-    const summary = await getSummary(text, options);
-    return {
-      summary,
-      systemMessage: "",
-    };
+    return await getSummary(text, options);
   }
 
   throw new Error(`Unsupported AI provider: ${provider}`);

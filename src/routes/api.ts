@@ -421,12 +421,13 @@ router.post(
           resolvedTargetAudience = defaultTargetAudience;
         }
 
+        const activeProvider = await configService.getActiveProvider();
         console.log(`[API] Starting AI processing (${requestId})`);
         logger.info("process.ai.requested", {
           requestId,
           processId,
           processStatus: "running",
-          meta: { provider: process.env.AI_PROVIDER || "default" },
+          meta: { provider: activeProvider },
         });
 
         // Create a callback to check if client is still connected
