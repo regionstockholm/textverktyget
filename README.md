@@ -34,6 +34,8 @@ kombineras med uppgifter. Det ingår även ett användargränssnitt för att gö
 
 [Textverktyget wiki](https://github.com/regionstockholm/textverktyget/wiki)
 
+[Tack till](#tack-till)
+
 ## Hur det funkar
 
 Verktyget använder sig av Google Gemini 2.5 Flash API för att bearbeta texter.
@@ -279,3 +281,15 @@ Förslag och utvecklingsfrågor kan skickas till <marcus.g.pettersson@regionstoc
 - Dubbelkolla säkerhet och eventuella läckor.
 - Förbättra UI och UX i adminpanelen.
 - Mer kontroll över vilka dokument som kan laddas upp samt hur stora.
+
+## Tack till
+
+Stort tack till:
+
+- Anneli Utas
+- Rodolfo Alvarez Rosas
+- Anna Lundin Almqvist
+- Carl Eckstein
+- Myndigheten för tillgängliga medier (MTM)
+- Institutet för språk och folkminnen
+- Samt alla som har testat och stöttat detta projekt
