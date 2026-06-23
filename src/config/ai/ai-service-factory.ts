@@ -14,7 +14,7 @@ import { validateLimits } from "./ai-limits.js";
 import { assert } from "../../utils/safety-utils.js";
 import { logger } from "../../utils/logger.js";
 import configService from "../../services/config/config-service.js";
-import { config as appConfig } from "../app-config.js";
+import { config } from "../app-config.js";
 import type {
   ProcessingOptions,
   ProcessingResult,
@@ -103,7 +103,11 @@ async function runSummaryWithProvider(
 
   if (provider === AI_PROVIDERS.OPENAI) {
     const { getSummary } = await import("./providers/openai.js");
-    return await getSummary(text, options);
+    const summary = await getSummary(text, options);
+    return {
+      summary,
+      systemMessage: "",
+    };
   }
 
   throw new Error(`Unsupported AI provider: ${provider}`);
@@ -145,7 +149,7 @@ export async function getSummary(
 
   const provider = await getConfiguredProvider();
   const fallbackProvider = getFallbackProvider(provider);
-  const fallbackEnabled = appConfig.resilience.providerFallbackEnabled;
+  const fallbackEnabled = config.resilience.providerFallbackEnabled;
   const requestId = options.requestId;
   const processId = options.processId || options.requestId;
 
@@ -238,7 +242,7 @@ export async function getQualityScore(
 
   const provider = await getConfiguredProvider();
   const fallbackProvider = getFallbackProvider(provider);
-  const fallbackEnabled = appConfig.resilience.providerFallbackEnabled;
+  const fallbackEnabled = config.resilience.providerFallbackEnabled;
 
   try {
     logger.debug("process.quality.provider.selected", {

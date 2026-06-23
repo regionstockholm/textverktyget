@@ -3,7 +3,8 @@
  * Handles primary pages and content serving
  */
 
-import express, { Request, Response } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import { join } from "path";
 import { apiLimiter } from "../middleware/api-rate-limiter.js";
 import { safeReadFile } from "../utils/file/file-reader.js";
@@ -12,7 +13,6 @@ import {
   generateCSPDirectives,
 } from "../utils/security/csp-utils.js";
 import { config } from "../config/app-config.js";
-import { getAppVersion } from "../config/app-version.js";
 
 const router = express.Router();
 const isLocalDev = process.env.LOCAL_DEV === "true";
@@ -105,7 +105,6 @@ if (!isLocalDev) {
         status: "healthy",
         timestamp: new Date().toISOString(),
         database: "postgres",
-        version: getAppVersion(),
         features: {
           qualityEvaluation: config.features.qualityEvaluation,
           fileUpload: config.features.fileUpload,

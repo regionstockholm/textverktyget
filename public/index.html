@@ -8,6 +8,7 @@ A big thank you to:
 - Carl Eckstein
 - and everyone who have tested and supported this project
 -->
+
 <html lang="sv">
   <head>
     <meta charset="UTF-8" />
@@ -709,103 +710,6 @@ A big thank you to:
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="hidden flex flex-row flex-justify-content-center">
-        <div class="orange-bg colored-bg-padding container">
-          <div class="textarea-wrapper relative">
-            <!-- Textarea header -->
-            <div
-              class="flex flex-row flex-space-between flex-align-items-center textarea-header"
-            >
-              <p>Färdig prompt</p>
-              <!-- Knapp för att visa prompten -->
-              <button
-                id="prompt-button"
-                class="flex flex-row flex-justify-content-center flex-align-items-center text-lg filled-white outline-blue gap-4 large-button"
-              >
-                <span id="prompt-button-text">Visa prompt</span>
-                <span>
-                  <svg
-                    width="21"
-                    height="21"
-                    viewBox="0 0 21 21"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    class="mt-0.5 h-5 w-5 group-open:-rotate-180"
-                  >
-                    <path
-                      d="m20.3 7.5-6.8 6.8c-1.6 1.7-4.4 1.8-6.1.1l-.1-.1L.5 7.5l2-2 6.9 6.8c.6.5 1.5.5 2 0l6.9-6.9 2 2.1z"
-                    ></path>
-                  </svg>
-                </span>
-              </button>
-            </div>
-            <div
-              id="final-prompt"
-              class="final-prompt flex-column flex-space-between"
-            >
-              <!-- Textarea -->
-              <form class="relative full-height">
-                <label for="prompt-output" class="textarea-label">
-                  Färdig prompt nedan
-                </label>
-                <div class="textarea-placeholder-text">
-                  <p>Här kommer den färdiga prompten att dyka upp.</p>
-                  <p>
-                    <small>
-                      Prompten skapas när du bearbetat en text. Den text du
-                      bearbetar är inte med i denna del.
-                    </small>
-                  </p>
-                </div>
-                <textarea
-                  id="prompt-output"
-                  class="relative"
-                  placeholder=""
-                ></textarea>
-              </form>
-              <!-- Textarea footer -->
-              <div
-                class="flex flex-row flex-justify-content-end flex-align-items-center textarea-footer"
-              >
-                <!-- Knapp för att kopiera text -->
-                <button
-                  id="copy-prompt"
-                  class="flex flex-row flex-justify-content-center flex-align-items-center text-lg filled-white outline-blue large-button"
-                >
-                  <span class="button-active">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 -960 960 960"
-                      height="32px"
-                      width="32px"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M300-200q-24 0-42-18t-18-42v-560q0-24 18-42t42-18h440q24 0 42 18t18 42v560q0 24-18 42t-42 18H300Zm0-60h440v-560H300v560ZM180-80q-24 0-42-18t-18-42v-620h60v620h500v60H180Zm120-180v-560 560Z"
-                      ></path>
-                    </svg>
-                  </span>
-                  <span class="button-inactive" aria-hidden="true">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      width="19px"
-                      height="32px"
-                      viewBox="0 0 18 14"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M17.66 2.8 9.8 12.33a4.35 4.35 0 0 1-6.12.58L0 9.87l1.85-2.24 3.68 3.04c.61.5 1.53.42 2.04-.2l7.85-9.5 2.24 1.84Z"
-                      ></path>
-                    </svg>
-                  </span>
-                </button>
               </div>
             </div>
           </div>

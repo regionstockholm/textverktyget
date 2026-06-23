@@ -5,7 +5,7 @@
  * @module services/textQualityControl
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { getDatabase } from "../config/database/db-connection.js";
 import {
   executeInsert,
@@ -146,7 +146,7 @@ export async function storeTextQualityData(
   try {
     validateTextInput(originalText, processedText);
 
-    const sessionId = uuidv4();
+    const sessionId = randomUUID();
     const trace: ProcessTrace = {
       requestId:
         typeof processingOptions?.requestId === "string"

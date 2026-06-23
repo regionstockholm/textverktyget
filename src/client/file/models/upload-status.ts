@@ -12,24 +12,3 @@ export interface FileUploadStatus {
   processedFiles: number;
   errors: string[];
 }
-
-/**
- * Interface for tracking upload progress
- */
-export interface UploadProgress {
-  current: number;
-  total: number;
-  percentage: number;
-}
-
-/**
- * Interface for batch processing status
- */
-export interface BatchProcessingStatus {
-  batchSize: number;
-  currentBatch: number;
-  totalBatches: number;
-  filesProcessed: number;
-  filesSucceeded: number;
-  filesFailed: number;
-}

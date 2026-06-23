@@ -1,14 +1,10 @@
 /**
  * Summarizer interfaces module
  * Contains shared interfaces for the summarizer functionality
- * Follows Power of Ten guidelines for TypeScript
  * @module summarizer/interfaces
  */
 
-/**
- * Interface for form values
- */
-export interface FormValues {
+export type FormValues = {
   taskKey?: string;
   processId?: string;
   targetAudience: string;
@@ -16,12 +12,9 @@ export interface FormValues {
   qualityProcess?: boolean;
   attemptNumber?: number;
   previousQualityId?: number;
-}
+};
 
-/**
- * Interface for summarization response
- */
-export interface SummarizationResponse {
+export type SummarizationResponse = {
   summary: string;
   systemMessage: string;
   processId?: string;
@@ -30,13 +23,4 @@ export interface SummarizationResponse {
   qualityAttempts?: number;
   needsResubmission?: boolean;
   maxQualityAttempts?: number;
-}
-
-/**
- * Extends Window interface to include qualityEvaluationTimeout
- */
-declare global {
-  interface Window {
-    qualityEvaluationTimeout: ReturnType<typeof setTimeout> | null;
-  }
-}
+};

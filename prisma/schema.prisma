@@ -1,10 +1,14 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  runtime                = "nodejs"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
 }
 
 model PromptTemplate {
@@ -34,32 +38,32 @@ model ProviderConfig {
 }
 
 model GlobalConfig {
-  configKey         String   @id @map("config_key")
-  provider          String
-  retryCount        Int      @default(2) @map("retry_count")
-  rewritePlanTasks  Json?    @map("rewrite_plan_tasks")
-  runtimeSettings   Json?    @map("runtime_settings")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-  updatedBy         String?  @map("updated_by")
+  configKey        String   @id @map("config_key")
+  provider         String
+  retryCount       Int      @default(2) @map("retry_count")
+  rewritePlanTasks Json?    @map("rewrite_plan_tasks")
+  runtimeSettings  Json?    @map("runtime_settings")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  updatedBy        String?  @map("updated_by")
 
   @@map("global_config")
 }
 
 model TaskDefinition {
-  id                   Int      @id @default(autoincrement())
-  key                  String   @unique @map("task_key")
-  label                String
-  description          String?
-  enabled              Boolean  @default(true)
-  sortOrder            Int      @map("sort_order")
-  outputMode           String   @default("rewrite") @map("output_mode")
-  bulletCount          Int?     @map("bullet_count")
-  maxChars             Int?     @map("max_chars")
-  targetAudienceEnabled Boolean @default(true) @map("target_audience_enabled")
-  rewritePlanEnabled   Boolean  @default(true) @map("rewrite_plan_enabled")
-  createdAt            DateTime @default(now()) @map("created_at")
-  updatedAt            DateTime @updatedAt @map("updated_at")
+  id                    Int      @id @default(autoincrement())
+  key                   String   @unique @map("task_key")
+  label                 String
+  description           String?
+  enabled               Boolean  @default(true)
+  sortOrder             Int      @map("sort_order")
+  outputMode            String   @default("rewrite") @map("output_mode")
+  bulletCount           Int?     @map("bullet_count")
+  maxChars              Int?     @map("max_chars")
+  targetAudienceEnabled Boolean  @default(true) @map("target_audience_enabled")
+  rewritePlanEnabled    Boolean  @default(true) @map("rewrite_plan_enabled")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
 
   @@index([enabled, sortOrder])
   @@index([sortOrder])
@@ -98,4 +102,24 @@ model AuditLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("audit_log")
+}
+
+model TextQualityControl {
+  id                Int      @id @default(autoincrement())
+  sessionId         String   @map("session_id")
+  originalText      String   @map("original_text")
+  processedText     String   @map("processed_text")
+  promptUsed        String?  @map("prompt_used")
+  processingOptions String?  @map("processing_options")
+  rewritePlanDraft  String?  @map("rewrite_plan_draft")
+  score             Float?
+  iteration         Int      @default(1)
+  status            String   @default("pending")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([sessionId], map: "idx_text_quality_session")
+  @@index([status], map: "idx_text_quality_status")
+  @@index([createdAt], map: "idx_text_quality_created_at")
+  @@map("text_quality_control")
 }

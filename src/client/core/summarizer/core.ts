@@ -1,13 +1,13 @@
 /**
  * Text summarization core functionality
  * Contains core summarization logic and initialization
- * Follows Power of Ten guidelines for TypeScript
  * @module summarizer/core
  */
 
 import { assert } from "../../safety/assertions.js";
-import { FormValues, SummarizationResponse } from "./interfaces.js";
-import { validateSummaryInput, getSelectedValues } from "./processing.js";
+import type { FormValues, SummarizationResponse } from "./interfaces.js";
+import { validateSummaryInput } from "./processing.js";
+import { getSelectedValues } from "../../ui/components/summarizer-form.js";
 import {
   sendSummarizationRequest,
   processSummarizationResponse,
@@ -31,8 +31,6 @@ export async function getSummary(
   // Validate input
   validateSummaryInput(text);
 
-  // Generate request ID locally instead of using global variable
-  // Following Rule 6: Data objects must be declared at the smallest possible level of scope
   const currentRequestId = Date.now() + Math.floor(Math.random() * 1000);
 
   console.log(

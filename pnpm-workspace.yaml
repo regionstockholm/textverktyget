@@ -1,0 +1,10 @@
+blockExoticSubdeps: false
+
+allowBuilds:
+  "@google/genai": true
+  "@parcel/watcher": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  esbuild: true
+  prisma: true
+  protobufjs: true

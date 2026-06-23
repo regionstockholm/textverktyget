@@ -11,21 +11,21 @@
 
 import { promises as fs } from "fs";
 import { assert } from "../safety-utils.js";
-import { FileLimits } from "../../config/shared-config.js";
+import { fileLimits } from "../../config/shared-config.js";
 
 /**
  * Safely reads a file with size checking
  *
  * @param {string} filePath - Path to the file
  * @param {string} encoding - File encoding
- * @param {number} [maxSize=FileLimits.MAX_FILE_SIZE] - Maximum allowed file size
+ * @param {number} [maxSize=fileLimits.maxFileSize] - Maximum allowed file size
  * @returns {Promise<string>} File contents
  * @throws {Error} If file is too large or cannot be read
  */
 export async function safeReadFile(
   filePath: string,
   encoding: BufferEncoding,
-  maxSize: number = FileLimits.MAX_FILE_SIZE,
+  maxSize: number = fileLimits.maxFileSize,
 ): Promise<string> {
   // Assert preconditions
   assert(typeof filePath === "string", "File path must be a string");

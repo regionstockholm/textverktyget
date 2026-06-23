@@ -3,7 +3,7 @@
  * Protects admin routes using a static API key (Bearer token)
  */
 
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import { timingSafeEqual } from "node:crypto";
 import { sendError } from "../utils/api/api-responses.js";

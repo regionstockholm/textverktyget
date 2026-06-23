@@ -14,7 +14,7 @@ services:
     environment:
       # NODE_ENV for Node.js runtime optimizations only (application doesn't depend on it)
       - NODE_ENV=production
-      - LOCAL_DEV=false
+      - LOCAL_DEV=${LOCAL_DEV:-true}
       - HOST=0.0.0.0
       - PORT=3000
       - DATABASE_URL=postgresql://textverktyg:textverktyg@postgres:5432/textverktyg

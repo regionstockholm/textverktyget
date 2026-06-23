@@ -5,7 +5,7 @@
 
 import { getTextExtractor } from "office-text-extractor";
 import { assert } from "../../utils/safety-utils.js";
-import { MAX_TIMEOUT_DURATION } from "../../config/app-config.js";
+import { timeLimits } from "../../config/shared-config.js";
 
 const extractor = getTextExtractor();
 
@@ -45,7 +45,7 @@ export async function extractRawText(buffer: Buffer): Promise<string> {
       input: buffer,
       type: "buffer",
     }),
-    createTimeoutPromise(MAX_TIMEOUT_DURATION),
+    createTimeoutPromise(timeLimits.maxTimeoutDuration),
   ]);
 
   assert(typeof text === "string", "Extracted text must be a string");

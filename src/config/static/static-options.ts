@@ -4,7 +4,7 @@
  * @module config/static
  */
 
-import { Response } from "express";
+import type { Response } from "express";
 import path from "path";
 import { config } from "../app-config.js";
 

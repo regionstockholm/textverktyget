@@ -9,67 +9,6 @@ import type { Pool, PoolClient } from "pg";
 export type DatabaseClient = Pool | PoolClient;
 
 /**
- * Maximum number of retry attempts for database operations
- */
-const MAX_RETRY_ATTEMPTS = 3;
-
-/**
- * Executes a database query with error handling and retry logic
- * @param db Postgres database client
- * @param query SQL query to execute
- * @param params Query parameters (optional)
- * @returns Query result
- */
-export async function executeQuery(
-  db: DatabaseClient,
-  query: string,
-  params: unknown[] = [],
-): Promise<any> {
-  if (!db) {
-    throw new Error("Database instance is required");
-  }
-
-  if (!query || typeof query !== "string") {
-    throw new Error("Valid SQL query string is required");
-  }
-
-  let attempts = 0;
-
-  while (attempts < MAX_RETRY_ATTEMPTS) {
-    try {
-      console.log(
-        `[Database] Executing query (attempt ${attempts + 1}): ${query.substring(0, 100)}...`,
-      );
-
-      const result = await db.query(query, params);
-      if (query.trim().toUpperCase().startsWith("SELECT")) {
-        return result.rows;
-      }
-      return result;
-    } catch (error) {
-      attempts++;
-      console.error(
-        `[Database] Query execution attempt ${attempts} failed:`,
-        error,
-      );
-
-      if (attempts >= MAX_RETRY_ATTEMPTS) {
-        console.error("[Database] All query execution attempts failed");
-        throw new Error(
-          `Query execution failed after ${MAX_RETRY_ATTEMPTS} attempts: ${error}`,
-        );
-      }
-
-      // Wait before retrying (exponential backoff)
-      const delay = Math.pow(2, attempts) * 100; // Shorter delay for queries
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-
-  throw new Error("Query execution failed");
-}
-
-/**
  * Executes a SELECT query and returns a single row
  * @param db Postgres database client
  * @param query SQL SELECT query

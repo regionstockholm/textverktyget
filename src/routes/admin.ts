@@ -2,9 +2,13 @@
  * Admin Routes (DB-backed config)
  */
 
-import express, { Request, Response } from "express";
-import type { Prisma, PrismaClient } from "@prisma/client";
-import { adminAuthLimiter, requireAdminAuth } from "../middleware/admin-auth.js";
+import express from "express";
+import type { Request, Response } from "express";
+import type { Prisma, PrismaClient } from "../generated/prisma/client.js";
+import {
+  adminAuthLimiter,
+  requireAdminAuth,
+} from "../middleware/admin-auth.js";
 import {
   sendError,
   sendSuccess,
@@ -31,6 +35,7 @@ import {
 import {
   BACKUP_APP_ID,
   BACKUP_SCHEMA_VERSION,
+  type BackupPayload,
   validateBackupPayload,
 } from "../services/config/backup-schema.js";
 import {
@@ -45,10 +50,8 @@ import {
   saveTargetAudienceCatalog,
   validateTargetAudienceCatalogInput,
 } from "../services/target-audiences/target-audience-catalog-service.js";
-import { config } from "../config/app-config.js";
-import { getSummarizeQueueState } from "../services/summarize/summarize-queue.js";
-import { getStageConcurrencyState } from "../services/summarize/stage-concurrency.js";
-import { getAutoProfileControllerStatus } from "../services/summarize/auto-profile-controller.js";
+import { registerAdminOrdlistaRoutes } from "./admin/ordlista-routes.js";
+import { registerAdminRuntimeReadRoutes } from "./admin/runtime-routes.js";
 
 const router = express.Router();
 const prisma = getPrismaClient();
@@ -153,19 +156,19 @@ async function logAudit(
   });
 }
 
-function readRewritePlanTasks(
-  value: unknown,
-): Record<string, boolean> {
+function readRewritePlanTasks(value: unknown): Record<string, boolean> {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
   }
 
   const result: Record<string, boolean> = {};
-  Object.entries(value as Record<string, unknown>).forEach(([key, candidate]) => {
-    if (typeof candidate === "boolean") {
-      result[key] = candidate;
-    }
-  });
+  Object.entries(value as Record<string, unknown>).forEach(
+    ([key, candidate]) => {
+      if (typeof candidate === "boolean") {
+        result[key] = candidate;
+      }
+    },
+  );
   return result;
 }
 
@@ -177,9 +180,10 @@ function normalizeRuntimeSettings(
   }
 
   try {
-    const normalized = JSON.parse(
-      JSON.stringify(value),
-    ) as Record<string, unknown>;
+    const normalized = JSON.parse(JSON.stringify(value)) as Record<
+      string,
+      unknown
+    >;
     if (!normalized || Array.isArray(normalized)) {
       return null;
     }
@@ -248,7 +252,9 @@ async function removeRewritePlanTaskToggle(
     return {};
   }
 
-  const rewritePlanTasks = readRewritePlanTasks(existingGlobal.rewritePlanTasks);
+  const rewritePlanTasks = readRewritePlanTasks(
+    existingGlobal.rewritePlanTasks,
+  );
   if (!(taskKey in rewritePlanTasks)) {
     return rewritePlanTasks;
   }
@@ -264,6 +270,314 @@ async function removeRewritePlanTaskToggle(
   });
 
   return rewritePlanTasks;
+}
+
+async function buildBackupPayload(): Promise<BackupPayload> {
+  const [
+    geminiConfig,
+    globalConfig,
+    targetAudienceCatalog,
+    ordlistaEntries,
+    activePrompts,
+    taskDefinitions,
+  ] = await Promise.all([
+    configService.getProviderConfig("gemini"),
+    configService.getGlobalConfig(),
+    getTargetAudienceCatalog(prisma),
+    prisma.ordlistaEntry.findMany({ orderBy: { fromWord: "asc" } }),
+    prisma.promptTemplate.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.taskDefinition.findMany({
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    }),
+  ]);
+
+  const activePromptMap = new Map<string, string>();
+  for (const prompt of activePrompts) {
+    activePromptMap.set(prompt.name, prompt.content);
+  }
+
+  const systemPromptMap = new Map<string, string>();
+  for (const prompt of activePrompts) {
+    if (isTargetAudiencePromptName(prompt.name)) {
+      continue;
+    }
+    if (getTaskKeyFromPromptName(prompt.name)) {
+      continue;
+    }
+    if (prompt.name === "task") {
+      continue;
+    }
+    systemPromptMap.set(prompt.name, prompt.content);
+  }
+
+  for (const name of SYSTEM_PROMPT_NAMES) {
+    if (!systemPromptMap.has(name)) {
+      systemPromptMap.set(name, await configService.getPrompt(name));
+    }
+  }
+
+  const systemPrompts = Array.from(systemPromptMap.entries())
+    .map(([name, content]) => ({ name, content }))
+    .sort((a, b) => a.name.localeCompare(b.name, "sv"));
+
+  const targetAudiences = await Promise.all(
+    targetAudienceCatalog.audiences.map(async (audience) => ({
+      label: audience.label,
+      category: audience.category,
+      sortOrder: audience.sortOrder,
+      prompt: {
+        content:
+          activePromptMap.get(`${TARGET_AUDIENCE_PREFIX}${audience.label}`) ||
+          (await configService.getPrompt("targetAudience", {
+            targetAudience: audience.label,
+          })),
+      },
+    })),
+  );
+
+  const tasks = await Promise.all(
+    taskDefinitions.map(async (task) => ({
+      label: task.label,
+      description: task.description,
+      enabled: task.enabled,
+      sortOrder: task.sortOrder,
+      targetAudienceEnabled: task.targetAudienceEnabled,
+      rewritePlanEnabled: task.rewritePlanEnabled,
+      prompt: {
+        content:
+          activePromptMap.get(`${TASK_PROMPT_PREFIX}${task.key}`) ||
+          (await configService.getPrompt("task", { taskKey: task.key })),
+      },
+    })),
+  );
+
+  return {
+    schemaVersion: BACKUP_SCHEMA_VERSION,
+    app: BACKUP_APP_ID,
+    exportedAt: new Date().toISOString(),
+    settings: {
+      global: {
+        provider: globalConfig.provider,
+        retryCount: globalConfig.retryCount,
+        runtimeSettings: globalConfig.runtimeSettings,
+      },
+      providers: {
+        gemini: {
+          model: geminiConfig.model,
+          temperature: geminiConfig.temperature,
+          maxOutputTokens: geminiConfig.maxOutputTokens,
+          useWebSearch: geminiConfig.useWebSearch,
+          useThinking: geminiConfig.useThinking,
+        },
+      },
+      systemPrompts,
+      targetAudienceCategories: targetAudienceCatalog.categories,
+      targetAudiences,
+      tasks,
+      ordlista: ordlistaEntries.map((entry) => ({
+        fromWord: entry.fromWord,
+        toWord: entry.toWord,
+      })),
+    },
+  };
+}
+
+async function importBackupPayload(
+  payload: BackupPayload,
+  actor: string,
+): Promise<{ prompts: number; tasks: number; ordlista: number }> {
+  const systemPromptEntries = payload.settings.systemPrompts;
+  const targetAudienceCategoryEntries =
+    payload.settings.targetAudienceCategories;
+  const targetAudienceEntries = payload.settings.targetAudiences;
+  const ordlistaEntries = payload.settings.ordlista;
+  const taskEntries = payload.settings.tasks;
+  const geminiModel = normalizeGeminiModel(
+    payload.settings.providers.gemini.model,
+  );
+  const runtimeSettings =
+    payload.settings.global.runtimeSettings ?? ({} as Record<string, unknown>);
+  let importedPromptCount = 0;
+
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await tx.globalConfig.upsert({
+      where: { configKey: GLOBAL_CONFIG_KEY },
+      create: {
+        configKey: GLOBAL_CONFIG_KEY,
+        provider: payload.settings.global.provider,
+        retryCount: payload.settings.global.retryCount,
+        rewritePlanTasks: {},
+        runtimeSettings: toInputJsonValue(runtimeSettings),
+        updatedBy: actor,
+      },
+      update: {
+        provider: payload.settings.global.provider,
+        retryCount: payload.settings.global.retryCount,
+        rewritePlanTasks: {},
+        runtimeSettings: toInputJsonValue(runtimeSettings),
+        updatedBy: actor,
+      },
+    });
+
+    const createProviderData = {
+      provider: "gemini",
+      model: geminiModel,
+      temperature: payload.settings.providers.gemini.temperature,
+      maxOutputTokens: payload.settings.providers.gemini.maxOutputTokens,
+      useWebSearch: payload.settings.providers.gemini.useWebSearch,
+      useThinking: payload.settings.providers.gemini.useThinking,
+    } as Prisma.ProviderConfigUncheckedCreateInput;
+
+    const updateProviderData = {
+      model: geminiModel,
+      temperature: payload.settings.providers.gemini.temperature,
+      maxOutputTokens: payload.settings.providers.gemini.maxOutputTokens,
+      useWebSearch: payload.settings.providers.gemini.useWebSearch,
+      useThinking: payload.settings.providers.gemini.useThinking,
+    } as Prisma.ProviderConfigUncheckedUpdateInput;
+
+    await tx.providerConfig.upsert({
+      where: { provider: "gemini" },
+      create: createProviderData,
+      update: updateProviderData,
+    });
+
+    await tx.taskDefinition.deleteMany();
+    const createdTaskRecords: Array<{
+      key: string;
+      rewritePlanEnabled: boolean;
+      promptContent: string;
+    }> = [];
+    for (const task of [...taskEntries].sort(
+      (a, b) => a.sortOrder - b.sortOrder,
+    )) {
+      const created = await createTaskDefinition(
+        {
+          label: task.label,
+          description: task.description,
+          enabled: task.enabled,
+          sortOrder: task.sortOrder,
+          settings: {
+            targetAudienceEnabled: task.targetAudienceEnabled,
+            rewritePlanEnabled: task.rewritePlanEnabled,
+          },
+        },
+        tx,
+      );
+
+      createdTaskRecords.push({
+        key: created.key,
+        rewritePlanEnabled: task.rewritePlanEnabled,
+        promptContent: task.prompt.content,
+      });
+    }
+
+    const rewritePlanTasks = Object.fromEntries(
+      createdTaskRecords.map((task) => [task.key, task.rewritePlanEnabled]),
+    );
+
+    await tx.globalConfig.update({
+      where: { configKey: GLOBAL_CONFIG_KEY },
+      data: {
+        rewritePlanTasks,
+        updatedBy: actor,
+      },
+    });
+
+    const promptEntries = [
+      ...systemPromptEntries,
+      ...targetAudienceEntries.map((entry) => ({
+        name: `${TARGET_AUDIENCE_PREFIX}${entry.label}`,
+        content: entry.prompt.content,
+      })),
+      ...createdTaskRecords.map((task) => ({
+        name: `${TASK_PROMPT_PREFIX}${task.key}`,
+        content: task.promptContent,
+      })),
+    ];
+    importedPromptCount = promptEntries.length;
+    const promptNames = promptEntries.map((entry) => entry.name);
+
+    await tx.promptTemplate.updateMany({
+      where: {
+        isActive: true,
+        name: promptNames.length > 0 ? { notIn: promptNames } : undefined,
+      },
+      data: { isActive: false },
+    });
+
+    for (const prompt of promptEntries) {
+      const latestPrompt = await tx.promptTemplate.findFirst({
+        where: { name: prompt.name },
+        orderBy: { version: "desc" },
+      });
+
+      const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
+
+      await tx.promptTemplate.updateMany({
+        where: { name: prompt.name, isActive: true },
+        data: { isActive: false },
+      });
+
+      await tx.promptTemplate.create({
+        data: {
+          name: prompt.name,
+          content: prompt.content,
+          version: nextVersion,
+          isActive: true,
+          updatedBy: actor,
+        },
+      });
+    }
+
+    await tx.ordlistaEntry.deleteMany();
+    if (ordlistaEntries.length > 0) {
+      await tx.ordlistaEntry.createMany({
+        data: ordlistaEntries.map((entry) => ({
+          fromWord: entry.fromWord,
+          toWord: entry.toWord,
+          updatedBy: actor,
+        })),
+      });
+    }
+
+    await saveTargetAudienceCatalog(
+      {
+        categories: targetAudienceCategoryEntries,
+        audiences: targetAudienceEntries.map((entry) => ({
+          label: entry.label,
+          category: entry.category,
+          sortOrder: entry.sortOrder,
+        })),
+      },
+      actor,
+      tx,
+    );
+
+    await logAudit(tx, "backup.import", actor, "backup", payload.exportedAt, {
+      prompts: promptEntries.length,
+      tasks: taskEntries.length,
+      ordlista: ordlistaEntries.length,
+      targetAudienceCategories: targetAudienceCategoryEntries.length,
+      targetAudiences: targetAudienceEntries.length,
+      provider: payload.settings.global.provider,
+      retryCount: payload.settings.global.retryCount,
+      rewritePlanTasks,
+      runtimeSettings: toInputJsonValue(runtimeSettings),
+      geminiModel,
+      useWebSearch: payload.settings.providers.gemini.useWebSearch,
+      useThinking: payload.settings.providers.gemini.useThinking,
+    });
+  });
+
+  return {
+    prompts: importedPromptCount,
+    tasks: taskEntries.length,
+    ordlista: ordlistaEntries.length,
+  };
 }
 
 router.use(adminAuthLimiter);
@@ -287,10 +601,12 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const targetAudienceEnabled =
-      readOptionalBoolean(req.body?.targetAudienceEnabled);
-    const rewritePlanEnabled =
-      readOptionalBoolean(req.body?.rewritePlanEnabled);
+    const targetAudienceEnabled = readOptionalBoolean(
+      req.body?.targetAudienceEnabled,
+    );
+    const rewritePlanEnabled = readOptionalBoolean(
+      req.body?.rewritePlanEnabled,
+    );
 
     const settings: Record<string, unknown> = {};
     if (targetAudienceEnabled !== undefined) {
@@ -302,79 +618,92 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
 
     const actor = getActor(req);
     const promptContentInput = req.body?.promptContent;
-    if (promptContentInput !== undefined && typeof promptContentInput !== "string") {
+    if (
+      promptContentInput !== undefined &&
+      typeof promptContentInput !== "string"
+    ) {
       sendError(res, 400, "Invalid promptContent");
       return;
     }
 
     const fallbackPrompt = await configService.getPrompt("task");
     const taskPromptContent =
-      typeof promptContentInput === "string" ? promptContentInput : fallbackPrompt;
+      typeof promptContentInput === "string"
+        ? promptContentInput
+        : fallbackPrompt;
 
-    const created = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      const task = await createTaskDefinition(
-        {
-          label,
-          description: req.body?.description,
-          enabled: req.body?.enabled,
-          settings,
-        },
-        tx,
-      );
+    const created = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const task = await createTaskDefinition(
+          {
+            label,
+            description: req.body?.description,
+            enabled: req.body?.enabled,
+            settings,
+          },
+          tx,
+        );
 
-      const promptName = `${TASK_PROMPT_PREFIX}${task.key}`;
-      const latestPrompt = await tx.promptTemplate.findFirst({
-        where: { name: promptName },
-        orderBy: { version: "desc" },
-      });
-      const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
+        const promptName = `${TASK_PROMPT_PREFIX}${task.key}`;
+        const latestPrompt = await tx.promptTemplate.findFirst({
+          where: { name: promptName },
+          orderBy: { version: "desc" },
+        });
+        const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
 
-      await tx.promptTemplate.updateMany({
-        where: { name: promptName, isActive: true },
-        data: { isActive: false },
-      });
+        await tx.promptTemplate.updateMany({
+          where: { name: promptName, isActive: true },
+          data: { isActive: false },
+        });
 
-      const prompt = await tx.promptTemplate.create({
-        data: {
-          name: promptName,
-          content: taskPromptContent,
-          version: nextVersion,
-          isActive: true,
-          updatedBy: actor,
-        },
-      });
+        const prompt = await tx.promptTemplate.create({
+          data: {
+            name: promptName,
+            content: taskPromptContent,
+            version: nextVersion,
+            isActive: true,
+            updatedBy: actor,
+          },
+        });
 
-      await logAudit(tx, "task.create", actor, "task_definition", task.key, {
-        key: task.key,
-        label: task.label,
-        enabled: task.enabled,
-        sortOrder: task.sortOrder,
-        outputMode: task.outputMode,
-        bulletCount: task.bulletCount,
-        maxChars: task.maxChars,
-        targetAudienceEnabled: task.targetAudienceEnabled,
-        rewritePlanEnabled: task.rewritePlanEnabled,
-      });
+        await logAudit(tx, "task.create", actor, "task_definition", task.key, {
+          key: task.key,
+          label: task.label,
+          enabled: task.enabled,
+          sortOrder: task.sortOrder,
+          outputMode: task.outputMode,
+          targetAudienceEnabled: task.targetAudienceEnabled,
+          rewritePlanEnabled: task.rewritePlanEnabled,
+        });
 
-      await logAudit(tx, "prompt.update", actor, "prompt_template", promptName, {
-        name: prompt.name,
-        version: prompt.version,
-      });
+        await logAudit(
+          tx,
+          "prompt.update",
+          actor,
+          "prompt_template",
+          promptName,
+          {
+            name: prompt.name,
+            version: prompt.version,
+          },
+        );
 
-      await setRewritePlanTaskToggle(
-        tx,
-        actor,
-        task.key,
-        task.rewritePlanEnabled,
-      );
+        await setRewritePlanTaskToggle(
+          tx,
+          actor,
+          task.key,
+          task.rewritePlanEnabled,
+        );
 
-      return task;
-    });
+        return task;
+      },
+    );
 
     configService.refresh();
     sendSuccess(res, created, 201);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Invalid task payload";
+    const message =
+      error instanceof Error ? error.message : "Invalid task payload";
     const status = getTaskServiceErrorStatus(message);
     sendError(res, status, message);
   }
@@ -418,10 +747,12 @@ router.put(
     }
 
     try {
-      const targetAudienceEnabled =
-        readOptionalBoolean(req.body?.targetAudienceEnabled);
-      const rewritePlanEnabled =
-        readOptionalBoolean(req.body?.rewritePlanEnabled);
+      const targetAudienceEnabled = readOptionalBoolean(
+        req.body?.targetAudienceEnabled,
+      );
+      const rewritePlanEnabled = readOptionalBoolean(
+        req.body?.rewritePlanEnabled,
+      );
 
       const settings: Record<string, unknown> = {};
       if (targetAudienceEnabled !== undefined) {
@@ -439,20 +770,30 @@ router.put(
       });
 
       const actor = getActor(req);
-      await logAudit(prisma, "task.update", actor, "task_definition", updated.key, {
-        key: updated.key,
-        label: updated.label,
-        enabled: updated.enabled,
-        sortOrder: updated.sortOrder,
-        outputMode: updated.outputMode,
-        bulletCount: updated.bulletCount,
-        maxChars: updated.maxChars,
-        targetAudienceEnabled: updated.targetAudienceEnabled,
-        rewritePlanEnabled: updated.rewritePlanEnabled,
-      });
+      await logAudit(
+        prisma,
+        "task.update",
+        actor,
+        "task_definition",
+        updated.key,
+        {
+          key: updated.key,
+          label: updated.label,
+          enabled: updated.enabled,
+          sortOrder: updated.sortOrder,
+          outputMode: updated.outputMode,
+          targetAudienceEnabled: updated.targetAudienceEnabled,
+          rewritePlanEnabled: updated.rewritePlanEnabled,
+        },
+      );
 
       if (rewritePlanEnabled !== undefined) {
-        await setRewritePlanTaskToggle(prisma, actor, updated.key, rewritePlanEnabled);
+        await setRewritePlanTaskToggle(
+          prisma,
+          actor,
+          updated.key,
+          rewritePlanEnabled,
+        );
         await logAudit(
           prisma,
           "rewrite_plan_task.update",
@@ -469,7 +810,8 @@ router.put(
       configService.refresh();
       sendSuccess(res, updated);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Invalid task payload";
+      const message =
+        error instanceof Error ? error.message : "Invalid task payload";
       const status = getTaskServiceErrorStatus(message);
       sendError(res, status, message);
     }
@@ -508,16 +850,24 @@ router.delete(
 
         await removeRewritePlanTaskToggle(tx, actor, existing.key);
 
-        await logAudit(tx, "task.delete", actor, "task_definition", existing.key, {
-          key: existing.key,
-        });
+        await logAudit(
+          tx,
+          "task.delete",
+          actor,
+          "task_definition",
+          existing.key,
+          {
+            key: existing.key,
+          },
+        );
       });
 
       configService.refresh();
 
       sendSuccess(res, { key: taskKey, deleted: true });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to delete task";
+      const message =
+        error instanceof Error ? error.message : "Failed to delete task";
       const status = getTaskServiceErrorStatus(message);
       sendError(res, status, message);
     }
@@ -548,7 +898,11 @@ router.put(
 
     try {
       const actor = getActor(req);
-      const saved = await saveTargetAudienceCatalog(validation.value, actor, prisma);
+      const saved = await saveTargetAudienceCatalog(
+        validation.value,
+        actor,
+        prisma,
+      );
 
       await logAudit(
         prisma,
@@ -587,119 +941,8 @@ router.get("/config", async (_req: Request, res: Response): Promise<void> => {
 
 router.get("/backup", async (_req: Request, res: Response): Promise<void> => {
   try {
-    const [
-      geminiConfig,
-      globalConfig,
-      targetAudienceCatalog,
-      ordlistaEntries,
-      activePrompts,
-      taskDefinitions,
-    ] = await Promise.all([
-      configService.getProviderConfig("gemini"),
-      configService.getGlobalConfig(),
-      getTargetAudienceCatalog(prisma),
-      prisma.ordlistaEntry.findMany({ orderBy: { fromWord: "asc" } }),
-      prisma.promptTemplate.findMany({
-        where: { isActive: true },
-        orderBy: { name: "asc" },
-      }),
-      prisma.taskDefinition.findMany({
-        orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
-      }),
-    ]);
-
-    const activePromptMap = new Map<string, string>();
-    for (const prompt of activePrompts) {
-      activePromptMap.set(prompt.name, prompt.content);
-    }
-
-    const systemPromptMap = new Map<string, string>();
-    for (const prompt of activePrompts) {
-      if (isTargetAudiencePromptName(prompt.name)) {
-        continue;
-      }
-      if (getTaskKeyFromPromptName(prompt.name)) {
-        continue;
-      }
-      if (prompt.name === "task") {
-        continue;
-      }
-      systemPromptMap.set(prompt.name, prompt.content);
-    }
-
-    for (const name of SYSTEM_PROMPT_NAMES) {
-      if (!systemPromptMap.has(name)) {
-        systemPromptMap.set(name, await configService.getPrompt(name));
-      }
-    }
-
-    const systemPrompts = Array.from(systemPromptMap.entries())
-      .map(([name, content]) => ({ name, content }))
-      .sort((a, b) => a.name.localeCompare(b.name, "sv"));
-
-    const targetAudienceCategories = targetAudienceCatalog.categories;
-
-    const targetAudiences = await Promise.all(
-      targetAudienceCatalog.audiences.map(async (audience) => ({
-        label: audience.label,
-        category: audience.category,
-        sortOrder: audience.sortOrder,
-        prompt: {
-          content:
-            activePromptMap.get(`${TARGET_AUDIENCE_PREFIX}${audience.label}`) ||
-            (await configService.getPrompt("targetAudience", {
-              targetAudience: audience.label,
-            })),
-        },
-      })),
-    );
-
-    const tasks = await Promise.all(
-      taskDefinitions.map(async (task) => ({
-        label: task.label,
-        description: task.description,
-        enabled: task.enabled,
-        sortOrder: task.sortOrder,
-        targetAudienceEnabled: task.targetAudienceEnabled,
-        rewritePlanEnabled: task.rewritePlanEnabled,
-        prompt: {
-          content:
-            activePromptMap.get(`${TASK_PROMPT_PREFIX}${task.key}`) ||
-            (await configService.getPrompt("task", { taskKey: task.key })),
-        },
-      })),
-    );
-
     res.set("Cache-Control", "no-store");
-    res.status(200).json({
-      schemaVersion: BACKUP_SCHEMA_VERSION,
-      app: BACKUP_APP_ID,
-      exportedAt: new Date().toISOString(),
-      settings: {
-        global: {
-          provider: globalConfig.provider,
-          retryCount: globalConfig.retryCount,
-          runtimeSettings: globalConfig.runtimeSettings,
-        },
-        providers: {
-          gemini: {
-            model: geminiConfig.model,
-            temperature: geminiConfig.temperature,
-            maxOutputTokens: geminiConfig.maxOutputTokens,
-            useWebSearch: geminiConfig.useWebSearch,
-            useThinking: geminiConfig.useThinking,
-          },
-        },
-        systemPrompts,
-        targetAudienceCategories,
-        targetAudiences,
-        tasks,
-        ordlista: ordlistaEntries.map((entry) => ({
-          fromWord: entry.fromWord,
-          toWord: entry.toWord,
-        })),
-      },
-    });
+    res.status(200).json(await buildBackupPayload());
   } catch (error) {
     sendError(res, 500, "Failed to export backup");
   }
@@ -714,205 +957,11 @@ router.post("/backup", async (req: Request, res: Response): Promise<void> => {
 
   const payload = result.payload;
   const actor = getActor(req);
-  let importedPromptCount = 0;
 
   try {
-    const systemPromptEntries = payload.settings.systemPrompts;
-    const targetAudienceCategoryEntries = payload.settings.targetAudienceCategories;
-    const targetAudienceEntries = payload.settings.targetAudiences;
-    const ordlistaEntries = payload.settings.ordlista;
-    const taskEntries = payload.settings.tasks;
-    const geminiModel = normalizeGeminiModel(
-      payload.settings.providers.gemini.model,
-    );
-    const runtimeSettings =
-      payload.settings.global.runtimeSettings ??
-      ({} as Record<string, unknown>);
-
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      await tx.globalConfig.upsert({
-        where: { configKey: GLOBAL_CONFIG_KEY },
-        create: {
-          configKey: GLOBAL_CONFIG_KEY,
-          provider: payload.settings.global.provider,
-          retryCount: payload.settings.global.retryCount,
-          rewritePlanTasks: {},
-          runtimeSettings: toInputJsonValue(runtimeSettings),
-          updatedBy: actor,
-        },
-        update: {
-          provider: payload.settings.global.provider,
-          retryCount: payload.settings.global.retryCount,
-          rewritePlanTasks: {},
-          runtimeSettings: toInputJsonValue(runtimeSettings),
-          updatedBy: actor,
-        },
-      });
-
-      const createProviderData = {
-        provider: "gemini",
-        model: geminiModel,
-        temperature: payload.settings.providers.gemini.temperature,
-        maxOutputTokens: payload.settings.providers.gemini.maxOutputTokens,
-        useWebSearch: payload.settings.providers.gemini.useWebSearch,
-        useThinking: payload.settings.providers.gemini.useThinking,
-      } as Prisma.ProviderConfigUncheckedCreateInput;
-
-      const updateProviderData = {
-        model: geminiModel,
-        temperature: payload.settings.providers.gemini.temperature,
-        maxOutputTokens: payload.settings.providers.gemini.maxOutputTokens,
-        useWebSearch: payload.settings.providers.gemini.useWebSearch,
-        useThinking: payload.settings.providers.gemini.useThinking,
-      } as Prisma.ProviderConfigUncheckedUpdateInput;
-
-      await tx.providerConfig.upsert({
-        where: { provider: "gemini" },
-        create: createProviderData,
-        update: updateProviderData,
-      });
-
-      await tx.taskDefinition.deleteMany();
-      const createdTaskRecords: Array<{
-        key: string;
-        rewritePlanEnabled: boolean;
-        promptContent: string;
-      }> = [];
-      for (const task of [...taskEntries].sort((a, b) => a.sortOrder - b.sortOrder)) {
-        const created = await createTaskDefinition(
-          {
-            label: task.label,
-            description: task.description,
-            enabled: task.enabled,
-            sortOrder: task.sortOrder,
-            settings: {
-              targetAudienceEnabled: task.targetAudienceEnabled,
-              rewritePlanEnabled: task.rewritePlanEnabled,
-            },
-          },
-          tx,
-        );
-
-        createdTaskRecords.push({
-          key: created.key,
-          rewritePlanEnabled: task.rewritePlanEnabled,
-          promptContent: task.prompt.content,
-        });
-      }
-
-      const rewritePlanTasks = Object.fromEntries(
-        createdTaskRecords.map((task) => [task.key, task.rewritePlanEnabled]),
-      );
-
-      await tx.globalConfig.update({
-        where: { configKey: GLOBAL_CONFIG_KEY },
-        data: {
-          rewritePlanTasks,
-          updatedBy: actor,
-        },
-      });
-
-      const promptEntries = [
-        ...systemPromptEntries,
-        ...targetAudienceEntries.map((entry) => ({
-          name: `${TARGET_AUDIENCE_PREFIX}${entry.label}`,
-          content: entry.prompt.content,
-        })),
-        ...createdTaskRecords.map((task) => ({
-          name: `${TASK_PROMPT_PREFIX}${task.key}`,
-          content: task.promptContent,
-        })),
-      ];
-      importedPromptCount = promptEntries.length;
-      const promptNames = promptEntries.map((entry) => entry.name);
-
-      await tx.promptTemplate.updateMany({
-        where: {
-          isActive: true,
-          name: promptNames.length > 0 ? { notIn: promptNames } : undefined,
-        },
-        data: { isActive: false },
-      });
-
-      for (const prompt of promptEntries) {
-        const latestPrompt = await tx.promptTemplate.findFirst({
-          where: { name: prompt.name },
-          orderBy: { version: "desc" },
-        });
-
-        const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
-
-        await tx.promptTemplate.updateMany({
-          where: { name: prompt.name, isActive: true },
-          data: { isActive: false },
-        });
-
-        await tx.promptTemplate.create({
-          data: {
-            name: prompt.name,
-            content: prompt.content,
-            version: nextVersion,
-            isActive: true,
-            updatedBy: actor,
-          },
-        });
-      }
-
-      await tx.ordlistaEntry.deleteMany();
-      if (ordlistaEntries.length > 0) {
-        await tx.ordlistaEntry.createMany({
-          data: ordlistaEntries.map((entry) => ({
-            fromWord: entry.fromWord,
-            toWord: entry.toWord,
-            updatedBy: actor,
-          })),
-        });
-      }
-
-      await saveTargetAudienceCatalog(
-        {
-          categories: targetAudienceCategoryEntries,
-          audiences: targetAudienceEntries.map((entry) => ({
-            label: entry.label,
-            category: entry.category,
-            sortOrder: entry.sortOrder,
-          })),
-        },
-        actor,
-        tx,
-      );
-
-      await logAudit(
-        tx,
-        "backup.import",
-        actor,
-        "backup",
-        payload.exportedAt,
-        {
-          prompts: promptEntries.length,
-          tasks: taskEntries.length,
-          ordlista: ordlistaEntries.length,
-          targetAudienceCategories: targetAudienceCategoryEntries.length,
-          targetAudiences: targetAudienceEntries.length,
-          provider: payload.settings.global.provider,
-          retryCount: payload.settings.global.retryCount,
-          rewritePlanTasks,
-          runtimeSettings: toInputJsonValue(runtimeSettings),
-          geminiModel,
-          useWebSearch: payload.settings.providers.gemini.useWebSearch,
-          useThinking: payload.settings.providers.gemini.useThinking,
-        },
-      );
-    });
-
+    const imported = await importBackupPayload(payload, actor);
     configService.refresh();
-    sendSuccess(res, {
-      imported: {
-        prompts: importedPromptCount,
-        tasks: taskEntries.length,
-        ordlista: ordlistaEntries.length,
-      },
-    });
+    sendSuccess(res, { imported });
   } catch (error) {
     sendError(res, 500, "Failed to import backup");
   }
@@ -998,49 +1047,54 @@ router.put(
           sendError(res, 404, "Prompt not found");
           return;
         }
-      } else if (!isPromptName(promptName) && !isTargetAudiencePromptName(promptName)) {
+      } else if (
+        !isPromptName(promptName) &&
+        !isTargetAudiencePromptName(promptName)
+      ) {
         sendError(res, 404, "Prompt not found");
         return;
       }
 
       const actor = getActor(req);
-      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        const latestPrompt = await tx.promptTemplate.findFirst({
-          where: { name: promptName },
-          orderBy: { version: "desc" },
-        });
+      const result = await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          const latestPrompt = await tx.promptTemplate.findFirst({
+            where: { name: promptName },
+            orderBy: { version: "desc" },
+          });
 
-        const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
+          const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
 
-        await tx.promptTemplate.updateMany({
-          where: { name: promptName, isActive: true },
-          data: { isActive: false },
-        });
+          await tx.promptTemplate.updateMany({
+            where: { name: promptName, isActive: true },
+            data: { isActive: false },
+          });
 
-        const created = await tx.promptTemplate.create({
-          data: {
-            name: promptName,
-            content,
-            version: nextVersion,
-            isActive: true,
-            updatedBy: actor,
-          },
-        });
+          const created = await tx.promptTemplate.create({
+            data: {
+              name: promptName,
+              content,
+              version: nextVersion,
+              isActive: true,
+              updatedBy: actor,
+            },
+          });
 
-        await logAudit(
-          tx,
-          "prompt.update",
-          actor,
-          "prompt_template",
-          `${promptName}:${nextVersion}`,
-          {
-            name: promptName,
-            version: nextVersion,
-          },
-        );
+          await logAudit(
+            tx,
+            "prompt.update",
+            actor,
+            "prompt_template",
+            `${promptName}:${nextVersion}`,
+            {
+              name: promptName,
+              version: nextVersion,
+            },
+          );
 
-        return created;
-      });
+          return created;
+        },
+      );
 
       configService.refresh();
       sendSuccess(res, {
@@ -1089,70 +1143,72 @@ router.put(
       const actor = getActor(req);
       const promptName = `${TASK_PROMPT_PREFIX}${taskKey}`;
 
-      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        const latestPrompt = await tx.promptTemplate.findFirst({
-          where: { name: promptName },
-          orderBy: { version: "desc" },
-        });
+      const result = await prisma.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          const latestPrompt = await tx.promptTemplate.findFirst({
+            where: { name: promptName },
+            orderBy: { version: "desc" },
+          });
 
-        const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
+          const nextVersion = latestPrompt ? latestPrompt.version + 1 : 1;
 
-        await tx.promptTemplate.updateMany({
-          where: { name: promptName, isActive: true },
-          data: { isActive: false },
-        });
+          await tx.promptTemplate.updateMany({
+            where: { name: promptName, isActive: true },
+            data: { isActive: false },
+          });
 
-        const createdPrompt = await tx.promptTemplate.create({
-          data: {
-            name: promptName,
-            content,
-            version: nextVersion,
-            isActive: true,
-            updatedBy: actor,
-          },
-        });
+          const createdPrompt = await tx.promptTemplate.create({
+            data: {
+              name: promptName,
+              content,
+              version: nextVersion,
+              isActive: true,
+              updatedBy: actor,
+            },
+          });
 
-        await logAudit(
-          tx,
-          "prompt.update",
-          actor,
-          "prompt_template",
-          `${promptName}:${nextVersion}`,
-          {
-            name: promptName,
-            version: nextVersion,
-          },
-        );
+          await logAudit(
+            tx,
+            "prompt.update",
+            actor,
+            "prompt_template",
+            `${promptName}:${nextVersion}`,
+            {
+              name: promptName,
+              version: nextVersion,
+            },
+          );
 
-        const nextRewritePlanTasks = await setRewritePlanTaskToggle(
-          tx,
-          actor,
-          taskKey,
-          rewritePlanEnabled,
-        );
-
-        await tx.taskDefinition.update({
-          where: { key: taskKey },
-          data: { rewritePlanEnabled },
-        });
-
-        await logAudit(
-          tx,
-          "rewrite_plan_task.update",
-          actor,
-          "global_config",
-          GLOBAL_CONFIG_KEY,
-          {
+          const nextRewritePlanTasks = await setRewritePlanTaskToggle(
+            tx,
+            actor,
             taskKey,
-            enabled: rewritePlanEnabled,
-          },
-        );
+            rewritePlanEnabled,
+          );
 
-        return {
-          prompt: createdPrompt,
-          rewritePlanTasks: nextRewritePlanTasks,
-        };
-      });
+          await tx.taskDefinition.update({
+            where: { key: taskKey },
+            data: { rewritePlanEnabled },
+          });
+
+          await logAudit(
+            tx,
+            "rewrite_plan_task.update",
+            actor,
+            "global_config",
+            GLOBAL_CONFIG_KEY,
+            {
+              taskKey,
+              enabled: rewritePlanEnabled,
+            },
+          );
+
+          return {
+            prompt: createdPrompt,
+            rewritePlanTasks: nextRewritePlanTasks,
+          };
+        },
+      );
 
       configService.refresh();
 
@@ -1222,8 +1278,12 @@ router.put(
           updatedBy: actor,
         },
         update: {
-          provider: normalizedProvider ?? existing?.provider ?? AI_PROVIDERS.GEMINI_2_5_FLASH,
-          retryCount: normalizedRetryCount ?? existing?.retryCount ?? DEFAULT_RETRY_COUNT,
+          provider:
+            normalizedProvider ??
+            existing?.provider ??
+            AI_PROVIDERS.GEMINI_2_5_FLASH,
+          retryCount:
+            normalizedRetryCount ?? existing?.retryCount ?? DEFAULT_RETRY_COUNT,
           updatedBy: actor,
         },
       });
@@ -1251,43 +1311,7 @@ router.put(
   },
 );
 
-router.get(
-  "/runtime-settings",
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const runtimeSettings = await configService.getRuntimeSettings();
-      sendSuccess(res, { runtimeSettings });
-    } catch (error) {
-      sendError(res, 500, "Failed to load runtime settings");
-    }
-  },
-);
-
-router.get(
-  "/ops/summarize-health",
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const runtimeSettings = await configService.getRuntimeSettings();
-      const globalConfig = await configService.getGlobalConfig();
-
-      sendSuccess(res, {
-        timestamp: new Date().toISOString(),
-        features: {
-          pipelineMode: "v2_always_on",
-          targetedRepairControl: "runtime.repair.enabled",
-          sharedLimiter: config.features.sharedLimiter,
-        },
-        activeProvider: globalConfig.provider,
-        summarizeQueue: getSummarizeQueueState(),
-        stageConcurrency: getStageConcurrencyState(),
-        autoProfile: getAutoProfileControllerStatus(),
-        runtimeSettings,
-      });
-    } catch (error) {
-      sendError(res, 500, "Failed to load summarize health snapshot");
-    }
-  },
-);
+registerAdminRuntimeReadRoutes(router);
 
 router.put(
   "/runtime-settings",
@@ -1346,15 +1370,13 @@ router.get("/prompts", async (_req: Request, res: Response): Promise<void> => {
       orderBy: { name: "asc" },
     });
 
-    const response = activePrompts.map((prompt: {
-      name: string;
-      version: number;
-      updatedAt: Date;
-    }) => ({
-      name: prompt.name,
-      activeVersion: prompt.version,
-      updatedAt: prompt.updatedAt,
-    }));
+    const response = activePrompts.map(
+      (prompt: { name: string; version: number; updatedAt: Date }) => ({
+        name: prompt.name,
+        activeVersion: prompt.version,
+        updatedAt: prompt.updatedAt,
+      }),
+    );
 
     sendSuccess(res, response);
   } catch (error) {
@@ -1381,7 +1403,10 @@ router.get(
           sendError(res, 404, "Prompt not found");
           return;
         }
-      } else if (!isPromptName(promptName) && !isTargetAudiencePromptName(promptName)) {
+      } else if (
+        !isPromptName(promptName) &&
+        !isTargetAudiencePromptName(promptName)
+      ) {
         sendError(res, 404, "Prompt not found");
         return;
       }
@@ -1391,15 +1416,13 @@ router.get(
         orderBy: { version: "desc" },
       });
 
-      const response = versions.map((version: {
-        version: number;
-        updatedAt: Date;
-        isActive: boolean;
-      }) => ({
-        version: version.version,
-        updatedAt: version.updatedAt,
-        isActive: version.isActive,
-      }));
+      const response = versions.map(
+        (version: { version: number; updatedAt: Date; isActive: boolean }) => ({
+          version: version.version,
+          updatedAt: version.updatedAt,
+          isActive: version.isActive,
+        }),
+      );
 
       sendSuccess(res, response);
     } catch (error) {
@@ -1435,7 +1458,10 @@ router.post(
           sendError(res, 404, "Prompt not found");
           return;
         }
-      } else if (!isPromptName(promptName) && !isTargetAudiencePromptName(promptName)) {
+      } else if (
+        !isPromptName(promptName) &&
+        !isTargetAudiencePromptName(promptName)
+      ) {
         sendError(res, 404, "Prompt not found");
         return;
       }
@@ -1543,11 +1569,11 @@ router.put(
       const nextUseWebSearch =
         typeof useWebSearch === "boolean"
           ? useWebSearch
-          : existing?.useWebSearch ?? defaultUseWebSearch;
+          : (existing?.useWebSearch ?? defaultUseWebSearch);
       const nextUseThinking =
         typeof useThinking === "boolean"
           ? useThinking
-          : existing?.useThinking ?? defaultUseThinking;
+          : (existing?.useThinking ?? defaultUseThinking);
 
       const createData = {
         provider,
@@ -1640,14 +1666,10 @@ router.put(
         },
       });
 
-      await logAudit(
-        prisma,
-        "secret.update",
-        actor,
-        "secret",
-        secretName,
-        { name: secretName, masked: maskSecretValue(value) },
-      );
+      await logAudit(prisma, "secret.update", actor, "secret", secretName, {
+        name: secretName,
+        masked: maskSecretValue(value),
+      });
 
       configService.refresh();
       sendSuccess(res, {
@@ -1660,151 +1682,14 @@ router.put(
   },
 );
 
-router.get(
-  "/secrets",
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const maskedSecrets = await configService.listMaskedSecrets();
-      sendSuccess(res, maskedSecrets);
-    } catch (error) {
-      sendError(res, 500, "Failed to load secrets");
-    }
-  },
-);
-
-router.get("/ordlista", async (_req: Request, res: Response): Promise<void> => {
+router.get("/secrets", async (_req: Request, res: Response): Promise<void> => {
   try {
-    res.set("Cache-Control", "no-store");
-    const entries = await prisma.ordlistaEntry.findMany({
-      orderBy: { fromWord: "asc" },
-    });
-
-    sendSuccess(
-      res,
-      entries.map((entry: {
-        id: number;
-        fromWord: string;
-        toWord: string;
-        updatedAt: Date;
-        updatedBy: string | null;
-      }) => ({
-        id: entry.id,
-        fromWord: entry.fromWord,
-        toWord: entry.toWord,
-        updatedAt: entry.updatedAt,
-        updatedBy: entry.updatedBy,
-      })),
-    );
+    const maskedSecrets = await configService.listMaskedSecrets();
+    sendSuccess(res, maskedSecrets);
   } catch (error) {
-    sendError(res, 500, "Failed to load ordlista");
+    sendError(res, 500, "Failed to load secrets");
   }
 });
 
-router.post("/ordlista", async (req: Request, res: Response): Promise<void> => {
-  const { fromWord, toWord } = req.body ?? {};
-
-  if (typeof fromWord !== "string" || fromWord.trim().length === 0) {
-    sendError(res, 400, "Invalid fromWord");
-    return;
-  }
-
-  if (typeof toWord !== "string" || toWord.trim().length === 0) {
-    sendError(res, 400, "Invalid toWord");
-    return;
-  }
-
-  try {
-    const actor = getActor(req);
-    const entry = await prisma.ordlistaEntry.upsert({
-      where: { fromWord: fromWord.trim() },
-      create: {
-        fromWord: fromWord.trim(),
-        toWord: toWord.trim(),
-        updatedBy: actor,
-      },
-      update: {
-        toWord: toWord.trim(),
-        updatedBy: actor,
-      },
-    });
-
-    await logAudit(prisma, "ordlista.upsert", actor, "ordlista_entries", String(entry.id), {
-      fromWord: entry.fromWord,
-      toWord: entry.toWord,
-    });
-
-    sendSuccess(res, {
-      id: entry.id,
-      fromWord: entry.fromWord,
-      toWord: entry.toWord,
-      updatedAt: entry.updatedAt,
-      updatedBy: entry.updatedBy,
-    });
-  } catch (error) {
-    sendError(res, 500, "Failed to save ordlista entry");
-  }
-});
-
-router.delete(
-  "/ordlista/:id",
-  async (req: Request, res: Response): Promise<void> => {
-    const rawId = req.params.id;
-    const idValue = Array.isArray(rawId) ? rawId[0] : rawId;
-    const id = idValue ? Number.parseInt(idValue, 10) : NaN;
-
-    if (!Number.isInteger(id) || id <= 0) {
-      sendError(res, 400, "Invalid ordlista id");
-      return;
-    }
-
-    try {
-      const actor = getActor(req);
-      const existing = await prisma.ordlistaEntry.findUnique({
-        where: { id },
-      });
-      if (!existing) {
-        sendSuccess(res, { id, deleted: false });
-        return;
-      }
-
-      await prisma.ordlistaEntry.delete({ where: { id } });
-
-      await logAudit(
-        prisma,
-        "ordlista.delete",
-        actor,
-        "ordlista_entries",
-        String(existing.id),
-        {
-          fromWord: existing.fromWord,
-          toWord: existing.toWord,
-        },
-      );
-
-      sendSuccess(res, {
-        id: existing.id,
-        fromWord: existing.fromWord,
-        toWord: existing.toWord,
-        deleted: true,
-      });
-    } catch (error) {
-      sendError(res, 500, "Failed to delete ordlista entry");
-    }
-  },
-);
-
-router.delete("/ordlista", async (req: Request, res: Response): Promise<void> => {
-  try {
-    const actor = getActor(req);
-    const result = await prisma.ordlistaEntry.deleteMany();
-
-    await logAudit(prisma, "ordlista.clear", actor, "ordlista_entries", null, {
-      count: result.count,
-    });
-
-    sendSuccess(res, { deletedCount: result.count });
-  } catch (error) {
-    sendError(res, 500, "Failed to clear ordlista");
-  }
-});
+registerAdminOrdlistaRoutes(router, { prisma, getActor, logAudit });
 export default router;

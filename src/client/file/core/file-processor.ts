@@ -5,8 +5,8 @@
 
 import { assert } from "../../safety/assertions.js";
 import { FileValidator } from "../../../utils/file/file-validator.js";
-import { FileInfo } from "../models/file-info.js";
-import { FileLimits } from "../../../config/shared-config.js";
+import type { FileInfo } from "../models/file-info.js";
+import { fileLimits } from "../../../config/shared-config.js";
 
 /**
  * Interface for server response data
@@ -63,16 +63,16 @@ export function generateUniqueId(): string {
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   assert(buffer instanceof ArrayBuffer, "Input must be an ArrayBuffer");
   assert(buffer.byteLength > 0, "Buffer cannot be empty");
-  const MAX_FILE_SIZE = FileLimits.MAX_FILE_SIZE;
-  assert(buffer.byteLength <= MAX_FILE_SIZE, "Buffer exceeds maximum size");
+  assert(
+    buffer.byteLength <= fileLimits.maxFileSize,
+    "Buffer exceeds maximum size",
+  );
 
   let binary = "";
   const bytes = new Uint8Array(buffer);
 
   // Convert buffer to binary string
-  // File size is already validated above (MAX_FILE_SIZE)
   for (let i = 0; i < bytes.length; i++) {
-    // Uint8Array elements are numbers, so we can safely convert to character codes
     binary += String.fromCharCode(bytes[i] as number);
   }
 
@@ -112,9 +112,8 @@ async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
       const result = reader.result as ArrayBuffer;
       assert(result instanceof ArrayBuffer, "Result must be an ArrayBuffer");
       assert(result.byteLength > 0, "Read buffer cannot be empty");
-      const MAX_FILE_SIZE = FileLimits.MAX_FILE_SIZE;
       assert(
-        result.byteLength <= MAX_FILE_SIZE,
+        result.byteLength <= fileLimits.maxFileSize,
         "Read buffer exceeds maximum size",
       );
       resolve(result);

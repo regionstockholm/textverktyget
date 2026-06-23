@@ -4,7 +4,7 @@
 #
 # Build Stage
 #
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 # Install build dependencies
 RUN apt-get update \
@@ -14,12 +14,12 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy package files for better layer caching
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml prisma.config.ts ./
 # Copy Prisma schema before postinstall (prisma generate)
 COPY prisma ./prisma
 
 # Install all dependencies including dev dependencies for building
-RUN corepack enable && corepack use pnpm@10.29.2 && pnpm install --frozen-lockfile
+RUN corepack enable && corepack use pnpm@11.0.9 && pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
@@ -35,7 +35,7 @@ RUN pnpm prune --prod
 #
 # Production Stage
 #
-FROM node:20-slim AS production
+FROM node:22-slim AS production
 
 # Create non-root user for security
 RUN groupadd -g 1001 nodejs && \
@@ -55,6 +55,7 @@ COPY --from=builder --chown=textverktyg:nodejs /app/package.json ./
 COPY --from=builder --chown=textverktyg:nodejs /app/pnpm-lock.yaml ./
 # Copy Prisma schema and migrations for deploy
 COPY --from=builder --chown=textverktyg:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=textverktyg:nodejs /app/prisma.config.ts ./prisma.config.ts
 # Copy public directory for static files
 COPY --from=builder --chown=textverktyg:nodejs /app/public ./public
 # Copy runtime prompt defaults (JSON)

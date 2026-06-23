@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "../../generated/prisma/client.js";
 import { getPrismaClient } from "../../config/database/prisma-client.js";
 import { getDefaultConfig } from "../../config/default-config-loader.js";
 import { createTaskDefinition } from "../tasks/task-catalog-service.js";

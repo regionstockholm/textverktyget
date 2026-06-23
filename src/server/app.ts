@@ -15,12 +15,10 @@
  * @module server/app
  */
 
-import express, { Application } from "express";
-import assert from "assert";
+import express from "express";
+import type { Application } from "express";
 
-// Import security and CORS configurations
 import configureHelmet from "../config/security/helmet-config.js";
-import configureCors from "../config/security/cors-config.js";
 
 // Import custom middleware
 import { setSecurityHeaders } from "../routes/static/middleware/security-headers.js";
@@ -70,9 +68,6 @@ function configureBodyParsing(app: Application): void {
  * @param {Application} app - Express application instance
  */
 function configureProxy(app: Application): void {
-  assert(app, "Express application is required");
-
-  // Set trust proxy to 1 (standard for production behind reverse proxy)
   app.set("trust proxy", 1);
   console.log("Trust proxy set to 1");
 }
@@ -81,39 +76,19 @@ function configureProxy(app: Application): void {
  * Creates and configures an Express application instance
  *
  * @returns {Application} Configured Express application
- * @throws {Error} If configuration fails or parameters are invalid
  */
 export function createApp(): Application {
-  try {
-    const app = express();
+  const app = express();
 
-    if (!app) {
-      throw new Error("Failed to create Express application");
-    }
+  configureProxy(app);
+  configureHelmet(app);
 
-    // Configure proxy settings
-    configureProxy(app);
+  app.use(developmentLogger);
+  console.log("Request logging enabled");
 
-    // Apply security configurations and CORS settings
-    configureHelmet(app);
-    configureCors(app);
+  configureBodyParsing(app);
+  app.use(setSecurityHeaders);
 
-    // Enable request logging (standard logger, was previously called developmentLogger)
-    app.use(developmentLogger);
-    console.log("Request logging enabled");
-
-    // Configure request body parsing with size limits for security
-    configureBodyParsing(app);
-
-    // Cookie parsing and session handling removed - no longer needed for user authentication
-
-    // Apply custom security headers
-    app.use(setSecurityHeaders);
-
-    console.log("Express application configured successfully");
-    return app;
-  } catch (error) {
-    console.error("Failed to create Express application:", error);
-    throw error;
-  }
+  console.log("Express application configured successfully");
+  return app;
 }

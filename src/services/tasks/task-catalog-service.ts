@@ -1,5 +1,5 @@
 import { getPrismaClient } from "../../config/database/prisma-client.js";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "../../generated/prisma/client.js";
 import {
   validateAndNormalizeTaskSettings,
   type TaskOutputMode,
@@ -22,8 +22,6 @@ export interface TaskDefinitionRecord {
   enabled: boolean;
   sortOrder: number;
   outputMode: TaskOutputMode;
-  bulletCount: number | null;
-  maxChars: number | null;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
   createdAt: Date;
@@ -64,8 +62,6 @@ function toTaskDefinitionRecord(task: {
   enabled: boolean;
   sortOrder: number;
   outputMode: string;
-  bulletCount: number | null;
-  maxChars: number | null;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
   createdAt: Date;
@@ -79,8 +75,6 @@ function toTaskDefinitionRecord(task: {
     enabled: task.enabled,
     sortOrder: task.sortOrder,
     outputMode: task.outputMode as TaskOutputMode,
-    bulletCount: task.bulletCount,
-    maxChars: task.maxChars,
     targetAudienceEnabled: task.targetAudienceEnabled,
     rewritePlanEnabled: task.rewritePlanEnabled,
     createdAt: task.createdAt,
@@ -329,8 +323,6 @@ export async function createTaskDefinition(
       enabled: input.enabled ?? true,
       sortOrder,
       outputMode: settingsValidation.settings.outputMode,
-      bulletCount: settingsValidation.settings.bulletCount,
-      maxChars: settingsValidation.settings.maxChars,
       targetAudienceEnabled: settingsValidation.settings.targetAudienceEnabled,
       rewritePlanEnabled: settingsValidation.settings.rewritePlanEnabled,
     },
@@ -358,8 +350,6 @@ export async function updateTaskDefinition(
 
   const currentSettings: TaskSettings = {
     outputMode: existing.outputMode as TaskOutputMode,
-    bulletCount: existing.bulletCount,
-    maxChars: existing.maxChars,
     targetAudienceEnabled: existing.targetAudienceEnabled,
     rewritePlanEnabled: existing.rewritePlanEnabled,
   };
@@ -379,14 +369,10 @@ export async function updateTaskDefinition(
     enabled?: boolean;
     sortOrder?: number;
     outputMode: TaskOutputMode;
-    bulletCount: number | null;
-    maxChars: number | null;
     targetAudienceEnabled: boolean;
     rewritePlanEnabled: boolean;
   } = {
     outputMode: settingsValidation.settings.outputMode,
-    bulletCount: settingsValidation.settings.bulletCount,
-    maxChars: settingsValidation.settings.maxChars,
     targetAudienceEnabled: settingsValidation.settings.targetAudienceEnabled,
     rewritePlanEnabled: settingsValidation.settings.rewritePlanEnabled,
   };

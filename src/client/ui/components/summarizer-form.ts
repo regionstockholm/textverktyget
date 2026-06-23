@@ -1,36 +1,37 @@
-export interface TaskCatalogItem {
+import { assert } from "../../safety/assertions.js";
+import type { FormValues } from "../../core/summarizer/interfaces.js";
+import { getById, query } from "../utils/dom.js";
+
+export type TaskCatalogItem = {
   key: string;
   label: string;
   description: string | null;
   sortOrder: number;
   settings: {
     outputMode: "rewrite" | "summary" | "bullets";
-    bulletCount: number | null;
-    maxChars: number | null;
     targetAudienceEnabled: boolean;
     rewritePlanEnabled: boolean;
   };
-}
+};
 
-export interface TaskSubmissionConfig {
-  taskKey: string;
-  targetAudienceEnabled: boolean;
-}
-
-interface TargetAudienceCategoryPayload {
+type TargetAudienceCategoryPayload = {
   name: string;
   sortOrder: number;
   audiences: Array<{
     label: string;
     sortOrder: number;
   }>;
-}
+};
 
-function getSelectedTaskInput(): HTMLInputElement | null {
-  return document.querySelector(
-    'input[name="summary-type"]:checked',
-  ) as HTMLInputElement | null;
-}
+export type TaskSubmissionConfig = {
+  taskKey: string;
+  targetAudienceEnabled: boolean;
+};
+
+type SelectedTaskValues = {
+  taskKey: string;
+  targetAudienceEnabled: boolean;
+};
 
 export function deriveTaskSubmissionConfig(
   task: TaskCatalogItem,
@@ -41,9 +42,14 @@ export function deriveTaskSubmissionConfig(
   };
 }
 
+function getSelectedTaskInput(): HTMLInputElement | null {
+  return query<HTMLInputElement>('input[name="summary-type"]:checked');
+}
+
 function updateTaskDependentUi(): void {
+  const root = query<HTMLElement>(".blue-bg");
   const selectedTask = getSelectedTaskInput();
-  const root = document.querySelector(".blue-bg") as HTMLElement | null;
+
   if (!root || !selectedTask) {
     return;
   }
@@ -53,7 +59,10 @@ function updateTaskDependentUi(): void {
   root.classList.toggle("hide-target-audience", !targetAudienceEnabled);
 }
 
-function createTaskOption(task: TaskCatalogItem, checked: boolean): HTMLElement {
+function createTaskOption(
+  task: TaskCatalogItem,
+  checked: boolean,
+): HTMLElement {
   const label = document.createElement("label");
   label.className = "first-pick-radio relative";
   label.htmlFor = `task-${task.key.replace(/[^A-Za-z0-9_-]/g, "-")}`;
@@ -85,26 +94,26 @@ function createTaskOption(task: TaskCatalogItem, checked: boolean): HTMLElement 
     content.appendChild(description);
   }
 
-  label.appendChild(input);
-  label.appendChild(content);
+  label.append(input, content);
   return label;
 }
 
 function renderTaskOptions(tasks: TaskCatalogItem[]): void {
-  const container = document.getElementById("task-options");
+  const container = getById<HTMLElement>("task-options");
   if (!container) {
     return;
   }
 
-  const existingSelected = getSelectedTaskInput()?.value;
-  const sorted = [...tasks].sort((a, b) => a.sortOrder - b.sortOrder);
+  const previousSelection = getSelectedTaskInput()?.value;
+  const sortedTasks = [...tasks].sort((a, b) => a.sortOrder - b.sortOrder);
 
   container.innerHTML = "";
-  sorted.forEach((task, index) => {
-    const shouldCheck = existingSelected
-      ? existingSelected === task.key
+
+  sortedTasks.forEach((task, index) => {
+    const checked = previousSelection
+      ? previousSelection === task.key
       : index === 0;
-    container.appendChild(createTaskOption(task, shouldCheck));
+    container.appendChild(createTaskOption(task, checked));
   });
 
   updateTaskDependentUi();
@@ -125,14 +134,20 @@ async function fetchTaskCatalog(): Promise<TaskCatalogItem[]> {
     data?: TaskCatalogItem[];
   };
 
-  if (!payload.success || !Array.isArray(payload.data) || payload.data.length === 0) {
+  if (
+    !payload.success ||
+    !Array.isArray(payload.data) ||
+    payload.data.length === 0
+  ) {
     throw new Error("Task catalog response missing enabled tasks");
   }
 
   return payload.data;
 }
 
-async function fetchTargetAudienceCatalog(): Promise<TargetAudienceCategoryPayload[]> {
+async function fetchTargetAudienceCatalog(): Promise<
+  TargetAudienceCategoryPayload[]
+> {
   const response = await fetch("/api/target-audiences", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -150,7 +165,11 @@ async function fetchTargetAudienceCatalog(): Promise<TargetAudienceCategoryPaylo
   };
 
   const categories = payload.data?.categories;
-  if (!payload.success || !Array.isArray(categories) || categories.length === 0) {
+  if (
+    !payload.success ||
+    !Array.isArray(categories) ||
+    categories.length === 0
+  ) {
     throw new Error("Target audience response missing categories");
   }
 
@@ -160,9 +179,7 @@ async function fetchTargetAudienceCatalog(): Promise<TargetAudienceCategoryPaylo
 function renderTargetAudienceOptions(
   categories: TargetAudienceCategoryPayload[],
 ): void {
-  const select = document.getElementById("target-audience") as
-    | HTMLSelectElement
-    | null;
+  const select = getById<HTMLSelectElement>("target-audience");
   if (!select) {
     return;
   }
@@ -185,21 +202,51 @@ function renderTargetAudienceOptions(
   });
 
   if (previousValue) {
-    const existing = Array.from(select.options).find(
+    const existingOption = Array.from(select.options).find(
       (option) => option.value === previousValue,
     );
-    if (existing) {
+
+    if (existingOption) {
       select.value = previousValue;
       return;
     }
   }
 
-  if (select.options.length > 0) {
-    const firstOption = select.options.item(0);
-    if (firstOption) {
-      select.value = firstOption.value;
-    }
+  const firstOption = select.options.item(0);
+  if (firstOption) {
+    select.value = firstOption.value;
   }
+}
+
+function getSelectedTaskValues(): SelectedTaskValues {
+  const selectedTask = getSelectedTaskInput();
+  assert(selectedTask !== null, "No summary type selected");
+
+  return {
+    taskKey: selectedTask.dataset.taskKey || selectedTask.value,
+    targetAudienceEnabled:
+      selectedTask.dataset.targetAudienceEnabled !== "false",
+  };
+}
+
+function getTargetAudience(): string {
+  const targetAudience = getById<HTMLSelectElement>("target-audience");
+  assert(targetAudience !== null, "Target audience element not found");
+  return targetAudience.value;
+}
+
+export function getSelectedValues(): FormValues {
+  const taskValues = getSelectedTaskValues();
+  const selectedAudience = getTargetAudience();
+
+  return {
+    taskKey: taskValues.taskKey,
+    targetAudience: taskValues.targetAudienceEnabled
+      ? selectedAudience
+      : selectedAudience || "Allman malgrupp",
+    checkboxContent: [],
+    qualityProcess: true,
+  };
 }
 
 export async function initializeTargetAudienceCatalog(): Promise<void> {
@@ -212,12 +259,8 @@ export async function initializeTargetAudienceCatalog(): Promise<void> {
 }
 
 export async function initializeTaskCatalog(): Promise<void> {
-  const container = document.getElementById("task-options");
-  if (container) {
-    container.addEventListener("change", () => {
-      updateTaskDependentUi();
-    });
-  }
+  const container = getById<HTMLElement>("task-options");
+  container?.addEventListener("change", updateTaskDependentUi);
 
   try {
     const tasks = await fetchTaskCatalog();

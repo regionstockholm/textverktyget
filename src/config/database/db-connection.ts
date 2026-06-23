@@ -5,8 +5,12 @@
  */
 
 import { Pool, type PoolConfig } from "pg";
-import { config } from "../app-config.js";
 import { ensureDatabaseStructure } from "./db-schema.js";
+import {
+  getPostgresSslConfig,
+  maskDatabaseUrl,
+  requireConfiguredDatabaseUrl,
+} from "./postgres-connection-options.js";
 
 /**
  * Maximum number of retry attempts for database operations
@@ -24,87 +28,11 @@ let dbInstance: Pool | null = null;
 let initializationPromise: Promise<Pool> | null = null;
 
 /**
- * Gets the Postgres database URL from configuration
- * @returns Database connection URL
- */
-function getDatabaseUrl(): string {
-  const databaseUrl = config.database.url || process.env.DATABASE_URL || "";
-  if (!databaseUrl) {
-    throw new Error("DATABASE_URL is required for Postgres connection");
-  }
-
-  return databaseUrl;
-}
-
-/**
- * Builds the Postgres SSL configuration
- */
-function getSslConfig(databaseUrl: string): PoolConfig["ssl"] {
-  let sslMode = (config.database.sslMode || "").toLowerCase();
-
-  if (!sslMode) {
-    try {
-      const parsed = new URL(databaseUrl);
-      const urlMode = parsed.searchParams.get("sslmode");
-      if (urlMode) {
-        sslMode = urlMode.toLowerCase();
-      }
-    } catch {
-      // Ignore URL parsing errors and fall back to defaults
-    }
-  }
-
-  if (!sslMode) {
-    sslMode = "disable";
-  }
-
-  if (sslMode === "true" || sslMode === "on" || sslMode === "1") {
-    sslMode = "require";
-  }
-
-  if (
-    sslMode === "disable" ||
-    sslMode === "false" ||
-    sslMode === "off" ||
-    sslMode === "0"
-  ) {
-    return undefined;
-  }
-
-  const override = process.env.DATABASE_SSL_REJECT_UNAUTHORIZED;
-  const insecureDefaultModes = new Set(["require", "prefer", "allow"]);
-  const defaultRejectUnauthorized = !insecureDefaultModes.has(sslMode);
-  const rejectUnauthorized =
-    override === "true"
-      ? true
-      : override === "false"
-        ? false
-        : defaultRejectUnauthorized;
-
-  return { rejectUnauthorized };
-}
-
-/**
- * Masks a database URL for safe logging
- */
-function maskDatabaseUrl(databaseUrl: string): string {
-  try {
-    const parsed = new URL(databaseUrl);
-    if (parsed.password) {
-      parsed.password = "****";
-    }
-    return parsed.toString();
-  } catch {
-    return "[invalid DATABASE_URL]";
-  }
-}
-
-/**
  * Creates Postgres pool configuration
  */
 function createPoolConfig(): PoolConfig {
-  const databaseUrl = getDatabaseUrl();
-  const ssl = getSslConfig(databaseUrl);
+  const databaseUrl = requireConfiguredDatabaseUrl();
+  const ssl = getPostgresSslConfig(databaseUrl);
 
   console.log(
     `[Database] Using Postgres connection: ${maskDatabaseUrl(databaseUrl)}`,
@@ -232,13 +160,5 @@ export async function testConnection(): Promise<boolean> {
     return false;
   }
 }
-
-// Initialize database on module load
-console.log("[Database] Initializing Postgres database");
-
-// Test connection on startup
-testConnection().catch((error) => {
-  console.error("[Database] Startup connection test failed:", error);
-});
 
 export default getDatabase;

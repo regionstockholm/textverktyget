@@ -3,7 +3,7 @@
  * Provides standardized response handling for API routes
  */
 
-import { Response } from "express";
+import type { Response } from "express";
 
 /**
  * Sends a success response with standardized format

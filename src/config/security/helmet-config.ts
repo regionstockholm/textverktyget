@@ -4,8 +4,8 @@
  * @module config/security/helmet-config
  */
 
-import helmet, { HelmetOptions } from "helmet";
-import { Express } from "express";
+import helmet, { type HelmetOptions } from "helmet";
+import type { Express } from "express";
 import { config } from "../app-config.js";
 
 /**

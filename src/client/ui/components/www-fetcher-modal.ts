@@ -1,24 +1,13 @@
-/**
- * WWW Fetcher Modal Component
- * Handles the modal functionality for fetching text from web URLs
- */
-
-/**
- * Interface for modal elements
- */
-interface ModalElements {
-  modal: HTMLElement;
+type ModalElements = {
+  modal: HTMLDialogElement;
   closeButton: HTMLElement;
   cancelButton: HTMLButtonElement;
   submitButton: HTMLButtonElement;
   urlInput: HTMLInputElement;
   form: HTMLFormElement;
-}
+};
 
-/**
- * Interface for web fetch API response
- */
-interface WebFetchResponse {
+type WebFetchResponse = {
   success: boolean;
   data?: {
     content: string;
@@ -27,19 +16,16 @@ interface WebFetchResponse {
     processingTime: number;
   };
   error?: string;
-}
+};
 
-/**
- * Check if URL is the set domain domain
- * @param url - URL to validate
- * @returns boolean indicating if URL is from allowed domain
- */
+const MIN_URL_LENGTH_FOR_VALIDATION = 10;
+
+let cachedElements: ModalElements | null = null;
+let hasInitialized = false;
+
 function isSetDomainUrl(url: string): boolean {
   try {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname.toLowerCase();
-
-    // Allow www.regionstockholm.se and regionstockholm.se as domains to scrape from
+    const hostname = new URL(url).hostname.toLowerCase();
     return (
       hostname === "www.regionstockholm.se" || hostname === "regionstockholm.se"
     );
@@ -48,112 +34,65 @@ function isSetDomainUrl(url: string): boolean {
   }
 }
 
-/**
- * Fetch web content from URL using the API
- * @param url - URL to fetch content from
- * @returns Promise with the fetched content
- */
 async function fetchWebContent(url: string): Promise<string> {
-  console.log(`[WWW Fetcher] Fetching content from: ${url}`);
-
   const response = await fetch("/api/fetch-web", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-
-    body: JSON.stringify({
-      url,
-    }),
+    body: JSON.stringify({ url }),
   });
-
-  console.log(
-    `[WWW Fetcher] Response status: ${response.status} ${response.statusText}`,
-  );
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
   const data: WebFetchResponse = await response.json();
-  console.log(`[WWW Fetcher] Response data:`, data);
-
   if (!data.success) {
-    console.error(`[WWW Fetcher] API returned error:`, data.error);
     throw new Error(data.error || "Failed to fetch web content");
   }
 
   const content = data.data?.content || "";
-  console.log(
-    `[WWW Fetcher] Extracted content length: ${content.length} characters`,
-  );
-
-  if (!content || content.trim().length === 0) {
-    console.error(`[WWW Fetcher] No content found in response`);
+  if (!content.trim()) {
     throw new Error("No content found in the response");
   }
 
   return content;
 }
 
-/**
- * Replace all content in the text input area with fetched content
- * @param content - Content to replace with
- */
 function insertContentIntoTextArea(content: string): void {
-  // Find the main text input area
-  const textArea = document.getElementById("text-input") as HTMLTextAreaElement;
-
+  const textArea = document.getElementById("text-input") as HTMLTextAreaElement | null;
   if (!textArea) {
-    console.error("Text input area not found");
     return;
   }
 
-  // Replace all content with the new content
   textArea.value = content;
-
-  // Set cursor position at the beginning
   textArea.setSelectionRange(0, 0);
-
-  // Focus the text area
   textArea.focus();
-
-  // Trigger input event to update any listeners (like character counters)
-  textArea.dispatchEvent(
-    new Event("input", {
-      bubbles: true,
-    }),
-  );
+  textArea.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-/**
- * Get all modal elements from the DOM
- */
 function getModalElements(): ModalElements | null {
-  const modal = document.getElementById("www-fetcher-modal");
+  if (cachedElements) {
+    return cachedElements;
+  }
+
+  const modal = document.getElementById("www-fetcher-modal") as HTMLDialogElement | null;
   const closeButton = document.getElementById("www-fetcher-modal-close");
   const cancelButton = document.getElementById(
     "www-fetcher-cancel",
-  ) as HTMLButtonElement;
+  ) as HTMLButtonElement | null;
   const submitButton = document.getElementById(
     "www-fetcher-submit",
-  ) as HTMLButtonElement;
-  const urlInput = document.getElementById("www-url-input") as HTMLInputElement;
-  const form = document.getElementById("modal-form") as HTMLFormElement;
+  ) as HTMLButtonElement | null;
+  const urlInput = document.getElementById("www-url-input") as HTMLInputElement | null;
+  const form = document.getElementById("modal-form") as HTMLFormElement | null;
 
-  if (
-    !modal ||
-    !closeButton ||
-    !cancelButton ||
-    !submitButton ||
-    !urlInput ||
-    !form
-  ) {
-    console.error("WWW Fetcher Modal: Required elements not found");
+  if (!modal || !closeButton || !cancelButton || !submitButton || !urlInput || !form) {
     return null;
   }
 
-  return {
+  cachedElements = {
     modal,
     closeButton,
     cancelButton,
@@ -161,68 +100,45 @@ function getModalElements(): ModalElements | null {
     urlInput,
     form,
   };
+
+  return cachedElements;
 }
 
-/**
- * Show the modal
- */
+function setFormBusy(elements: ModalElements, busy: boolean): void {
+  elements.submitButton.disabled = busy;
+  elements.submitButton.textContent = busy ? "Hämtar..." : "Hämta text";
+  elements.urlInput.disabled = busy;
+  elements.cancelButton.disabled = busy;
+}
+
 function showModal(elements: ModalElements): void {
-  console.log("WWW Fetcher Modal: Showing modal");
-
-  // Clear previous input
   elements.urlInput.value = "";
+  setFormBusy(elements, false);
 
-  // Use the native dialog showModal() method
-  const dialog = elements.modal as HTMLDialogElement;
-  dialog.showModal();
+  if (!elements.modal.open) {
+    elements.modal.showModal();
+  }
 
-  // Focus on the input field after a short delay to ensure smooth animation
-  setTimeout(
-    () => {
-      elements.urlInput.focus();
-    },
-
-    50,
-  );
+  setTimeout(() => {
+    elements.urlInput.focus();
+  }, 50);
 }
 
-/**
- * Hide the modal
- */
 function hideModal(elements: ModalElements): void {
-  console.log("WWW Fetcher Modal: Hiding modal");
-
-  // Use the native dialog close() method
-  const dialog = elements.modal as HTMLDialogElement;
-  dialog.close();
-}
-
-/**
- * Handle escape key press
- */
-function handleEscapeKey(elements: ModalElements, event: KeyboardEvent): void {
-  if (event.key === "Escape") {
-    hideModal(elements);
+  if (elements.modal.open) {
+    elements.modal.close();
   }
 }
 
-/**
- * Validates URL input
- * @param url - URL to validate
- * @param elements - Modal elements
- * @returns True if URL is valid
- */
 function validateUrlInput(url: string, elements: ModalElements): boolean {
   if (!url) {
-    console.warn("WWW Fetcher Modal: No URL provided");
     elements.urlInput.focus();
     return false;
   }
 
   try {
     new URL(url);
-  } catch (error) {
-    console.warn("WWW Fetcher Modal: Invalid URL provided");
+  } catch {
     alert("Ogiltig URL. Kontrollera att webbadressen är korrekt.");
     elements.urlInput.focus();
     return false;
@@ -237,86 +153,34 @@ function validateUrlInput(url: string, elements: ModalElements): boolean {
   return true;
 }
 
-/**
- * Disables form elements during fetch
- * @param elements - Modal elements
- */
-function disableFormElements(elements: ModalElements): void {
-  elements.submitButton.disabled = true;
-  elements.submitButton.textContent = "Hämtar...";
-  elements.urlInput.disabled = true;
-  elements.cancelButton.disabled = true;
-}
-
-/**
- * Enables form elements after fetch
- * @param elements - Modal elements
- */
-function enableFormElements(elements: ModalElements): void {
-  elements.submitButton.disabled = false;
-  elements.submitButton.textContent = "Hämta text";
-  elements.urlInput.disabled = false;
-  elements.cancelButton.disabled = false;
-}
-
-/**
- * Handles form submission
- * @param elements - Modal elements
- * @param hideModalWithListeners - Function to hide modal
- */
 function setupFormSubmission(
   elements: ModalElements,
-  hideModalWithListeners: () => void,
+  closeModal: () => void,
 ): void {
   elements.form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const url = elements.urlInput.value.trim();
-
     if (!validateUrlInput(url, elements)) {
       return;
     }
 
-    console.log("WWW Fetcher Modal: Form submitted with URL:", url);
-    disableFormElements(elements);
+    setFormBusy(elements, true);
 
     try {
       const content = await fetchWebContent(url);
-
-      if (content) {
-        insertContentIntoTextArea(content);
-        hideModalWithListeners();
-        console.log(
-          `Successfully fetched and inserted ${content.length} characters from ${url}`,
-        );
-      } else {
-        console.error(
-          "[WWW Fetcher] Empty content returned from fetchWebContent",
-        );
-        throw new Error("Ingen text hittades på webbsidan");
-      }
+      insertContentIntoTextArea(content);
+      closeModal();
     } catch (error) {
-      console.error("Error fetching web content:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
-      console.error(`[WWW Fetcher] Error occurred:`, errorMessage);
       alert(`Fel vid hämtning av webbsida:\n${errorMessage}`);
     } finally {
-      enableFormElements(elements);
+      setFormBusy(elements, false);
     }
   });
 }
 
-/**
- * Minimum length for URL validation to avoid premature validation
- * A valid URL needs at least "https://" (8 chars) + domain (2+ chars) = 10+ chars minimum
- */
-const MIN_URL_LENGTH_FOR_VALIDATION = 10;
-
-/**
- * Sets up URL input validation
- * @param elements - Modal elements
- */
 function setupUrlInputValidation(elements: ModalElements): void {
   elements.urlInput.addEventListener("input", () => {
     const url = elements.urlInput.value.trim();
@@ -325,7 +189,6 @@ function setupUrlInputValidation(elements: ModalElements): void {
       try {
         new URL(url);
 
-        // Need to set the domain as a variable
         if (!isSetDomainUrl(url)) {
           elements.urlInput.setCustomValidity(
             "Det går endast att hämta texter från www.regionstockholm.se",
@@ -336,111 +199,59 @@ function setupUrlInputValidation(elements: ModalElements): void {
       } catch {
         elements.urlInput.setCustomValidity("");
       }
-    } else {
-      elements.urlInput.setCustomValidity("");
+      return;
     }
+
+    elements.urlInput.setCustomValidity("");
   });
 }
 
-/**
- * Sets up modal backdrop click handling
- * @param elements - Modal elements
- * @param hideModalWithListeners - Function to hide modal
- */
 function setupBackdropClick(
   elements: ModalElements,
-  hideModalWithListeners: () => void,
+  closeModal: () => void,
 ): void {
-  elements.modal.addEventListener("click", () => {
-    hideModalWithListeners();
-  });
+  elements.modal.addEventListener("click", closeModal);
 
   const modalContent = elements.modal.querySelector(".modal-content");
-  if (modalContent) {
-    modalContent.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-  } else {
-    console.warn(
-      "WWW Fetcher Modal: .modal-content element not found - backdrop click may not work properly",
-    );
-  }
+  modalContent?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
 }
 
-/**
- * Initialize the WWW Fetcher Modal
- */
 export function initializeWwwFetcherModal(): boolean {
-  console.log("WWW Fetcher Modal: Initializing...");
-
-  try {
-    const triggerButton = document.getElementById("www-fetcher-button");
-
-    if (!triggerButton) {
-      console.error("WWW Fetcher Modal: Trigger button not found");
-      return false;
-    }
-
-    const elements = getModalElements();
-    if (!elements) {
-      return false;
-    }
-
-    // Check if already initialized
-    if ((triggerButton as any).wwwFetcherInitialized) {
-      console.log("WWW Fetcher Modal: Already initialized, skipping");
-      return true;
-    }
-
-    (triggerButton as any).wwwFetcherInitialized = true;
-
-    // Create escape key handler
-    const escapeKeyHandler = (event: KeyboardEvent) => {
-      handleEscapeKey(elements, event);
-    };
-
-    // Enhanced show/hide functions with listeners
-    const showModalWithListeners = () => {
-      showModal(elements);
-      document.addEventListener("keydown", escapeKeyHandler);
-    };
-
-    const hideModalWithListeners = () => {
-      hideModal(elements);
-      document.removeEventListener("keydown", escapeKeyHandler);
-    };
-
-    // Set up event listeners
-    triggerButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      showModalWithListeners();
-    });
-
-    elements.closeButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      hideModalWithListeners();
-    });
-
-    elements.cancelButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      hideModalWithListeners();
-    });
-
-    setupFormSubmission(elements, hideModalWithListeners);
-    setupUrlInputValidation(elements);
-    setupBackdropClick(elements, hideModalWithListeners);
-
-    console.log("WWW Fetcher Modal: Initialized successfully");
+  if (hasInitialized) {
     return true;
-  } catch (error) {
-    console.error("WWW Fetcher Modal: Failed to initialize:", error);
+  }
+
+  const triggerButton = document.getElementById("www-fetcher-button");
+  const elements = getModalElements();
+
+  if (!triggerButton || !elements) {
     return false;
   }
-}
 
-/**
- * Export for global access if needed
- */
-export const WwwFetcherModal = {
-  initialize: initializeWwwFetcherModal,
-};
+  hasInitialized = true;
+
+  const closeModal = () => hideModal(elements);
+
+  triggerButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    showModal(elements);
+  });
+
+  elements.closeButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    closeModal();
+  });
+
+  elements.cancelButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    closeModal();
+  });
+
+  setupFormSubmission(elements, closeModal);
+  setupUrlInputValidation(elements);
+  setupBackdropClick(elements, closeModal);
+
+  return true;
+}

@@ -3,7 +3,7 @@
  * Provides standardized rate limiters for API routes
  */
 
-import { rateLimit, Options } from "express-rate-limit";
+import { rateLimit, type Options } from "express-rate-limit";
 import type { NextFunction, Request, Response } from "express";
 import { config } from "../../config/app-config.js";
 import configService from "../../services/config/config-service.js";

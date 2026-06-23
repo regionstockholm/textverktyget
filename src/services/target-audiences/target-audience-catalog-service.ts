@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "../../generated/prisma/client.js";
 import { getPrismaClient } from "../../config/database/prisma-client.js";
 import { getDefaultConfig } from "../../config/default-config-loader.js";
 
@@ -63,13 +63,6 @@ function uniqueBy<T>(values: T[], keyFn: (value: T) => string): T[] {
     result.push(value);
   }
   return result;
-}
-
-function nextSortOrder(existing: number[]): number {
-  if (existing.length === 0) {
-    return SORT_STEP;
-  }
-  return Math.max(...existing) + SORT_STEP;
 }
 
 function getDefaultGlobalValues(): { provider: string; retryCount: number } {
@@ -260,7 +253,7 @@ function normalizeCatalogForRuntime(catalog: TargetAudienceCatalog): TargetAudie
       {
         label: fallback.audiences[0]?.label ?? GENERIC_FALLBACK_AUDIENCE_LABEL,
         category: fallbackCategoryName,
-        sortOrder: nextSortOrder([]),
+        sortOrder: SORT_STEP,
       },
     ];
   }

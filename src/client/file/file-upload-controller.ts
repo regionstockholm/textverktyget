@@ -4,12 +4,12 @@
  */
 
 import { FileValidator } from "../../utils/file/file-validator.js";
-import { FileInfo } from "./models/file-info.js";
-import { FileUploadUI, FileUploadEvents } from "./ui/upload-ui.js";
+import type { FileInfo } from "./models/file-info.js";
+import { FileUploadUI } from "./ui/upload-ui.js";
+import type { FileUploadEvents } from "./ui/upload-ui.js";
 import { FileManager } from "./core/file-manager.js";
 import { FileStorage } from "./core/file-storage.js";
-import { ElementManager } from "../ui/utils/element-manager.js";
-import { assert } from "../safety/assertions.js";
+import { ElementManager } from "./ui/element-manager.js";
 
 /**
  * Collection of attached files
@@ -21,7 +21,7 @@ export const attachedFiles: Map<string, FileInfo> = new Map();
  * Main controller for file upload functionality, coordinating between UI, drag-drop,
  * and file management operations.
  */
-export class FileUploadController {
+class FileUploadController {
   private elementManager: ElementManager;
   private fileUploadUI: FileUploadUI;
   private fileManager: FileManager;
@@ -77,7 +77,6 @@ export class FileUploadController {
    * Handle file input change event
    */
   private handleFileInputChange(e: Event): void {
-    assert(e instanceof Event, "Event must be a valid Event object");
     console.log("File input change event triggered");
 
     const target = e.target as HTMLInputElement;

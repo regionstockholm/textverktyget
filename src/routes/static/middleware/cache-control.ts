@@ -7,7 +7,7 @@
 
 "use strict";
 
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { assert } from "../../../utils/safety-utils.js";
 import { getFileExtension } from "../utils/file-path-validation.js";
 

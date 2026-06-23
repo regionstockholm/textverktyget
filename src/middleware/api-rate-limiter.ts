@@ -6,11 +6,10 @@
 
 "use strict";
 
-import { Request, Response } from "express";
-import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
-import { assert } from "../utils/safety-utils.js";
-import { safetyConfig, config } from "../config/app-config.js";
-import { Application, NextFunction } from "express";
+import type { NextFunction, Request, Response } from "express";
+import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
+import { timeLimits } from "../config/shared-config.js";
+import { config } from "../config/app-config.js";
 import configService from "../services/config/config-service.js";
 import { readRuntimeInteger } from "../utils/runtime-number.js";
 
@@ -35,10 +34,7 @@ const ERROR_MESSAGES = Object.freeze({
 
 /**
  * Maximum allowed rate limit value
- * Uses safetyConfig.MAX_RATE_LIMIT if available or defaults to 1000
- * @constant {number}
  */
-const MAX_RATE_LIMIT: number = safetyConfig.MAX_RATE_LIMIT || 1000;
 
 /**
  * Calculates remaining time for rate limit reset
@@ -47,17 +43,8 @@ const MAX_RATE_LIMIT: number = safetyConfig.MAX_RATE_LIMIT || 1000;
  * @returns {number} Remaining time in seconds
  */
 function calculateRemainingTime(resetTime: Date | number): number {
-  // Assert preconditions
-  assert(
-    resetTime instanceof Date || typeof resetTime === "number",
-    "Reset time must be a Date or number",
-  );
-
-  // Check return value
-  const remainingMs: number = Number(resetTime) - Date.now();
-  const remainingSeconds: number = Math.ceil(remainingMs / 1000);
-
-  // Ensure we always return a positive number
+  const remainingMs = Number(resetTime) - Date.now();
+  const remainingSeconds = Math.ceil(remainingMs / 1000);
   return Math.max(0, remainingSeconds);
 }
 
@@ -70,31 +57,12 @@ function calculateRemainingTime(resetTime: Date | number): number {
 function createRateLimitHandler(
   errorMessage: string,
 ): (req: Request, res: Response) => void {
-  // Assert preconditions
-  assert(typeof errorMessage === "string", "Error message must be a string");
-  assert(errorMessage.length > 0, "Error message cannot be empty");
-
   return (req: Request, res: Response): void => {
-    // Assert request has rate limit information
-    assert(req !== undefined, "Request object is required");
-    assert(res !== undefined, "Response object is required");
-    assert(
-      req.rateLimit !== undefined,
-      "Request missing rate limit information",
-    );
-    assert(
-      req.rateLimit.resetTime !== undefined,
-      "Request missing reset time information",
-    );
-
-    // Declare variables in smallest scope
-    const remainingTime: number = calculateRemainingTime(
-      req.rateLimit.resetTime,
-    );
+    const remainingTime = calculateRemainingTime(req.rateLimit?.resetTime || 0);
 
     res.status(429).json({
       error: errorMessage,
-      remainingTime: remainingTime,
+      remainingTime,
     });
   };
 }
@@ -158,8 +126,13 @@ export function resolveRuntimeGlobalRateLimit(
 
   const raw = runtimeConfig as Record<string, unknown>;
   return {
-    windowMs: readRuntimeInteger(raw.windowMs, defaults.windowMs, 1000, 60 * 60 * 1000),
-    max: readRuntimeInteger(raw.max, defaults.max, 1, MAX_RATE_LIMIT),
+    windowMs: readRuntimeInteger(
+      raw.windowMs,
+      defaults.windowMs,
+      1000,
+      60 * 60 * 1000,
+    ),
+    max: readRuntimeInteger(raw.max, defaults.max, 1, timeLimits.maxRateLimit),
   };
 }
 
@@ -220,7 +193,11 @@ function logRateLimiterConfig(name: string, rateLimiterConfig: any): void {
  * Uses base rate limit from environment config
  * Simple control flow, assertions
  */
-const apiLimiter = ((req: Request, res: Response, next: NextFunction) => {
+export const apiLimiter = ((
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   void refreshGlobalRateLimitConfig()
     .then(() => {
       const limiter = getDynamicApiLimiter();
@@ -244,31 +221,9 @@ const apiLimiter = ((req: Request, res: Response, next: NextFunction) => {
  * @param {Response} res - Express response object
  */
 export const cspViolationReporter = (req: Request, res: Response): void => {
-  // Assert preconditions
-  assert(req !== undefined, "Request object is required");
-  assert(res !== undefined, "Response object is required");
-
   if (req.body) {
     console.error("CSP Violation:", req.body);
   }
 
   res.status(204).end();
 };
-
-/**
- * Configures proxy settings for the application
- *
- * @function configureProxy
- * @param {Application} app - Express application instance
- */
-export function configureProxy(app: Application): void {
-  // Use a boolean assertion instead of passing the app object directly
-  assert(!!app, "Express application is required");
-
-  // Set trust proxy based on server settings
-  app.set("trust proxy", config.serverSettings.trustProxy);
-  console.log(`Trust proxy set to ${config.serverSettings.trustProxy}`);
-}
-
-// Export API rate limiter only (auth rate limiters removed)
-export { apiLimiter };

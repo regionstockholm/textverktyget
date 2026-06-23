@@ -4,7 +4,10 @@
  */
 
 import { assert } from "../../utils/safety-utils.js";
-import { FileValidator } from "../../utils/file/file-validator.js";
+import {
+  getFileExtension,
+  isSupportedExtension,
+} from "../../utils/file/file-type-policy.js";
 
 /**
  * Validates if a file type is supported for text extraction
@@ -16,8 +19,5 @@ export function isFileTypeSupported(filename: string): boolean {
   assert(typeof filename === "string", "Filename must be a string");
   assert(filename.includes("."), "Filename must have an extension");
 
-  const extension = filename.split(".").pop()?.toLowerCase() || "";
-  return FileValidator.getSupportedExtensionsArray()
-    .map((ext) => ext.replace(".", ""))
-    .includes(extension);
+  return isSupportedExtension(getFileExtension(filename));
 }

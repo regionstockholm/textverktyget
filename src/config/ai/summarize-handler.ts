@@ -444,6 +444,349 @@ export function shouldRunQualityEvaluation(
   return qualityProcess !== false && runtimeQualityEnabled;
 }
 
+type SummarizeLogContext = {
+  requestId?: string;
+  processId?: string;
+};
+
+type SummarizeProgressUpdater = (stage: SummarizeStage, message?: string) => void;
+
+function updateResultSummary(
+  result: MutableSummarizationResult,
+  summary: string,
+  systemMessage?: string,
+): void {
+  result.summary = summary;
+  result.summaryLength = summary.length;
+  result.compressionRatio = Math.round(
+    (result.summaryLength / result.originalLength) * 100,
+  );
+  if (systemMessage) {
+    result.systemMessage = systemMessage;
+  }
+}
+
+async function runPipelineAnalysisStage(
+  text: string,
+  processingOptions: ProcessingOptions,
+  senderIntentPrompt: string,
+  runtimeSettings: Record<string, unknown>,
+) {
+  return runWithStageConcurrency("analysis", runtimeSettings, async () => {
+    const audienceProfile = buildAudienceProfile(
+      text,
+      processingOptions.targetAudience,
+    );
+    const senderIntentProfile = buildSenderIntentProfile(senderIntentPrompt);
+    const importanceMap = buildSalienceMap(
+      text,
+      audienceProfile,
+      senderIntentProfile,
+    );
+    const rewriteBlueprint = buildRewriteBlueprint(importanceMap);
+    const rewriteBlueprintPrompt = renderRewriteBlueprint(
+      rewriteBlueprint,
+      importanceMap,
+    );
+
+    return {
+      audienceProfile,
+      senderIntentProfile,
+      importanceMap,
+      rewriteBlueprint,
+      rewriteBlueprintPrompt,
+    };
+  });
+}
+
+function storePipelineAnalysisArtifacts(
+  processingOptions: ProcessingOptions,
+  analysisResult: Awaited<ReturnType<typeof runPipelineAnalysisStage>>,
+): void {
+  const {
+    audienceProfile,
+    senderIntentProfile,
+    importanceMap,
+    rewriteBlueprint,
+    rewriteBlueprintPrompt,
+  } = analysisResult;
+
+  processingOptions.audiencePriorityMode = audienceProfile.priorityMode;
+  processingOptions.textType = audienceProfile.textType;
+  processingOptions.senderIntentSummary = senderIntentProfile.summary;
+  processingOptions.rewriteBlueprint = rewriteBlueprintPrompt;
+  processingOptions.audienceProfileArtifact = JSON.stringify(audienceProfile);
+  processingOptions.senderIntentProfileArtifact = JSON.stringify(senderIntentProfile);
+  processingOptions.importanceMapArtifact = JSON.stringify(importanceMap);
+  processingOptions.rewriteBlueprintArtifact = JSON.stringify(rewriteBlueprint);
+}
+
+async function maybeGenerateRewritePlanDraft(
+  text: string,
+  processingOptions: ProcessingOptions,
+  easyToReadWorkflow: EasyToReadWorkflowConfig,
+  useEasyToReadTwoPassWorkflow: boolean,
+  updateProgress: SummarizeProgressUpdater,
+  logContext: SummarizeLogContext,
+): Promise<string> {
+  const rewritePlanTaskKey = getRewritePlanTaskKey(processingOptions);
+  if (rewritePlanTaskKey) {
+    processingOptions.rewritePlanEnabled =
+      await configService.getRewritePlanTaskSetting(rewritePlanTaskKey);
+
+    logger.debug("process.rewrite.draft.setting", {
+      ...logContext,
+      processStatus: "running",
+      meta: {
+        taskKey: rewritePlanTaskKey,
+        enabled: processingOptions.rewritePlanEnabled,
+      },
+    });
+  } else {
+    processingOptions.rewritePlanEnabled = false;
+  }
+
+  if (useEasyToReadTwoPassWorkflow && !easyToReadWorkflow.useRewriteDraft) {
+    processingOptions.rewritePlanEnabled = false;
+    logger.info("process.rewrite.draft.skipped", {
+      ...logContext,
+      processStatus: "running",
+      meta: {
+        reason: "easy_to_read_workflow_rewrite_draft_disabled",
+      },
+    });
+  }
+
+  if (!shouldRunRewriteDraft(processingOptions)) {
+    return "";
+  }
+
+  updateProgress("rewrite_draft");
+  logger.info("process.rewrite.draft.used", {
+    ...logContext,
+    processStatus: "running",
+    meta: {
+      taskKey: rewritePlanTaskKey,
+    },
+  });
+  logger.debug("process.rewrite.draft.enabled", {
+    ...logContext,
+    processStatus: "running",
+  });
+
+  const { generateRewritePlanDraft } = await import("./rewrite-plan-handler.js");
+  const rewritePlanDraft = await generateRewritePlanDraft(text, processingOptions);
+  if (rewritePlanDraft) {
+    processingOptions.rewritePlanDraft = rewritePlanDraft;
+    logRewritePlanDraftPreview(rewritePlanDraft);
+    logger.debug("process.rewrite.draft.generated", {
+      ...logContext,
+      processStatus: "running",
+      meta: { draftLength: rewritePlanDraft.length },
+    });
+  } else {
+    logger.warn("process.rewrite.draft.empty", {
+      ...logContext,
+      processStatus: "running",
+    });
+  }
+
+  return rewritePlanDraft;
+}
+
+async function runPrimaryRewriteStage(
+  text: string,
+  processingOptions: ProcessingOptions,
+  runtimeSettings: Record<string, unknown>,
+  isRewriteTask: boolean,
+  useEasyToReadTwoPassWorkflow: boolean,
+  updateProgress: SummarizeProgressUpdater,
+  logContext: SummarizeLogContext,
+): Promise<SummarizationResult[]> {
+  processingOptions.taskShapingMode = "rewrite";
+  processingOptions.applyTaskPromptInRewriteStage =
+    isRewriteTask && !useEasyToReadTwoPassWorkflow;
+  updateProgress("task_execution");
+
+  const chunks = chunkText(text);
+  logger.debug("process.chunks.prepared", {
+    ...logContext,
+    processStatus: "running",
+    meta: { chunkCount: chunks.length },
+  });
+
+  const results = await runWithStageConcurrency("rewrite", runtimeSettings, async () =>
+    processChunksSequentially(chunks, processingOptions),
+  );
+  logger.debug("process.chunks.processed", {
+    ...logContext,
+    processStatus: "running",
+    meta: { processedChunks: results.length },
+  });
+
+  return results;
+}
+
+async function applyOrdlistaReplacementsToResult(
+  combinedResult: MutableSummarizationResult,
+): Promise<void> {
+  const ordlistaEntries = await listOrdlistaEntries();
+  if (ordlistaEntries.length === 0) {
+    return;
+  }
+
+  const replacements = ordlistaEntries.map((entry) => ({
+    term: entry.fromWord,
+    replacement: entry.toWord,
+  }));
+  const replacedSummary = applyWordListReplacements(
+    combinedResult.summary,
+    replacements,
+  );
+
+  if (replacedSummary !== combinedResult.summary) {
+    updateResultSummary(combinedResult, replacedSummary);
+  }
+}
+
+async function applyTaskShapingIfNeeded(
+  combinedResult: MutableSummarizationResult,
+  processingOptions: ProcessingOptions,
+  runtimeSettings: Record<string, unknown>,
+  isRewriteTask: boolean,
+  useEasyToReadTwoPassWorkflow: boolean,
+  updateProgress: SummarizeProgressUpdater,
+  logContext: SummarizeLogContext,
+): Promise<void> {
+  if (isRewriteTask && !useEasyToReadTwoPassWorkflow) {
+    logger.info("process.task_shaping.skipped", {
+      ...logContext,
+      processStatus: "running",
+      meta: {
+        reason: "rewrite_task_uses_main_prompt_in_primary_pass",
+        easyToReadTwoPassWorkflow: false,
+      },
+    });
+    return;
+  }
+
+  updateProgress("task_shaping");
+  const shapingOptions: ProcessingOptions = {
+    ...processingOptions,
+    taskShapingMode: "task-shaping",
+    rewriteBlueprint: undefined,
+  };
+
+  logger.info("process.task_shaping.started", {
+    ...logContext,
+    processStatus: "running",
+  });
+
+  const shapedResult = await runWithStageConcurrency(
+    "rewrite",
+    runtimeSettings,
+    async () => getProviderSummary(combinedResult.summary, shapingOptions),
+  );
+
+  if (shapedResult.summary && shapedResult.summary.trim().length > 0) {
+    updateResultSummary(
+      combinedResult,
+      shapedResult.summary,
+      shapedResult.systemMessage,
+    );
+  }
+
+  logger.info("process.task_shaping.completed", {
+    ...logContext,
+    processStatus: "running",
+    meta: {
+      summaryLength: combinedResult.summary.length,
+      rewritePlanDraftUsed:
+        typeof shapingOptions.rewritePlanDraft === "string" &&
+        shapingOptions.rewritePlanDraft.trim().length > 0,
+      easyToReadTwoPassWorkflow: useEasyToReadTwoPassWorkflow,
+    },
+  });
+}
+
+function applyEasyToReadLayoutToResult(
+  combinedResult: MutableSummarizationResult,
+  easyToReadLayout: EasyToReadLayoutConfig,
+  logContext: SummarizeLogContext,
+): void {
+  const formattedEasyToReadSummary = applyEasyToReadLayoutIfNeeded(
+    combinedResult.summary,
+    easyToReadLayout,
+  );
+  if (formattedEasyToReadSummary === combinedResult.summary) {
+    return;
+  }
+
+  updateResultSummary(combinedResult, formattedEasyToReadSummary);
+  logger.info("process.easy_to_read.layout.applied", {
+    ...logContext,
+    processStatus: "running",
+    meta: {
+      summaryLength: combinedResult.summaryLength,
+    },
+  });
+}
+
+function resolveMaxQualityAttempts(
+  runtimeSettings: Record<string, unknown>,
+  configuredMaxAttempts: number,
+): number {
+  const runtimeQualityMaxAttempts = readRuntimeNumber(
+    (runtimeSettings.retry as Record<string, unknown> | undefined)
+      ?.qualityMaxAttempts,
+    configuredMaxAttempts,
+    1,
+    20,
+  );
+
+  return Number.isInteger(runtimeQualityMaxAttempts) && runtimeQualityMaxAttempts > 0
+    ? runtimeQualityMaxAttempts
+    : DEFAULT_MAX_QUALITY_ATTEMPTS;
+}
+
+function resolveRepairRuntimeSettings(
+  runtimeSettings: Record<string, unknown>,
+): {
+  targetedRepairEnabled: boolean;
+  repairBudget: number;
+  repairMaxActions: number;
+  repairMinScore: number;
+  repairMinSubscore: number;
+} {
+  const repairSettings = (runtimeSettings.repair as
+    | Record<string, unknown>
+    | undefined) ?? {
+  };
+  const targetedRepairEnabled = readRuntimeBoolean(repairSettings.enabled, true);
+  const repairBudget = readRuntimeNumber(repairSettings.budget, 1, 0, 10);
+  const repairMaxActions = readRuntimeNumber(
+    repairSettings.maxActionsPerAttempt,
+    3,
+    1,
+    20,
+  );
+  const repairMinScore = readRuntimeNumber(repairSettings.minScore, 8, 1, 10);
+  const repairMinSubscore = readRuntimeNumber(
+    repairSettings.minSubscore,
+    repairMinScore,
+    1,
+    10,
+  );
+
+  return {
+    targetedRepairEnabled,
+    repairBudget,
+    repairMaxActions,
+    repairMinScore,
+    repairMinSubscore,
+  };
+}
+
 /**
  * Handles summarization requests
  *
@@ -534,54 +877,19 @@ export async function handleSummarization(
     processingOptions.maxChunks = runtimeMaxChunks;
     updateProgress("analysis");
 
-    const analysisResult = await runWithStageConcurrency(
-      "analysis",
+    const analysisResult = await runPipelineAnalysisStage(
+      text,
+      processingOptions,
+      senderIntentPrompt,
       runtimeSettings,
-      async () => {
-        const audienceProfile = buildAudienceProfile(
-          text,
-          processingOptions.targetAudience,
-        );
-        const senderIntentProfile = buildSenderIntentProfile(senderIntentPrompt);
-        const importanceMap = buildSalienceMap(
-          text,
-          audienceProfile,
-          senderIntentProfile,
-        );
-        const rewriteBlueprint = buildRewriteBlueprint(importanceMap);
-        const rewriteBlueprintPrompt = renderRewriteBlueprint(
-          rewriteBlueprint,
-          importanceMap,
-        );
-
-        return {
-          audienceProfile,
-          senderIntentProfile,
-          importanceMap,
-          rewriteBlueprint,
-          rewriteBlueprintPrompt,
-        };
-      },
     );
 
     const {
       audienceProfile,
-      senderIntentProfile,
       importanceMap,
-      rewriteBlueprint,
-      rewriteBlueprintPrompt,
     } = analysisResult;
 
-    processingOptions.audiencePriorityMode = audienceProfile.priorityMode;
-    processingOptions.textType = audienceProfile.textType;
-    processingOptions.senderIntentSummary = senderIntentProfile.summary;
-    processingOptions.rewriteBlueprint = rewriteBlueprintPrompt;
-    processingOptions.audienceProfileArtifact = JSON.stringify(audienceProfile);
-    processingOptions.senderIntentProfileArtifact = JSON.stringify(
-      senderIntentProfile,
-    );
-    processingOptions.importanceMapArtifact = JSON.stringify(importanceMap);
-    processingOptions.rewriteBlueprintArtifact = JSON.stringify(rewriteBlueprint);
+    storePipelineAnalysisArtifacts(processingOptions, analysisResult);
 
     let rewritePlanDraft = "";
 
@@ -598,92 +906,24 @@ export async function handleSummarization(
       },
     });
 
-    const rewritePlanTaskKey = getRewritePlanTaskKey(processingOptions);
-    if (rewritePlanTaskKey) {
-      processingOptions.rewritePlanEnabled =
-        await configService.getRewritePlanTaskSetting(rewritePlanTaskKey);
-
-      logger.debug("process.rewrite.draft.setting", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          taskKey: rewritePlanTaskKey,
-          enabled: processingOptions.rewritePlanEnabled,
-        },
-      });
-    } else {
-      processingOptions.rewritePlanEnabled = false;
-    }
-
-    if (useEasyToReadTwoPassWorkflow && !easyToReadWorkflow.useRewriteDraft) {
-      processingOptions.rewritePlanEnabled = false;
-      logger.info("process.rewrite.draft.skipped", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          reason: "easy_to_read_workflow_rewrite_draft_disabled",
-        },
-      });
-    }
-
-    if (shouldRunRewriteDraft(processingOptions)) {
-      updateProgress("rewrite_draft");
-      logger.info("process.rewrite.draft.used", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          taskKey: rewritePlanTaskKey,
-        },
-      });
-      logger.debug("process.rewrite.draft.enabled", {
-        ...logContext,
-        processStatus: "running",
-      });
-      const { generateRewritePlanDraft } = await import(
-        "./rewrite-plan-handler.js"
-      );
-      rewritePlanDraft = await generateRewritePlanDraft(text, processingOptions);
-
-      if (rewritePlanDraft) {
-        processingOptions.rewritePlanDraft = rewritePlanDraft;
-        logRewritePlanDraftPreview(rewritePlanDraft);
-        logger.debug("process.rewrite.draft.generated", {
-          ...logContext,
-          processStatus: "running",
-          meta: { draftLength: rewritePlanDraft.length },
-        });
-      } else {
-        logger.warn("process.rewrite.draft.empty", {
-          ...logContext,
-          processStatus: "running",
-        });
-      }
-    }
-
-    // Split text into chunks for processing
-    processingOptions.taskShapingMode = "rewrite";
-    processingOptions.applyTaskPromptInRewriteStage =
-      isRewriteTask && !useEasyToReadTwoPassWorkflow;
-    updateProgress("task_execution");
-
-    const chunks = chunkText(text);
-    logger.debug("process.chunks.prepared", {
-      ...logContext,
-      processStatus: "running",
-      meta: { chunkCount: chunks.length },
-    });
-
-    // Process chunks sequentially
-    const results = await runWithStageConcurrency(
-      "rewrite",
-      runtimeSettings,
-      async () => processChunksSequentially(chunks, processingOptions),
+    rewritePlanDraft = await maybeGenerateRewritePlanDraft(
+      text,
+      processingOptions,
+      easyToReadWorkflow,
+      useEasyToReadTwoPassWorkflow,
+      updateProgress,
+      logContext,
     );
-    logger.debug("process.chunks.processed", {
-      ...logContext,
-      processStatus: "running",
-      meta: { processedChunks: results.length },
-    });
+
+    const results = await runPrimaryRewriteStage(
+      text,
+      processingOptions,
+      runtimeSettings,
+      isRewriteTask,
+      useEasyToReadTwoPassWorkflow,
+      updateProgress,
+      logContext,
+    );
 
     // CHECK: Is client still connected after AI processing completes?
     if (isClientConnected && !isClientConnected()) {
@@ -707,112 +947,26 @@ export async function handleSummarization(
       meta: { summaryLength: combinedResult.summary.length, status: "success" },
     });
 
-    const ordlistaEntries = await listOrdlistaEntries();
-    if (ordlistaEntries.length > 0) {
-      const replacements = ordlistaEntries.map((entry) => ({
-        term: entry.fromWord,
-        replacement: entry.toWord,
-      }));
-      const replacedSummary = applyWordListReplacements(
-        combinedResult.summary,
-        replacements,
-      );
-
-      if (replacedSummary !== combinedResult.summary) {
-        combinedResult.summary = replacedSummary;
-        combinedResult.summaryLength = replacedSummary.length;
-        combinedResult.compressionRatio = Math.round(
-          (replacedSummary.length / combinedResult.originalLength) * 100,
-        );
-      }
-    }
-
-    if (!isRewriteTask || useEasyToReadTwoPassWorkflow) {
-      updateProgress("task_shaping");
-      const shapingOptions: ProcessingOptions = {
-        ...processingOptions,
-        taskShapingMode: "task-shaping",
-        rewriteBlueprint: undefined,
-      };
-
-      logger.info("process.task_shaping.started", {
-        ...logContext,
-        processStatus: "running",
-      });
-
-      const shapedResult = await runWithStageConcurrency(
-        "rewrite",
-        runtimeSettings,
-        async () => getProviderSummary(combinedResult.summary, shapingOptions),
-      );
-
-      if (shapedResult.summary && shapedResult.summary.trim().length > 0) {
-        combinedResult.summary = shapedResult.summary;
-        combinedResult.summaryLength = shapedResult.summary.length;
-        combinedResult.compressionRatio = Math.round(
-          (combinedResult.summaryLength / combinedResult.originalLength) * 100,
-        );
-        if (shapedResult.systemMessage) {
-          combinedResult.systemMessage = shapedResult.systemMessage;
-        }
-      }
-
-      logger.info("process.task_shaping.completed", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          summaryLength: combinedResult.summary.length,
-          rewritePlanDraftUsed:
-            typeof shapingOptions.rewritePlanDraft === "string" &&
-            shapingOptions.rewritePlanDraft.trim().length > 0,
-          easyToReadTwoPassWorkflow: useEasyToReadTwoPassWorkflow,
-        },
-      });
-    } else {
-      logger.info("process.task_shaping.skipped", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          reason: "rewrite_task_uses_main_prompt_in_primary_pass",
-          easyToReadTwoPassWorkflow: false,
-        },
-      });
-    }
-
-    const formattedEasyToReadSummary = applyEasyToReadLayoutIfNeeded(
-      combinedResult.summary,
-      easyToReadLayout,
+    await applyOrdlistaReplacementsToResult(combinedResult);
+    await applyTaskShapingIfNeeded(
+      combinedResult,
+      processingOptions,
+      runtimeSettings,
+      isRewriteTask,
+      useEasyToReadTwoPassWorkflow,
+      updateProgress,
+      logContext,
     );
-    if (formattedEasyToReadSummary !== combinedResult.summary) {
-      combinedResult.summary = formattedEasyToReadSummary;
-      combinedResult.summaryLength = formattedEasyToReadSummary.length;
-      combinedResult.compressionRatio = Math.round(
-        (combinedResult.summaryLength / combinedResult.originalLength) * 100,
-      );
-      logger.info("process.easy_to_read.layout.applied", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          summaryLength: combinedResult.summaryLength,
-        },
-      });
-    }
+    applyEasyToReadLayoutToResult(combinedResult, easyToReadLayout, logContext);
 
     // Check if this is a resubmission attempt
     const attemptNumber = options.attemptNumber || 1;
     const previousQualityId = options.previousQualityId || 0;
     const configuredMaxAttempts = await configService.getRetryCount();
-    const runtimeQualityMaxAttempts = readRuntimeNumber(
-      (runtimeSettings.retry as Record<string, unknown> | undefined)
-        ?.qualityMaxAttempts,
+    const maxQualityAttempts = resolveMaxQualityAttempts(
+      runtimeSettings,
       configuredMaxAttempts,
-      1,
-      20,
     );
-    const maxQualityAttempts =
-      Number.isInteger(runtimeQualityMaxAttempts) && runtimeQualityMaxAttempts > 0
-        ? runtimeQualityMaxAttempts
-        : DEFAULT_MAX_QUALITY_ATTEMPTS;
 
     logger.debug("process.quality.attempt", {
       ...logContext,
@@ -951,38 +1105,13 @@ export async function handleSummarization(
               });
               return combinedResult;
             }
-            const repairSettings = (runtimeSettings.repair as
-              | Record<string, unknown>
-              | undefined) ?? {
-              };
-            const targetedRepairEnabled = readRuntimeBoolean(
-              repairSettings.enabled,
-              true,
-            );
-            const repairBudget = readRuntimeNumber(
-              repairSettings.budget,
-              1,
-              0,
-              10,
-            );
-            const repairMaxActions = readRuntimeNumber(
-              repairSettings.maxActionsPerAttempt,
-              3,
-              1,
-              20,
-            );
-            const repairMinScore = readRuntimeNumber(
-              repairSettings.minScore,
-              8,
-              1,
-              10,
-            );
-            const repairMinSubscore = readRuntimeNumber(
-              repairSettings.minSubscore,
+            const {
+              targetedRepairEnabled,
+              repairBudget,
+              repairMaxActions,
               repairMinScore,
-              1,
-              10,
-            );
+              repairMinSubscore,
+            } = resolveRepairRuntimeSettings(runtimeSettings);
             const qualityDimensionThresholds =
               resolveEasyToReadQualityDimensionThresholds(
                 runtimeSettings,

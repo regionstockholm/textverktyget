@@ -37,14 +37,6 @@ export function createAbortController(): AbortController {
 }
 
 /**
- * Gets the current abort controller
- * @returns The current abort controller or null if none exists
- */
-export function getCurrentAbortController(): AbortController | null {
-  return currentAbortController;
-}
-
-/**
  * Cancels the current request if one exists
  * @returns true if a request was cancelled, false otherwise
  */
@@ -76,26 +68,10 @@ export function clearAbortController(): void {
 /**
  * Interface for file information
  */
-export interface FileInfo {
+interface FileInfo {
   file: File;
   fileName: string;
   [key: string]: unknown; // Using unknown for better type safety
-}
-
-/**
- * Type for exportable functions
- */
-export interface ExportableFunctions {
-  [key: string]: Function;
-}
-
-/**
- * Result of global exports operation
- */
-export interface GlobalExportsResult {
-  success: boolean;
-  exposedFunctions?: string[];
-  errors?: string[];
 }
 
 /**
@@ -147,7 +123,6 @@ export async function processAttachedFiles(
         `Invalid file info for ID: ${fileId}`,
       );
 
-      // Destructure fileInfo to avoid deep property access (Rule 9)
       const { file, fileName } = fileInfo as FileInfo;
 
       console.log(

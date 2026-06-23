@@ -3,18 +3,24 @@
  * Handles communication with OpenAI API for text processing and summarization
  */
 
-import { AI_PROVIDERS, getProviderConfig } from "../ai-config.js";
+import { getProviderConfig } from "../ai-config.js";
+import { getCurrentProvider } from "../ai-service-factory.js";
 import { createRateLimiter } from "../../../utils/rate-limiter.js";
 import { createCircuitBreaker } from "../../../utils/circuit-breaker.js";
 import { assert } from "../../../utils/safety-utils.js";
 import { logger } from "../../../utils/logger.js";
 import configService from "../../../services/config/config-service.js";
-import { listOrdlistaEntries } from "../../../services/ordlista/ordlista-service.js";
 import { config as appConfig } from "../../app-config.js";
+import { buildSystemMessage } from "../prompt-assembly.js";
+import type {
+  ErrorHandlingResult,
+  ProcessingOptions,
+  ProcessingResult,
+} from "../ai-service-types.js";
 import { preserveLineSeparatorTrim } from "../text-normalization.js";
 
-// Base provider configuration (static limits)
-const config = getProviderConfig(AI_PROVIDERS.OPENAI);
+// Get the current provider configuration
+const config = getProviderConfig(getCurrentProvider());
 
 // Replace the constants with config values
 const MODEL = config.MODEL;
@@ -22,108 +28,35 @@ const MAX_INPUT_TOKENS = config.MAX_INPUT_TOKENS;
 const MAX_OUTPUT_TOKENS = config.MAX_OUTPUT_TOKENS;
 const RETRY_DELAY = config.RETRY_DELAY;
 const RPM_LIMIT = config.RPM_LIMIT || 3500; // Default if not specified
-const RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses";
-type OpenAIReasoningEffort = "none" | "low" | "medium" | "high" | "xhigh";
-type OpenAITextVerbosity = "low" | "medium" | "high";
-type OpenAISecretName = "OPENAI_API_KEY" | "OPENAI_QE_API_KEY";
+const DEFAULT_QUALITY_EVALUATION_TEMPERATURE = 0.3;
 
-const DEFAULT_REASONING_EFFORT: OpenAIReasoningEffort = "low";
-const DEFAULT_QUALITY_REASONING_EFFORT: OpenAIReasoningEffort = "low";
-const DEFAULT_TEXT_VERBOSITY: OpenAITextVerbosity = "medium";
-
-const OPENAI_REASONING_EFFORT = resolveReasoningEffort(
-  "OPENAI_REASONING_EFFORT",
-  DEFAULT_REASONING_EFFORT,
-);
-const OPENAI_QUALITY_REASONING_EFFORT = resolveReasoningEffort(
-  "OPENAI_QUALITY_REASONING_EFFORT",
-  DEFAULT_QUALITY_REASONING_EFFORT,
-);
-const OPENAI_TEXT_VERBOSITY = resolveTextVerbosity();
-
-function resolveReasoningEffort(
-  envKey: string,
-  fallback: OpenAIReasoningEffort,
-): OpenAIReasoningEffort {
-  const raw = process.env[envKey];
-  if (!raw || raw.trim().length === 0) {
+function normalizeTemperature(value: unknown, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
     return fallback;
   }
 
-  const normalized = raw.trim().toLowerCase();
-  if (
-    normalized === "none" ||
-    normalized === "low" ||
-    normalized === "medium" ||
-    normalized === "high" ||
-    normalized === "xhigh"
-  ) {
-    return normalized;
-  }
-
-  logger.warn("provider.openai.reasoning_effort_invalid", {
-    processStatus: "running",
-    meta: { envKey, value: raw, fallback },
-  });
-  return fallback;
+  const clamped = Math.min(1, Math.max(0, value));
+  return Number(clamped.toFixed(2));
 }
 
-function resolveTextVerbosity(): OpenAITextVerbosity {
-  const raw = process.env.OPENAI_TEXT_VERBOSITY;
-  if (!raw || raw.trim().length === 0) {
-    return DEFAULT_TEXT_VERBOSITY;
+async function resolveQualityEvaluationTemperature(): Promise<number> {
+  try {
+    const runtimeSettings = await configService.getRuntimeSettings();
+    const qualitySettings = runtimeSettings.quality as
+      | Record<string, unknown>
+      | undefined;
+    return normalizeTemperature(
+      qualitySettings?.temperature,
+      DEFAULT_QUALITY_EVALUATION_TEMPERATURE,
+    );
+  } catch {
+    return DEFAULT_QUALITY_EVALUATION_TEMPERATURE;
   }
-
-  const normalized = raw.trim().toLowerCase();
-  if (
-    normalized === "low" ||
-    normalized === "medium" ||
-    normalized === "high"
-  ) {
-    return normalized;
-  }
-
-  logger.warn("provider.openai.text_verbosity_invalid", {
-    processStatus: "running",
-    meta: { value: raw, fallback: DEFAULT_TEXT_VERBOSITY },
-  });
-  return DEFAULT_TEXT_VERBOSITY;
-}
-
-function supportsReasoningParameters(): boolean {
-  const normalizedModel = MODEL.toLowerCase();
-  return (
-    normalizedModel.startsWith("gpt-5") ||
-    normalizedModel === "o1" ||
-    normalizedModel === "o3" ||
-    normalizedModel === "o4-mini" ||
-    normalizedModel.startsWith("o1-") ||
-    normalizedModel.startsWith("o3-") ||
-    normalizedModel.startsWith("o4-")
-  );
-}
-
-function supportsTextVerbosity(): boolean {
-  return MODEL.toLowerCase().startsWith("gpt-5");
-}
-
-function buildReasoningPayload(
-  effort: OpenAIReasoningEffort,
-): { effort: OpenAIReasoningEffort } | undefined {
-  if (!supportsReasoningParameters()) {
-    return undefined;
-  }
-
-  return { effort };
 }
 
 logger.debug("provider.openai.initialized", {
   processStatus: "running",
-  meta: {
-    model: MODEL,
-    reasoningEffort: OPENAI_REASONING_EFFORT,
-    qualityReasoningEffort: OPENAI_QUALITY_REASONING_EFFORT,
-  },
+  meta: { model: MODEL },
 });
 
 const rateLimiterCache = new Map<
@@ -236,103 +169,27 @@ function throwIfCircuitOpen(): void {
 }
 
 /**
- * Options for text processing
+ * Message for OpenAI API
  */
-interface ProcessingOptions {
-  taskKey?: string;
-  taskPromptMode?: "rewritePlanDraft";
-  paragraphCount?: number | string;
-  senderIntent?: string;
-  senderIntentSummary?: string;
-  audiencePriorityMode?: "generic" | "specific";
-  textType?: string;
-  rewriteBlueprint?: string;
-  taskShapingMode?: "rewrite" | "task-shaping";
-  targetAudience: string;
-  checkboxContent: string | string[];
-  requestId?: string;
-  processId?: string;
-  rewritePlanDraft?: string;
-  applyTaskPromptInRewriteStage?: boolean;
+interface Message {
+  role: "system" | "user" | "assistant";
+  content: string;
 }
 
 /**
- * Result of text processing
+ * OpenAI API response
  */
-interface ProcessingResult {
-  summary: string;
-  systemMessage: string;
-}
-
-/**
- * Error handling result
- */
-interface ErrorHandlingResult {
-  shouldRetry: boolean;
-  error?: Error;
-}
-
-/**
- * OpenAI Responses API response
- */
-interface OpenAIResponsesContent {
-  type?: string;
-  text?: string;
-}
-
-interface OpenAIResponsesOutputItem {
-  type?: string;
-  content?: OpenAIResponsesContent[];
-}
-
-interface OpenAIResponsesResponse {
-  output_text?: string;
-  output?: OpenAIResponsesOutputItem[];
-  status?: string;
-  incomplete_details?: {
-    reason?: string;
-  };
-  usage?: {
-    total_tokens?: number;
-    input_tokens?: number;
-    output_tokens?: number;
-    output_tokens_details?: {
-      reasoning_tokens?: number;
+interface OpenAIResponse {
+  choices: {
+    message: {
+      content: string;
     };
+  }[];
+  usage?: {
+    total_tokens: number;
+    prompt_tokens: number;
+    completion_tokens: number;
   };
-}
-
-function extractResponseText(result: OpenAIResponsesResponse): string {
-  if (typeof result.output_text === "string" && result.output_text.length > 0) {
-    return result.output_text;
-  }
-
-  const parts: string[] = [];
-  for (const item of result.output ?? []) {
-    if (!Array.isArray(item.content)) {
-      continue;
-    }
-
-    for (const content of item.content) {
-      if (
-        (content.type === "output_text" || content.type === "text") &&
-        typeof content.text === "string"
-      ) {
-        parts.push(content.text);
-      }
-    }
-  }
-
-  return parts.join("");
-}
-
-function assertOpenAIResponseComplete(result: OpenAIResponsesResponse): void {
-  if (result.status !== "incomplete") {
-    return;
-  }
-
-  const reason = result.incomplete_details?.reason || "unknown";
-  throw new Error(`OpenAI response was incomplete: ${reason}`);
 }
 
 /**
@@ -341,158 +198,22 @@ function assertOpenAIResponseComplete(result: OpenAIResponsesResponse): void {
  * @returns Formatted system message
  * @private
  */
-async function resolveOpenAiApiKey(
-  secretName: OpenAISecretName = "OPENAI_API_KEY",
-): Promise<string> {
-  let apiKey = process.env[secretName] || "";
+async function resolveOpenAiApiKey(): Promise<string> {
+  let apiKey = process.env.OPENAI_API_KEY || "";
 
   try {
-    const storedKey = await configService.getSecret(secretName);
+    const storedKey = await configService.getSecret("OPENAI_API_KEY");
     if (storedKey) {
       apiKey = storedKey;
     }
   } catch (error) {
     logger.warn("provider.openai.secret_load_failed", {
       processStatus: "running",
-      meta: { secret: secretName },
+      meta: { secret: "OPENAI_API_KEY" },
     });
   }
 
-  if (!apiKey && secretName !== "OPENAI_API_KEY") {
-    return resolveOpenAiApiKey("OPENAI_API_KEY");
-  }
-
   return apiKey;
-}
-
-async function getSystemMessage({
-  taskKey,
-  taskPromptMode,
-  senderIntent,
-  senderIntentSummary,
-  audiencePriorityMode,
-  textType,
-  rewriteBlueprint,
-  taskShapingMode,
-  targetAudience,
-  checkboxContent,
-  rewritePlanDraft,
-  applyTaskPromptInRewriteStage,
-}: ProcessingOptions): Promise<string> {
-  assert(
-    targetAudience !== undefined && targetAudience !== null,
-    "Target audience is required",
-  );
-  assert(
-    checkboxContent !== undefined && checkboxContent !== null,
-    "Checkbox content is required",
-  );
-
-  const rolePrompt = await configService.getPrompt("role");
-  const senderIntentPrompt =
-    typeof senderIntent === "string" && senderIntent.trim().length > 0
-      ? senderIntent
-      : await configService.getPrompt("senderIntent");
-  const targetPrompt = await configService.getPrompt("targetAudience", {
-    targetAudience,
-  });
-  const rulesPrompt = await configService.getPrompt("importantRules");
-  const ordlistaUsagePrompt = await buildOrdlistaUsagePrompt();
-  const taskPrompt = await configService.getPrompt("task", {
-    taskKey: typeof taskKey === "string" ? taskKey : undefined,
-    taskPromptMode,
-  });
-
-  let message = rolePrompt;
-  message += "\n\n";
-  // message += "\n\n";
-  if (senderIntentSummary && senderIntentSummary.trim().length > 0) {
-    message += `AVSÄNDARENS PRIORITERING: ${senderIntentSummary.trim()}`;
-    message += "\n\n";
-  }
-
-  if (audiencePriorityMode) {
-    if (audiencePriorityMode === "generic") {
-      message +=
-        "PRIORITERINGSSTRATEGI: Generic audience. Start with core message and most important facts first.";
-    } else {
-      message +=
-        "PRIORITERINGSSTRATEGI: Specific audience. Prioritize what matters most for the named target group first.";
-    }
-    message += "\n\n";
-  }
-
-  if (textType && textType.trim().length > 0) {
-    message += `TEXTTYP: ${textType.trim()}`;
-    message += "\n\n";
-  }
-
-  if (
-    taskShapingMode !== "task-shaping" &&
-    rewriteBlueprint &&
-    rewriteBlueprint.trim().length > 0
-  ) {
-    message += rewriteBlueprint;
-    message += "\n\n";
-  }
-
-  message += senderIntentPrompt;
-  message += "\n\n";
-  message += targetPrompt;
-  message += "\n\n";
-  message += rulesPrompt;
-  if (ordlistaUsagePrompt) {
-    message += "\n\n";
-    message += ordlistaUsagePrompt;
-  }
-  message += "\n\n";
-  if (
-    taskShapingMode !== "task-shaping" &&
-    rewritePlanDraft &&
-    rewritePlanDraft.trim().length > 0
-  ) {
-    message += "Omskrivningsutkast att FÖLJA (prioriterad ordning):\n";
-    message += rewritePlanDraft.trim();
-    message += "\n\n";
-  }
-
-  if (taskShapingMode === "rewrite" && !applyTaskPromptInRewriteStage) {
-    const rewriteFallbackPrompt =
-      await configService.getPrompt("rewriteFallback");
-    message += rewriteFallbackPrompt;
-  } else {
-    message += taskPrompt;
-  }
-
-  // Add the text introduction line
-  message += "\n\n";
-  message +=
-    "Ge mig ENDAST den slutgiltiga versionen av den bearbetade texten UTAN dina kommentarer. Här är texten som ska skrivas om:";
-
-  return message;
-}
-
-async function buildOrdlistaUsagePrompt(): Promise<string> {
-  const entries = await listOrdlistaEntries();
-  if (entries.length === 0) {
-    return "";
-  }
-
-  const listLines = entries
-    .filter((entry) => entry.fromWord && entry.toWord)
-    .map((entry) => `- från: "${entry.fromWord}" -> till: "${entry.toWord}"`)
-    .join("\n");
-
-  if (!listLines) {
-    return "";
-  }
-
-  const promptTemplate = await configService.getPrompt("wordListUsage");
-  if (promptTemplate.includes("{{wordList}}")) {
-    return promptTemplate.replace("{{wordList}}", listLines);
-  }
-
-  return `${promptTemplate}\n${listLines}`;
 }
 
 /**
@@ -549,7 +270,7 @@ function validateInputLength(text: string, systemMessage: string): string {
 async function makeApiCall(
   systemMessage: string,
   text: string,
-): Promise<OpenAIResponsesResponse> {
+): Promise<OpenAIResponse> {
   assert(typeof systemMessage === "string", "System message must be a string");
   assert(typeof text === "string", "Text must be a string");
 
@@ -560,29 +281,28 @@ async function makeApiCall(
     MAX_INPUT_TOKENS - estimatedPromptTokens,
   );
 
-  const apiKey = await resolveOpenAiApiKey();
-  const payload: Record<string, unknown> = {
-    model: MODEL,
-    instructions: systemMessage,
-    input: text,
-    max_output_tokens: maxResponseTokens,
-    store: false,
-  };
-  const reasoning = buildReasoningPayload(OPENAI_REASONING_EFFORT);
-  if (reasoning) {
-    payload.reasoning = reasoning;
-  }
-  if (supportsTextVerbosity()) {
-    payload.text = { verbosity: OPENAI_TEXT_VERBOSITY };
-  }
+  // Combine system message and user text as single user message
+  // This matches the expected prompt structure where system prompt ends with
+  // "Här är texten som ska skrivas om:" and user text follows
+  const fullPrompt = `${systemMessage}\n\n${text}`;
 
-  const response = await fetch(RESPONSES_ENDPOINT, {
+  const messages: Message[] = [{ role: "user", content: fullPrompt }];
+
+  const apiKey = await resolveOpenAiApiKey();
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      model: MODEL,
+      messages: messages,
+      max_tokens: maxResponseTokens,
+      n: 1,
+      stop: null,
+      temperature: 0.7,
+    }),
   });
 
   if (!response.ok) {
@@ -592,9 +312,7 @@ async function makeApiCall(
     );
   }
 
-  const result = (await response.json()) as OpenAIResponsesResponse;
-  assertOpenAIResponseComplete(result);
-  return result;
+  return (await response.json()) as OpenAIResponse;
 }
 
 /**
@@ -700,7 +418,7 @@ async function callOpenAI(
     await getRateLimiter(rpmLimit).checkLimit();
 
     // Generate system message
-    const systemMessage = await getSystemMessage(options);
+    const systemMessage = await buildSystemMessage(options);
 
     // Validate input length
     validateInputLength(text, systemMessage);
@@ -709,7 +427,7 @@ async function callOpenAI(
     const response = await makeApiCall(systemMessage, text);
 
     // Extract and return the summary
-    const summary = extractResponseText(response);
+    const summary = response.choices[0]?.message?.content || "";
 
     providerCircuitBreaker.recordSuccess();
 
@@ -755,14 +473,14 @@ async function callOpenAI(
 export const getSummary = async (
   text: string,
   options: ProcessingOptions,
-): Promise<ProcessingResult> => {
+): Promise<string> => {
   assert(typeof text === "string", "Text must be a string");
   assert(text.trim().length > 0, "Text cannot be empty");
   assert(options !== undefined && options !== null, "Options are required");
 
   try {
     const startTime = Date.now();
-    const { summary, systemMessage } = await callOpenAI(text, options);
+    const { summary } = await callOpenAI(text, options);
     logger.info("process.ai.responded", {
       requestId: options.requestId,
       processId: options.processId || options.requestId,
@@ -773,10 +491,7 @@ export const getSummary = async (
         latencyMs: Date.now() - startTime,
       },
     });
-    return {
-      summary: preserveLineSeparatorTrim(summary),
-      systemMessage: preserveLineSeparatorTrim(systemMessage),
-    };
+    return preserveLineSeparatorTrim(summary);
   } catch (error) {
     logger.error("process.failed", {
       requestId: options.requestId,
@@ -816,24 +531,32 @@ async function makeQualityEvaluationCall(
     MAX_INPUT_TOKENS - estimatedPromptTokens,
   );
 
-  const apiKey = await resolveOpenAiApiKey("OPENAI_QE_API_KEY");
-  const basePayload: Record<string, unknown> = {
+  // Create messages array
+  const messages: Message[] = [
+    {
+      role: "system",
+      content:
+        "You are a strict text quality evaluator. Follow the user instruction and return valid JSON only.",
+    },
+    { role: "user", content: evaluationPrompt },
+  ];
+
+  const apiKey = await resolveOpenAiApiKey();
+  const qualityTemperature = await resolveQualityEvaluationTemperature();
+  const endpoint = "https://api.openai.com/v1/chat/completions";
+  const basePayload = {
     model: MODEL,
-    instructions:
-      "You are a strict text quality evaluator. Follow the user instruction and return valid JSON only.",
-    input: evaluationPrompt,
-    max_output_tokens: maxResponseTokens,
-    store: false,
+    messages,
+    max_tokens: maxResponseTokens,
+    n: 1,
+    stop: null,
+    temperature: qualityTemperature,
   };
-  const reasoning = buildReasoningPayload(OPENAI_QUALITY_REASONING_EFFORT);
-  if (reasoning) {
-    basePayload.reasoning = reasoning;
-  }
 
   const requestWithFormat = async (
-    textFormat: Record<string, unknown>,
+    responseFormat: Record<string, unknown>,
   ): Promise<Response> => {
-    return fetch(RESPONSES_ENDPOINT, {
+    return fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -841,55 +564,57 @@ async function makeQualityEvaluationCall(
       },
       body: JSON.stringify({
         ...basePayload,
-        text: { format: textFormat },
+        response_format: responseFormat,
       }),
     });
   };
 
   const jsonSchemaFormat = {
     type: "json_schema",
-    name: "quality_evaluation",
-    strict: true,
-    schema: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        overall: { type: "integer" },
-        subscores: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            fidelity: { type: "integer" },
-            priorityOrder: { type: "integer" },
-            plainLanguage: { type: "integer" },
-            taskFit: { type: "integer" },
-            audienceFit: { type: "integer" },
-            intentFit: { type: "integer" },
-          },
-          required: [
-            "fidelity",
-            "priorityOrder",
-            "plainLanguage",
-            "taskFit",
-            "audienceFit",
-            "intentFit",
-          ],
-        },
-        failures: {
-          type: "array",
-          items: {
+    json_schema: {
+      name: "quality_evaluation",
+      strict: true,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          overall: { type: "integer" },
+          subscores: {
             type: "object",
             additionalProperties: false,
             properties: {
-              sectionKey: { type: "string" },
-              dimension: { type: "string" },
-              reason: { type: "string" },
+              fidelity: { type: "integer" },
+              priorityOrder: { type: "integer" },
+              plainLanguage: { type: "integer" },
+              taskFit: { type: "integer" },
+              audienceFit: { type: "integer" },
+              intentFit: { type: "integer" },
             },
-            required: ["sectionKey", "dimension", "reason"],
+            required: [
+              "fidelity",
+              "priorityOrder",
+              "plainLanguage",
+              "taskFit",
+              "audienceFit",
+              "intentFit",
+            ],
+          },
+          failures: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                sectionKey: { type: "string" },
+                dimension: { type: "string" },
+                reason: { type: "string" },
+              },
+              required: ["sectionKey", "dimension", "reason"],
+            },
           },
         },
+        required: ["overall", "subscores", "failures"],
       },
-      required: ["overall", "subscores", "failures"],
     },
   };
 
@@ -923,9 +648,8 @@ async function makeQualityEvaluationCall(
     }
   }
 
-  const result = (await response.json()) as OpenAIResponsesResponse;
-  assertOpenAIResponseComplete(result);
-  return extractResponseText(result);
+  const result = (await response.json()) as OpenAIResponse;
+  return result.choices[0]?.message?.content || "";
 }
 
 /**

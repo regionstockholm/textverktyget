@@ -20,12 +20,8 @@ const isProduction = process.env.NODE_ENV === "production";
 const scriptBuildDir = path.join(__dirname, "public", "script");
 const cssBuildDir = path.join(__dirname, "public", "css");
 
-if (!fs.existsSync(scriptBuildDir)) {
-  fs.mkdirSync(scriptBuildDir, { recursive: true });
-}
-if (!fs.existsSync(cssBuildDir)) {
-  fs.mkdirSync(cssBuildDir, { recursive: true });
-}
+fs.mkdirSync(scriptBuildDir, { recursive: true });
+fs.mkdirSync(cssBuildDir, { recursive: true });
 
 // Simple build configuration
 const buildOptions = {
@@ -53,7 +49,7 @@ const buildOptions = {
 /**
  * Compile SCSS to CSS
  */
-async function buildCSS() {
+function buildCSS() {
   try {
     const scssFile = path.join(__dirname, "public", "css", "app-main.scss");
     const cssFile = path.join(cssBuildDir, "app-main.css");

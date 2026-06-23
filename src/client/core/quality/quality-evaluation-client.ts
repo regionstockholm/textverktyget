@@ -1,7 +1,6 @@
 /**
  * Text Quality Evaluator Module
  * Handles automatic quality evaluation of processed text
- * Follows Power of Ten guidelines for TypeScript
  *
  * @module quality-evaluation
  */
@@ -10,16 +9,18 @@
 
 // Import the updateButtonState function
 import { getSummary } from "../summarizer/core.js";
-import { FormValues } from "../summarizer/interfaces.js";
-import { getSelectedValues } from "../summarizer/processing.js";
-import { handleSummarizationError } from "../summarizer/processing.js";
+import type { FormValues } from "../summarizer/interfaces.js";
+import { getSummarizationErrorMessage } from "../summarizer/processing.js";
 import {
   textProcessingEvents,
   TextProcessingEventType,
+} from "../events/text-processing-events.js";
+import type {
   TextReceivedEventData,
   ProcessingCompletedEventData,
   ProcessingErrorEventData,
 } from "../events/text-processing-events.js";
+import { getSelectedValues } from "../../ui/components/summarizer-form.js";
 import {
   ProcessingState,
   ProcessingStage,
@@ -498,29 +499,23 @@ export async function processSummaryWithQuality(
   } catch (summaryError) {
     console.error("[TextQuality] Error getting summary:", summaryError);
 
+    const error =
+      summaryError instanceof Error
+        ? summaryError
+        : new Error("Unknown summarization error");
+    const errorMessage = getSummarizationErrorMessage(error);
+
     textProcessingEvents.emit<ProcessingErrorEventData>(
       TextProcessingEventType.PROCESSING_ERROR,
       {
         clickCount,
         attemptNumber,
         timestamp: Date.now(),
-        error: summaryError as Error,
-        errorMessage: "Ett fel uppstod vid bearbetningen. Försök igen senare.",
+        error,
+        errorMessage,
       },
     );
-
-    await handleSummarizationError(summaryError as Error, clickCount);
   } finally {
     stopProgressPolling();
   }
 }
-
-// Add the qualityEvaluationTimeout property to the Window interface
-declare global {
-  interface Window {
-    qualityEvaluationTimeout: ReturnType<typeof setTimeout> | null;
-  }
-}
-
-// Initialize the timeout property
-window.qualityEvaluationTimeout = null;

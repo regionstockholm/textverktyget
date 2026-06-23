@@ -4,33 +4,26 @@
  */
 
 import {
-  GoogleGenerativeAI,
-  GenerativeModel,
-  GenerateContentResult,
-  SchemaType,
-  type ResponseSchema,
-} from "@google/generative-ai";
+  GoogleGenAI,
+  Type,
+  type GenerateContentConfig,
+  type GenerateContentResponse,
+  type Schema,
+} from "@google/genai";
 import { AI_PROVIDERS, getProviderConfig } from "../ai-config.js";
 import { createRateLimiter } from "../../../utils/rate-limiter.js";
 import { createCircuitBreaker } from "../../../utils/circuit-breaker.js";
 import { assert } from "../../../utils/safety-utils.js";
 import { logger } from "../../../utils/logger.js";
 import configService from "../../../services/config/config-service.js";
-import { listOrdlistaEntries } from "../../../services/ordlista/ordlista-service.js";
 import { config as appConfig } from "../../app-config.js";
 import type {
   ProcessingOptions,
   ProcessingResult,
   ErrorHandlingResult,
 } from "../ai-service-types.js";
+import { buildSystemMessage } from "../prompt-assembly.js";
 import { preserveLineSeparatorTrim } from "../text-normalization.js";
-
-// Extend the GenerateContentResult type to include promptFeedback
-interface ExtendedGenerateContentResult extends GenerateContentResult {
-  promptFeedback?: {
-    blockReason?: string;
-  };
-}
 
 // Base provider configuration (static limits)
 const config = getProviderConfig(AI_PROVIDERS.GEMINI_2_5_FLASH);
@@ -43,19 +36,19 @@ const DEFAULT_THINKING_BUDGET = config.THINKING_BUDGET;
 const DEFAULT_USE_GOOGLE_SEARCH_GROUNDING = config.USE_GOOGLE_SEARCH_GROUNDING;
 const DEFAULT_QUALITY_EVALUATION_TEMPERATURE = 0.3;
 
-const QUALITY_EVALUATION_RESPONSE_SCHEMA: ResponseSchema = {
-  type: SchemaType.OBJECT,
+const QUALITY_EVALUATION_RESPONSE_SCHEMA: Schema = {
+  type: Type.OBJECT,
   properties: {
-    overall: { type: SchemaType.INTEGER },
+    overall: { type: Type.INTEGER },
     subscores: {
-      type: SchemaType.OBJECT,
+      type: Type.OBJECT,
       properties: {
-        fidelity: { type: SchemaType.INTEGER },
-        priorityOrder: { type: SchemaType.INTEGER },
-        plainLanguage: { type: SchemaType.INTEGER },
-        taskFit: { type: SchemaType.INTEGER },
-        audienceFit: { type: SchemaType.INTEGER },
-        intentFit: { type: SchemaType.INTEGER },
+        fidelity: { type: Type.INTEGER },
+        priorityOrder: { type: Type.INTEGER },
+        plainLanguage: { type: Type.INTEGER },
+        taskFit: { type: Type.INTEGER },
+        audienceFit: { type: Type.INTEGER },
+        intentFit: { type: Type.INTEGER },
       },
       required: [
         "fidelity",
@@ -67,13 +60,13 @@ const QUALITY_EVALUATION_RESPONSE_SCHEMA: ResponseSchema = {
       ],
     },
     failures: {
-      type: SchemaType.ARRAY,
+      type: Type.ARRAY,
       items: {
-        type: SchemaType.OBJECT,
+        type: Type.OBJECT,
         properties: {
-          sectionKey: { type: SchemaType.STRING },
-          dimension: { type: SchemaType.STRING },
-          reason: { type: SchemaType.STRING },
+          sectionKey: { type: Type.STRING },
+          dimension: { type: Type.STRING },
+          reason: { type: Type.STRING },
         },
         required: ["sectionKey", "dimension", "reason"],
       },
@@ -156,14 +149,14 @@ const providerCircuitBreaker = createCircuitBreaker({
 });
 
 async function getGeminiClients(): Promise<{
-  genAI: GoogleGenerativeAI;
-  genAIQualityEval: GoogleGenerativeAI;
+  genAI: GoogleGenAI;
+  genAIQualityEval: GoogleGenAI;
   usesSeparateQeKey: boolean;
 }> {
   const keys = await resolveGeminiApiKeys();
   return {
-    genAI: new GoogleGenerativeAI(keys.primary),
-    genAIQualityEval: new GoogleGenerativeAI(keys.quality),
+    genAI: new GoogleGenAI({ apiKey: keys.primary }),
+    genAIQualityEval: new GoogleGenAI({ apiKey: keys.quality }),
     usesSeparateQeKey: keys.usesSeparate,
   };
 }
@@ -268,142 +261,6 @@ function throwIfCircuitOpen(): void {
 }
 
 /**
- * Constructs the system message for Gemini API
- * @param options - Configuration options
- * @returns Formatted system message
- * @private
- */
-async function getSystemMessage({
-  taskKey,
-  taskPromptMode,
-  senderIntent,
-  senderIntentSummary,
-  audiencePriorityMode,
-  textType,
-  rewriteBlueprint,
-  taskShapingMode,
-  targetAudience,
-  checkboxContent,
-  rewritePlanDraft,
-  applyTaskPromptInRewriteStage,
-}: ProcessingOptions): Promise<string> {
-  assert(
-    targetAudience !== undefined && targetAudience !== null,
-    "Target audience is required",
-  );
-  assert(
-    checkboxContent !== undefined && checkboxContent !== null,
-    "Checkbox content is required",
-  );
-
-  const rolePrompt = await configService.getPrompt("role");
-  const senderIntentPrompt =
-    typeof senderIntent === "string" && senderIntent.trim().length > 0
-      ? senderIntent
-      : await configService.getPrompt("senderIntent");
-  const targetPrompt = await configService.getPrompt("targetAudience", {
-    targetAudience,
-  });
-  const rulesPrompt = await configService.getPrompt("importantRules");
-  const ordlistaUsagePrompt = await buildOrdlistaUsagePrompt();
-  const taskPrompt = await configService.getPrompt("task", {
-    taskKey: typeof taskKey === "string" ? taskKey : undefined,
-    taskPromptMode,
-  });
-
-  let message = rolePrompt;
-  message += "\n\n";
-  // message += "\n\n";
-  if (senderIntentSummary && senderIntentSummary.trim().length > 0) {
-    message += `AVSÄNDARENS PRIORITERING: ${senderIntentSummary.trim()}`;
-    message += "\n\n";
-  }
-
-  if (audiencePriorityMode) {
-    if (audiencePriorityMode === "generic") {
-      message +=
-        "PRIORITERINGSSTRATEGI: Generic audience. Start with core message and most important facts first.";
-    } else {
-      message +=
-        "PRIORITERINGSSTRATEGI: Specific audience. Prioritize what matters most for the named target group first.";
-    }
-    message += "\n\n";
-  }
-
-  if (textType && textType.trim().length > 0) {
-    message += `TEXTTYP: ${textType.trim()}`;
-    message += "\n\n";
-  }
-
-  if (
-    taskShapingMode !== "task-shaping" &&
-    rewriteBlueprint &&
-    rewriteBlueprint.trim().length > 0
-  ) {
-    message += rewriteBlueprint;
-    message += "\n\n";
-  }
-
-  message += senderIntentPrompt;
-  message += "\n\n";
-  message += targetPrompt;
-  message += "\n\n";
-  message += rulesPrompt;
-  if (ordlistaUsagePrompt) {
-    message += "\n\n";
-    message += ordlistaUsagePrompt;
-  }
-  message += "\n\n";
-  if (
-    taskShapingMode !== "task-shaping" &&
-    rewritePlanDraft &&
-    rewritePlanDraft.trim().length > 0
-  ) {
-    message += "Omskrivningsutkast att FÖLJA (prioriterad ordning):\n";
-    message += rewritePlanDraft.trim();
-    message += "\n\n";
-  }
-
-  if (taskShapingMode === "rewrite" && !applyTaskPromptInRewriteStage) {
-    const rewriteFallbackPrompt =
-      await configService.getPrompt("rewriteFallback");
-    message += rewriteFallbackPrompt;
-  } else {
-    message += taskPrompt;
-  }
-
-  // Add the text introduction line
-  message += "\n\n";
-  message +=
-    "Ge mig ENDAST den slutgiltiga versionen av den bearbetade texten UTAN dina kommentarer. Här är texten som ska skrivas om:";
-
-  return message;
-}
-
-async function buildOrdlistaUsagePrompt(): Promise<string> {
-  const entries = await listOrdlistaEntries();
-  if (entries.length === 0) {
-    return "";
-  }
-
-  const listLines = entries
-    .filter((entry) => entry.fromWord && entry.toWord)
-    .map((entry) => `- från: "${entry.fromWord}" -> till: "${entry.toWord}"`)
-    .join("\n");
-
-  if (!listLines) {
-    return "";
-  }
-
-  const promptTemplate = await configService.getPrompt("wordListUsage");
-  if (promptTemplate.includes("{{wordList}}")) {
-    return promptTemplate.replace("{{wordList}}", listLines);
-  }
-
-  return `${promptTemplate}\n${listLines}`;
-}
-
-/**
  * Token estimation (roughly 4 characters per token)
  * @param text - Text to estimate tokens for
  * @returns Estimated token count
@@ -449,16 +306,10 @@ function validateInputLength(text: string, systemMessage: string): string {
 /**
  * Interface for Gemini generation configuration
  */
-interface GeminiGenerationConfig {
-  temperature: number;
-  topK: number;
-  topP: number;
-  maxOutputTokens: number;
-  responseMimeType?: string;
-  responseSchema?: ResponseSchema;
-  thinkingConfig?: {
-    thinkingBudget: number;
-  };
+interface GeminiRequestConfig {
+  ai: GoogleGenAI;
+  model: string;
+  config: GenerateContentConfig;
 }
 
 /**
@@ -466,7 +317,7 @@ interface GeminiGenerationConfig {
  * @returns Configured Gemini model
  * @private
  */
-async function initializeModel(): Promise<GenerativeModel> {
+async function initializeModel(): Promise<GeminiRequestConfig> {
   const providerConfig = await configService.getProviderConfig("gemini");
   const { genAI, usesSeparateQeKey } = await getGeminiClients();
   const useThinking =
@@ -488,7 +339,7 @@ async function initializeModel(): Promise<GenerativeModel> {
     },
   });
 
-  const generationConfig: GeminiGenerationConfig = {
+  const generationConfig: GenerateContentConfig = {
     temperature: providerConfig.temperature,
     topK: 40,
     topP: 0.95,
@@ -505,23 +356,19 @@ async function initializeModel(): Promise<GenerativeModel> {
     );
   }
 
-  // Configure model options - let TypeScript infer the type from SDK
-  const modelConfig = {
-    model: providerConfig.model,
-    generationConfig,
-  };
-
   // Add Google Search grounding tool if enabled
   if (useWebSearch) {
-    // Using any here as the Tool type from SDK is complex and changes between versions
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (modelConfig as any).tools = [{ googleSearch: {} }];
+    generationConfig.tools = [{ googleSearch: {} }];
     console.log(
       `[Gemini] Adding Google Search grounding tool to model configuration`,
     );
   }
 
-  return genAI.getGenerativeModel(modelConfig);
+  return {
+    ai: genAI,
+    model: providerConfig.model,
+    config: generationConfig,
+  };
 }
 
 /**
@@ -529,7 +376,7 @@ async function initializeModel(): Promise<GenerativeModel> {
  * @returns Configured Gemini model for quality evaluation
  * @private
  */
-async function initializeQualityEvaluationModel(): Promise<GenerativeModel> {
+async function initializeQualityEvaluationModel(): Promise<GeminiRequestConfig> {
   const providerConfig = await configService.getProviderConfig("gemini");
   const qualityTemperature = await resolveQualityEvaluationTemperature();
   const { genAIQualityEval } = await getGeminiClients();
@@ -540,7 +387,7 @@ async function initializeQualityEvaluationModel(): Promise<GenerativeModel> {
     ? (DEFAULT_THINKING_BUDGET ?? -1)
     : undefined;
 
-  const generationConfig: GeminiGenerationConfig = {
+  const generationConfig: GenerateContentConfig = {
     temperature: qualityTemperature,
     topK: 40,
     topP: 0.95,
@@ -559,10 +406,20 @@ async function initializeQualityEvaluationModel(): Promise<GenerativeModel> {
     );
   }
 
-  return genAIQualityEval.getGenerativeModel({
+  return {
+    ai: genAIQualityEval,
     model: providerConfig.model,
-    generationConfig,
-  });
+    config: generationConfig,
+  };
+}
+
+function readGeminiText(result: GenerateContentResponse): string {
+  const text = result.text;
+  if (typeof text !== "string") {
+    throw new Error("Gemini response did not include text content");
+  }
+
+  return preserveLineSeparatorTrim(text);
 }
 
 /**
@@ -574,16 +431,18 @@ async function initializeQualityEvaluationModel(): Promise<GenerativeModel> {
  */
 async function makeApiCall(
   prompt: string,
-): Promise<ExtendedGenerateContentResult> {
+): Promise<GenerateContentResponse> {
   assert(typeof prompt === "string", "Prompt must be a string");
 
   // Initialize model with configuration
-  const model = await initializeModel();
+  const requestConfig = await initializeModel();
 
   // Generate content with structured format
-  const result = (await model.generateContent({
+  const result = await requestConfig.ai.models.generateContent({
+    model: requestConfig.model,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-  })) as ExtendedGenerateContentResult;
+    config: requestConfig.config,
+  });
 
   // Check if generation was blocked
   if (result.promptFeedback?.blockReason) {
@@ -691,19 +550,19 @@ async function callGemini(
     await getRateLimiter(rpmLimit).checkLimit();
 
     // Generate system message
-    const systemMessage = await getSystemMessage(options);
+    const systemMessage = await buildSystemMessage(options);
 
     // Validate input length and get full prompt
     const prompt = validateInputLength(text, systemMessage);
 
     // Make API call
     const result = await makeApiCall(prompt);
-    const response = result.response;
+    const responseText = readGeminiText(result);
 
     providerCircuitBreaker.recordSuccess();
 
     return {
-      summary: preserveLineSeparatorTrim(response.text()),
+      summary: responseText,
       systemMessage: preserveLineSeparatorTrim(systemMessage),
     };
   } catch (error) {
@@ -807,12 +666,14 @@ async function makeQualityEvaluationCall(prompt: string): Promise<string> {
   assert(typeof prompt === "string", "Prompt must be a string");
 
   // Initialize quality evaluation model with configuration
-  const model = await initializeQualityEvaluationModel();
+  const requestConfig = await initializeQualityEvaluationModel();
 
   // Generate content with structured format
-  const result = (await model.generateContent({
+  const result = await requestConfig.ai.models.generateContent({
+    model: requestConfig.model,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
-  })) as ExtendedGenerateContentResult;
+    config: requestConfig.config,
+  });
 
   // Check if generation was blocked
   if (result.promptFeedback?.blockReason) {
@@ -821,7 +682,7 @@ async function makeQualityEvaluationCall(prompt: string): Promise<string> {
     );
   }
 
-  return preserveLineSeparatorTrim(result.response.text());
+  return readGeminiText(result);
 }
 
 /**

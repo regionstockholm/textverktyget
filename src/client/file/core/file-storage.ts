@@ -4,7 +4,7 @@
  */
 
 import { assert } from "../../safety/assertions.js";
-import { FileInfo } from "../models/file-info.js";
+import type { FileInfo } from "../models/file-info.js";
 
 /**
  * Maximum number of file references to store in local storage

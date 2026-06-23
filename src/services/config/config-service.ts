@@ -82,10 +82,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
 
-function getDefaultRewritePlanTasks(): RewritePlanTaskSettings {
-  return {};
-}
-
 function getDefaultRewritePlanTasksFromConfig(): RewritePlanTaskSettings {
   const defaultConfig = getDefaultConfig();
   const sortedTasks = [...defaultConfig.settings.tasks].sort(
@@ -106,17 +102,13 @@ function getDefaultRewritePlanTasksFromConfig(): RewritePlanTaskSettings {
   return settings;
 }
 
-function getDefaultRuntimeSettings(): RuntimeSettings {
-  return {};
-}
-
 function getDefaultTargetAudienceLabel(): string {
   const defaultConfig = getDefaultConfig();
   return defaultConfig.settings.targetAudiences[0]?.label ?? "Allman malgrupp";
 }
 
 function resolveRewritePlanTasks(value: unknown): RewritePlanTaskSettings {
-  const result = getDefaultRewritePlanTasks();
+  const result: RewritePlanTaskSettings = {};
   if (!isRecord(value)) {
     return result;
   }
@@ -131,7 +123,7 @@ function resolveRewritePlanTasks(value: unknown): RewritePlanTaskSettings {
 }
 
 function resolveRuntimeSettings(value: unknown): RuntimeSettings {
-  const result = getDefaultRuntimeSettings();
+  const result: RuntimeSettings = {};
   if (!isRecord(value)) {
     return result;
   }
