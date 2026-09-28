@@ -931,6 +931,15 @@ label:has(input:focus-visible) {
   min-width: 31px;
 }
 
+.file-name {
+  max-width: 16rem;
+  word-break: break-word;
+}
+
+.file-size {
+  min-width: 5rem;
+}
+
 .absolute {
   border: 2px dashed var(--blue-700);
   border-radius: var(--br-md);

@@ -116,7 +116,8 @@ export class ElementManager {
     fileInput.type = "file";
     fileInput.multiple = true;
     fileInput.id = FILE_INPUT_ID;
-    fileInput.accept = acceptedTypes.length > 0 ? acceptedTypes.join(", ") : "*";
+    fileInput.accept =
+      acceptedTypes.length > 0 ? acceptedTypes.join(", ") : "*";
     fileInput.style.display = "none";
 
     document.body.appendChild(fileInput);
@@ -146,7 +147,11 @@ export class ElementManager {
     const icon = createElement("div", { className: "file-icon" });
     icon.innerHTML = this.getFileIconSVG(config.fileType || "");
 
-    const name = createElement("span", {}, config.fileName);
+    const name = createElement(
+      "span",
+      { className: "file-name" },
+      config.fileName,
+    );
 
     fileInfo.append(icon, name);
 
