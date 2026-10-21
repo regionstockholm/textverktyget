@@ -6,6 +6,10 @@ import { testConnection } from "../config/database/db-connection.js";
 import { applyDefaultConfigIfDatabaseEmpty } from "../services/config/default-config-bootstrap-service.js";
 import { ensureTaskPromptDefaults } from "../services/tasks/task-prompt-bootstrap-service.js";
 import { assertSafeAdminCredentialsForStartup } from "../config/security/admin-credential-policy.js";
+import { isUserLoginEnabled } from "../config/security/access-config.js";
+import { assertSessionStoreReady } from "../config/security/session-config.js";
+import { initializeSubmissionLogging } from "../services/submission-log-service.js";
+import { getPrismaClient } from "../config/database/prisma-client.js";
 
 const DEFAULT_PORT = 3000;
 const MIN_PORT = 1024;
@@ -93,7 +97,7 @@ async function initializeBackgroundServices(): Promise<void> {
   const { initializeTextQualityControl } = await import(
     "../services/quality-evaluation-controls.js"
   );
-  initializeTextQualityControl();
+  await initializeTextQualityControl();
 
 }
 
@@ -133,6 +137,12 @@ export async function startup(port: unknown): Promise<http.Server> {
   }
 
   const app = createApp();
+  if (isUserLoginEnabled()) {
+    if (!databaseConnected) throw new Error("Login requires a working database");
+    await assertSessionStoreReady();
+    await getPrismaClient().user.findFirst({ select: { id: true } });
+  }
+  await initializeSubmissionLogging();
   await initializeBackgroundServices();
   await setupRoutes(app);
 

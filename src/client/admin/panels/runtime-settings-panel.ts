@@ -145,7 +145,6 @@ export function initRuntimeSettingsPanel(
     setStageFields(sources.stageConcurrency);
     setRetryAndRepairFields(sources.retrySettings, sources.repairSettings);
     setAutoProfileFields(sources.autoProfile, sources.autoWindows);
-    setEasyReadWorkflowFields(sources.easyToReadWorkflow);
   };
 
   const buildRuntimeSettingsFromFields = (): RuntimeSettings => {
@@ -321,36 +320,6 @@ export function initRuntimeSettingsPanel(
     }
   };
 
-  const saveGeminiConfig = async (): Promise<void> => {
-    let providerSaved = false;
-    try {
-      setStatus("Sparar Gemini-konfiguration...");
-      const payload = readGeminiConfigPayload();
-      if (!payload) {
-        return;
-      }
-
-      const data = await request<GeminiConfig>(
-        "PUT",
-        "/admin/providers/gemini",
-        payload.provider,
-      );
-      providerSaved = true;
-
-      await updateRuntimeSettings((runtimeSettings) => {
-        getRuntimeObject(runtimeSettings, "quality").temperature =
-          payload.qualityTemperature;
-      });
-
-      applySavedGeminiConfig(data);
-      setStatus("Gemini-konfiguration sparad.");
-      showHint("Sparat.", "success");
-      showButtonHint(refs.saveGeminiButton, "Sparat.", "success");
-    } catch (error) {
-      setGeminiSaveError(providerSaved, error);
-    }
-  };
-
   const init = (): void => {
     refs.saveGlobalButton.addEventListener("click", () => {
       saveGlobalConfig();
@@ -360,9 +329,6 @@ export function initRuntimeSettingsPanel(
     });
     refs.saveRuntimeSettingsButton.addEventListener("click", () => {
       saveRuntimeSettings();
-    });
-    refs.saveGeminiButton.addEventListener("click", () => {
-      saveGeminiConfig();
     });
     refs.geminiTemp.addEventListener("input", () => {
       setGeminiTemperatureSelected(refs.geminiTemp.value);
@@ -438,7 +404,6 @@ export function initRuntimeSettingsPanel(
       repairSettings: readRecord(runtimeSettings.repair),
       autoProfile,
       autoWindows: readRecord(autoProfile.windows),
-      easyToReadWorkflow: readRecord(runtimeSettings.easyToReadWorkflow),
     };
   }
 
@@ -582,14 +547,6 @@ export function initRuntimeSettingsPanel(
     setInputValue(refs.runtimeAutoMinSamples, autoWindows.minSamples, DEFAULT_RUNTIME_AUTO_MIN_SAMPLES, 1, 5000);
     setInputValue(refs.runtimeAutoEscalateConsecutive, autoWindows.escalateConsecutive, DEFAULT_RUNTIME_AUTO_ESCALATE_CONSECUTIVE, 1, 20);
     setInputValue(refs.runtimeAutoRelaxConsecutive, autoWindows.relaxConsecutive, DEFAULT_RUNTIME_AUTO_RELAX_CONSECUTIVE, 1, 50);
-  }
-
-  function setEasyReadWorkflowFields(source: RuntimeSource): void {
-    refs.easyReadWorkflowEnabled.checked = readRuntimeBoolean(source.enabled, false);
-    refs.easyReadWorkflowUseRewriteDraft.checked = readRuntimeBoolean(
-      source.useRewriteDraft,
-      false,
-    );
   }
 
   function writeInteger(
@@ -746,116 +703,6 @@ export function initRuntimeSettingsPanel(
     }
 
     return value;
-  }
-
-  function readGeminiConfigPayload(): {
-    provider: Record<string, unknown>;
-    qualityTemperature: number;
-  } | null {
-    const model = refs.geminiModel.value.trim();
-    if (!model) {
-      setGeminiValidationError("Fyll i modellnamn.");
-      return null;
-    }
-
-    const temperature = readGeminiTemperature(refs.geminiTemp, "Temperature");
-    const qualityTemperature = readGeminiTemperature(
-      refs.geminiQeTemp,
-      "QE temperature",
-    );
-    const maxOutputTokens = readGeminiMaxTokens();
-
-    if (temperature === null || qualityTemperature === null || maxOutputTokens === null) {
-      return null;
-    }
-
-    return {
-      provider: {
-        model,
-        temperature,
-        maxOutputTokens,
-        useWebSearch: refs.geminiUseSearch.checked,
-        useThinking: refs.geminiUseThinking.checked,
-      },
-      qualityTemperature,
-    };
-  }
-
-  function readGeminiTemperature(
-    input: HTMLInputElement,
-    label: string,
-  ): number | null {
-    const raw = input.value.trim();
-    if (!raw) {
-      const displayLabel = label === "Temperature" ? "temperature" : label;
-      setGeminiValidationError(`Fyll i ${displayLabel}.`);
-      return null;
-    }
-
-    const value = Number(raw);
-    if (!Number.isFinite(value) || value < 0 || value > 1) {
-      setGeminiValidationError(`${label} måste vara mellan 0 och 1.`);
-      return null;
-    }
-
-    return value;
-  }
-
-  function readGeminiMaxTokens(): number | null {
-    const raw = refs.geminiMax.value.trim();
-    if (!raw) {
-      setGeminiValidationError("Fyll i max output tokens.");
-      return null;
-    }
-
-    const value = Number.parseInt(raw, 10);
-    if (!Number.isInteger(value) || value <= 0) {
-      setGeminiValidationError("Max output tokens måste vara ett heltal över 0.");
-      return null;
-    }
-
-    return value;
-  }
-
-  function setGeminiValidationError(message: string): void {
-    setStatus(message);
-    showButtonHint(refs.saveGeminiButton, "Fel.", "error");
-  }
-
-  function applySavedGeminiConfig(config: GeminiConfig): void {
-    if (config.temperature !== undefined) {
-      setGeminiTemperature(config.temperature);
-      setGeminiTemperatureSelected(config.temperature);
-    }
-    if (config.maxOutputTokens !== undefined) {
-      refs.geminiMax.value = String(config.maxOutputTokens);
-    }
-    if (config.model) {
-      refs.geminiModel.value = config.model;
-    }
-    if (typeof config.useWebSearch === "boolean") {
-      refs.geminiUseSearch.checked = config.useWebSearch;
-    }
-    if (typeof config.useThinking === "boolean") {
-      refs.geminiUseThinking.checked = config.useThinking;
-    }
-  }
-
-  function setGeminiSaveError(providerSaved: boolean, error: unknown): void {
-    if (providerSaved) {
-      setStatus(
-        error instanceof Error
-          ? `Gemini sparades, men QE temperature misslyckades: ${error.message}`
-          : "Gemini sparades, men QE temperature kunde inte sparas.",
-      );
-    } else {
-      setStatus(
-        error instanceof Error
-          ? error.message
-          : "Kunde inte spara Gemini-konfiguration.",
-      );
-    }
-    showButtonHint(refs.saveGeminiButton, "Fel.", "error");
   }
 
   return {

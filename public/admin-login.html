@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logga in - Adminpanel</title>
+    <link rel="stylesheet" href="/css/admin-ui.css" />
+    <link rel="icon" href="/img/favicon.ico" />
+  </head>
+  <body class="admin-app">
+    <main class="admin-sign-in">
+      <section class="admin-sign-in-box" aria-labelledby="admin-login-heading">
+        <h1 id="admin-login-heading">Logga in till adminpanelen</h1>
+        <form id="admin-login-form" action="/admin/login" method="post" class="flex flex-column gap-4">
+          <label for="admin-key">Admin-nyckel</label>
+          <input id="admin-key" name="admin-key" type="password" autocomplete="current-password" required maxlength="4096" autofocus />
+          <p id="admin-login-error" role="alert" aria-live="polite"></p>
+          <button id="admin-login-button" type="submit" class="filled-blue">Logga in</button>
+        </form>
+      </section>
+    </main>
+    <script data-cfasync="false" type="module" src="/script/admin-login.js" nonce="__CSP_NONCE__"></script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+import type { CerebrasModelInput } from "./types.js";
+export const template: CerebrasModelInput = { provider: "cerebras", id: "replace-model-id", displayName: "New Cerebras model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "deployment-dependent" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://inference-docs.cerebras.ai/models/overview"], notes: "Record account-tier-specific limits explicitly." } };

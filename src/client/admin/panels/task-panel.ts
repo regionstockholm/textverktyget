@@ -1,11 +1,9 @@
 import {
-  EASY_TO_READ_TASK_ALIASES,
   TASK_PROMPT_PREFIX,
 } from "../admin_constants.js";
 import type { AdminContext } from "../admin_context.js";
 import type { TaskDefinition, TaskPromptSaveResponse } from "../admin_types.js";
 import {
-  normalizeTaskIdentity,
   resolveRewritePlanTasks,
 } from "../admin_utils.js";
 
@@ -16,7 +14,6 @@ type TaskPanelOptions = {
 export type TaskPanel = {
   init(): void;
   loadCatalog(preferredKey?: string): Promise<void>;
-  getEasyToReadTaskDefinition(): TaskDefinition | undefined;
   updateTaskDefinition(
     taskKey: string,
     payload: Record<string, unknown>,
@@ -66,9 +63,6 @@ export function initTaskPanel(
 
   const getSelectedTaskDefinition = (): TaskDefinition | undefined =>
     state.taskDefinitions.find((task) => task.key === refs.taskPromptSelect.value);
-
-  const getEasyToReadTaskDefinition = (): TaskDefinition | undefined =>
-    state.taskDefinitions.find((task) => isEasyToReadTask(task));
 
   const loadCatalog = async (preferredKey?: string): Promise<void> => {
     const currentKey = preferredKey || refs.taskPromptSelect.value;
@@ -233,13 +227,6 @@ export function initTaskPanel(
     });
   };
 
-  function isEasyToReadTask(task: TaskDefinition): boolean {
-    return (
-      EASY_TO_READ_TASK_ALIASES.has(normalizeTaskIdentity(task.key)) ||
-      EASY_TO_READ_TASK_ALIASES.has(normalizeTaskIdentity(task.label))
-    );
-  }
-
   function getTaskPromptName(key: string): string {
     return taskPromptIndex.get(key)?.promptName ?? `${TASK_PROMPT_PREFIX}${key}`;
   }
@@ -270,6 +257,8 @@ export function initTaskPanel(
     refs.taskDefEnabled.checked = Boolean(task.enabled);
     refs.taskDefTargetAudienceEnabled.checked = task.targetAudienceEnabled !== false;
     refs.taskDefRewritePlanEnabled.checked = task.rewritePlanEnabled !== false;
+    refs.taskDefReasoningEnabled.checked = task.reasoningEnabled !== false;
+    refs.taskDefWebSearchMode.value = task.webSearchMode ?? "inherit";
     refs.taskDefDeleteButton.disabled = false;
     setTaskMoveButtonState(task);
   }
@@ -280,6 +269,8 @@ export function initTaskPanel(
     refs.taskDefEnabled.checked = true;
     refs.taskDefTargetAudienceEnabled.checked = true;
     refs.taskDefRewritePlanEnabled.checked = true;
+    refs.taskDefReasoningEnabled.checked = true;
+    refs.taskDefWebSearchMode.value = "inherit";
     refs.taskDefDeleteButton.disabled = true;
     refs.taskDefMoveUpButton.disabled = true;
     refs.taskDefMoveDownButton.disabled = true;
@@ -388,6 +379,8 @@ export function initTaskPanel(
       enabled: refs.taskDefEnabled.checked,
       targetAudienceEnabled: refs.taskDefTargetAudienceEnabled.checked,
       rewritePlanEnabled: refs.taskDefRewritePlanEnabled.checked,
+      reasoningEnabled: refs.taskDefReasoningEnabled.checked,
+      webSearchMode: refs.taskDefWebSearchMode.value,
     };
   }
 
@@ -398,6 +391,8 @@ export function initTaskPanel(
       enabled: true,
       targetAudienceEnabled: true,
       rewritePlanEnabled: true,
+      reasoningEnabled: true,
+      webSearchMode: "inherit",
       promptContent: "",
     };
   }
@@ -437,7 +432,6 @@ export function initTaskPanel(
   return {
     init,
     loadCatalog,
-    getEasyToReadTaskDefinition,
     updateTaskDefinition,
   };
 }

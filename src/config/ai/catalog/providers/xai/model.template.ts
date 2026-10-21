@@ -1,0 +1,2 @@
+import type { XaiModelInput } from "./types.js";
+export const template: XaiModelInput = { provider: "xai", id: "replace-model-id", displayName: "New Grok model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "unsupported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.x.ai/developers/models"], notes: "Verify supported effort values and output limit." } };

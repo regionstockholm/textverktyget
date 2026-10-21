@@ -23,7 +23,7 @@ type TimeLimits = {
 
 export const fileLimits: FileLimits = {
   batchProcessingSize: 3,
-  maxFileSize: 100 * 1024 * 1024,
+  maxFileSize: 50 * 1024 * 1024,
   maxFiles: 10,
   maxPromptContentLength: 1000,
   minTextLength: 10,

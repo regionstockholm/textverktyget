@@ -15,6 +15,7 @@ public/script/*.js.map
 public/css/*.css
 public/css/*.css.map
 !public/css/*.scss
+src/generated/prisma/
 
 # Environment variables
 .env
@@ -32,7 +33,9 @@ uploads/
 
 # Logs
 logs/
+logs-export/
 *.log
+docker-build-logs
 
 # Runtime data  
 pids/
@@ -75,7 +78,8 @@ Thumbs.db
 documentation/
 
 # Tests
-scripts/
+scripts/*
+!scripts/test.mjs
 local-dev/
 
 # Ad-hoc local scratch/output files

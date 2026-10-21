@@ -15,12 +15,12 @@ export type AdminApiClient = {
   ): Promise<T>;
 };
 
-export function requireAdminToken(token: string): string {
-  if (!token) {
-    throw new Error("Ingen admin-nyckel angiven.");
-  }
+export function adminRequestHeaders(token = ""): Record<string, string> {
+  return { "X-Admin-Actor": "admin-ui", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+}
 
-  return token;
+export function handleAdminSessionExpiry(response: Response): void {
+  if (response.status === 401) window.location.replace(`/admin-ui${window.location.hash}`);
 }
 
 export async function requestAdminApi<T>(
@@ -29,11 +29,7 @@ export async function requestAdminApi<T>(
   path: string,
   body?: Record<string, unknown>,
 ): Promise<T> {
-  const adminToken = requireAdminToken(token);
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${adminToken}`,
-    "X-Admin-Actor": "admin-ui",
-  };
+  const headers = adminRequestHeaders(token);
 
   if (body !== undefined) {
     headers["Content-Type"] = "application/json";
@@ -44,7 +40,9 @@ export async function requestAdminApi<T>(
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
     cache: "no-store",
+    credentials: "same-origin",
   });
+  if (!token) handleAdminSessionExpiry(response);
 
   const payload = (await response
     .json()

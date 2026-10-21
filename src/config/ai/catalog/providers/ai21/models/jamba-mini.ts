@@ -1,0 +1,3 @@
+import { defineModel } from "../../../validation.js";
+import type { Ai21ModelInput } from "../types.js";
+export default defineModel({ provider: "ai21", id: "jamba-mini", displayName: "Jamba2 Mini", aliases: ["jamba-mini-2", "jamba-mini-2-2026-01"], limits: { contextWindow: 256000, maxOutputTokens: 4096, verification: "verified" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "json-object", status: "active", defaults: { temperature: 0.4 }, metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.ai21.com/docs/jamba-foundation-models.md", "https://docs.ai21.com/reference/jamba-1-6-api-ref.md"], notes: "Alias now resolves to Jamba2 Mini January 2026, not the older 1.7 model." } } satisfies Ai21ModelInput);

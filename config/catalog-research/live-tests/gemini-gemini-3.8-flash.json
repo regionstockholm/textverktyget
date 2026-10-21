@@ -1,0 +1,9 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "testedAt": "2026-10-05T07:31:44.067Z",
+  "generation": "passed",
+  "qualityJson": "passed",
+  "latencyMs": 4397,
+  "profileCount": 30
+}

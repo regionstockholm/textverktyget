@@ -1,3 +1,5 @@
+import { isCloudflareEnabled, isUserLoginEnabled } from "./access-config.js";
+
 const DEFAULT_ADMIN_API_KEYS = new Set(["admin"]);
 const DEFAULT_CONFIG_MASTER_KEYS = new Set([
   "LaNg5Ch1K09BXqXNRlczqFnG9OqFp2gX",
@@ -25,7 +27,8 @@ function hasUnsafeConfigMasterKey(value: string | undefined): boolean {
 }
 
 export function assertSafeAdminCredentialsForStartup(): void {
-  if (!isProductionRuntime() || isLocalDevelopmentOverride()) {
+  const sharedAccess = isCloudflareEnabled() || isUserLoginEnabled();
+  if (!sharedAccess && (!isProductionRuntime() || isLocalDevelopmentOverride())) {
     return;
   }
 

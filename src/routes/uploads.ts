@@ -12,6 +12,7 @@ import { config } from "../config/app-config.js";
 import { logger } from "../utils/logger.js";
 import configService from "../services/config/config-service.js";
 import { readRuntimeInteger } from "../utils/runtime-number.js";
+import { getFileExtension } from "../utils/file/file-type-policy.js";
 
 const router = express.Router();
 const DEFAULT_UPLOAD_MAX_FILE_SIZE_MB = config.security.maxFileSizeMB;
@@ -48,6 +49,16 @@ async function resolveUploadMaxFileSizeMB(): Promise<number> {
 router.post(
   "/process-document",
   rateLimiters.fileUpload,
+  async (req, res, next) => {
+    try {
+      const maxFileSizeMB = await resolveUploadMaxFileSizeMB();
+      res.locals.uploadMaxFileSizeMB = maxFileSizeMB;
+      express.json({ limit: uploadJsonByteLimit(maxFileSizeMB) })(req, res, error => {
+        if (!error) { next(); return; }
+        sendError(res, error.type === "entity.too.large" ? 413 : 400, "Invalid or oversized document upload");
+      });
+    } catch { sendError(res, 503, "Upload settings unavailable"); }
+  },
   async (req: Request, res: Response): Promise<void> => {
     const startTime = Date.now();
     logger.info("upload.process.started", {
@@ -56,9 +67,9 @@ router.post(
     });
 
     try {
-      const { fileData, fileName } = req.body;
+      const { fileData, fileName } = req.body ?? {};
 
-      if (!fileData || !fileName) {
+      if (typeof fileData !== "string" || !fileData || typeof fileName !== "string" || !fileName || fileName.length > 1024) {
         logger.warn("upload.process.invalid_request", {
           processStatus: "failed",
           meta: { hasFileData: !!fileData, hasFileName: !!fileName },
@@ -101,7 +112,7 @@ router.post(
       }
 
       // Validate file size
-      const maxFileSizeMB = await resolveUploadMaxFileSizeMB();
+      const maxFileSizeMB = res.locals.uploadMaxFileSizeMB as number;
       const maxFileSize = maxFileSizeMB * 1024 * 1024;
       if (fileBuffer.length > maxFileSize) {
         logger.warn("upload.process.file_too_large", {
@@ -140,6 +151,7 @@ router.post(
         textLength: extractedText.length,
         originalLength: fileBuffer.length,
         processingTime,
+        extractionWarnings: getFileExtension(fileName) === "txt" ? [] : ["Endast maskinläsbar dokumenttext har extraherats. Text i bilder, skannade sidor, inbäddningar och vissa dokumentdelar kan saknas. Kontrollera hela underlaget; bildtext behöver OCR före bearbetning."],
       };
 
       logger.info("upload.process.completed", {
@@ -157,7 +169,10 @@ router.post(
       });
 
       if (error instanceof Error) {
-        if (error.message.includes("File too large")) {
+        if (error.message.includes("Document processing busy")) {
+          res.setHeader("Retry-After", "5");
+          sendError(res, 503, "Document processing busy. Try again shortly.");
+        } else if (error.message.includes("File too large")) {
           sendError(res, 413, "File size exceeds maximum limit");
         } else if (
           error.message.includes("Invalid file") ||
@@ -165,7 +180,7 @@ router.post(
         ) {
           sendError(res, 415, "Unsupported file type");
         } else {
-          sendError(res, 500, "Document processing failed", undefined);
+          sendError(res, 422, "Dokumentet kunde inte läsas fullständigt. Kontrollera format, teckenkodning och om dokumentet kräver OCR.");
         }
       } else {
         sendError(res, 500, "Unknown error occurred");
@@ -173,5 +188,15 @@ router.post(
     }
   },
 );
+
+export function uploadJsonByteLimit(maxFileSizeMB: number): number {
+  return 4 * Math.ceil(maxFileSizeMB * 1024 * 1024 / 3) + 64 * 1024;
+}
+
+router.get("/config", rateLimiters.standard, async (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  try { sendSuccess(res, { maxFileSizeMB: await resolveUploadMaxFileSizeMB() }); }
+  catch { sendError(res, 503, "Upload settings unavailable"); }
+});
 
 export default router;

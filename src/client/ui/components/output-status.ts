@@ -148,7 +148,8 @@ export function showOutputErrorIndicator(
   }
 
   setActiveIndicator(elements, "error");
-  scheduleHide(getSafeDuration(duration, 5000));
+  if (duration === 0) clearHideTimeout();
+  else scheduleHide(getSafeDuration(duration, 5000));
   return true;
 }
 

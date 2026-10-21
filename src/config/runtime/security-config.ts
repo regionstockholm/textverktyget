@@ -23,7 +23,7 @@ export type SecurityConfig = {
 
 export const securityConfig: SecurityConfig = {
   maxFileSize: "50mb",
-  maxFileSizeMB: readIntegerEnv("maxFileSize", 50, 1),
+  maxFileSizeMB: readIntegerEnv("maxFileSize", 50, 1, 100),
   rateLimit: {
     windowMs: readIntegerEnv("API_GLOBAL_RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000, 1000),
     max: readIntegerEnv("API_GLOBAL_RATE_LIMIT_MAX", 100, 1),

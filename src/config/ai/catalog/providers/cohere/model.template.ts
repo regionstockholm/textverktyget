@@ -1,0 +1,2 @@
+import type { CohereModelInput } from "./types.js";
+export const template: CohereModelInput = { provider: "cohere", id: "replace-model-id", displayName: "New Cohere model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.cohere.com/docs/models"], notes: "Reasoning families need their own adapter policy before enabling thinking." } };

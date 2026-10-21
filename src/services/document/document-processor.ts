@@ -6,6 +6,7 @@
 import { assert } from "../../utils/safety-utils.js";
 import { logger } from "../../utils/logger.js";
 import { isFileTypeSupported } from "./format-detector.js";
+import { getFileExtension } from "../../utils/file/file-type-policy.js";
 import {
   extractRawText,
   validateTextLength,
@@ -53,14 +54,22 @@ export async function extractTextFromDocument(
       throw new Error(`Unsupported file type: ${filename}`);
     }
 
-    // Extract raw text
-    const rawText = await extractRawText(buffer);
+    const extension = getFileExtension(filename);
+    // The extraction library has no legacy Office/RTF parser; do not treat markup
+    // or binary data as successfully extracted source text.
+    if (["doc", "xls", "ppt", "rtf"].includes(extension)) {
+      throw new Error("Formatet kan inte läsas fullständigt. Spara filen som DOCX, XLSX, PPTX, PDF eller UTF-8-text och försök igen.");
+    }
+    // Text files are decoded strictly and preserved, not interpreted as documents.
+    const rawText = extension === "txt"
+      ? new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(buffer)
+      : await extractRawText(buffer);
 
     // Validate text length
     validateTextLength(rawText);
 
     // Clean and return the text
-    const cleanedText = cleanExtractedText(rawText);
+    const cleanedText = extension === "txt" ? rawText : cleanExtractedText(rawText);
     logger.info("document.extract.completed", {
       processStatus: "completed",
       meta: { filename, textLength: cleanedText.length },

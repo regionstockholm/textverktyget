@@ -1,0 +1,13 @@
+import model0 from "./models/researched-codestral-2405-93caf4c4.js";
+import model1 from "./models/researched-codestral-2501-8f063afa.js";
+import model2 from "./models/researched-codestral-2508-7a4dc0cb.js";
+import model3 from "./models/researched-devstral-2512-17ae024a.js";
+import model4 from "./models/researched-ministral-14b-2512-cec67484.js";
+import model5 from "./models/researched-ministral-3b-2410-308387d5.js";
+import model6 from "./models/researched-ministral-3b-2512-82dc9bd6.js";
+import model7 from "./models/researched-ministral-8b-2410-708c7cde.js";
+import model8 from "./models/researched-ministral-8b-2512-66574a2a.js";
+import model9 from "./models/researched-mistral-7b-aa38360a.js";
+import model10 from "./models/researched-zai-glm-5-2-7e6f4290.js";
+import model11 from "./models/researched-zai-glm-5-3-6bc33604.js";
+export default [model0, model1, model2, model3, model4, model5, model6, model7, model8, model9, model10, model11];

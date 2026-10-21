@@ -10,6 +10,7 @@
 // Import the updateButtonState function
 import { getSummary } from "../summarizer/core.js";
 import type { FormValues } from "../summarizer/interfaces.js";
+import type { QualityStatus } from "../../../types/quality-status.js";
 import { getSummarizationErrorMessage } from "../summarizer/processing.js";
 import {
   textProcessingEvents,
@@ -238,6 +239,7 @@ function emitProcessingCompleted(
   clickCount: number,
   attemptNumber: number,
   qualityScore?: number,
+  qualityStatus: QualityStatus = "failed",
 ): void {
   textProcessingEvents.emit<ProcessingCompletedEventData>(
     TextProcessingEventType.PROCESSING_COMPLETED,
@@ -246,6 +248,7 @@ function emitProcessingCompleted(
       attemptNumber,
       timestamp: Date.now(),
       finalScore: qualityScore,
+      qualityStatus,
       totalAttempts: attemptNumber,
     },
   );
@@ -272,7 +275,7 @@ function handleMaxAttemptsReached(
     result.systemMessage,
   );
 
-  emitProcessingCompleted(clickCount, attemptNumber, result.qualityScore);
+  emitProcessingCompleted(clickCount, attemptNumber, result.qualityScore, "rejected");
 }
 
 /**
@@ -296,7 +299,7 @@ function handleAcceptableQuality(
     result.systemMessage,
   );
 
-  emitProcessingCompleted(clickCount, attemptNumber, result.qualityScore);
+  emitProcessingCompleted(clickCount, attemptNumber, result.qualityScore, "passed");
 }
 
 /**
@@ -316,11 +319,11 @@ function handleIncompleteQuality(
     attemptNumber,
     result.summary,
     result.qualityEvaluationId,
-    false,
+    true,
     result.systemMessage,
   );
 
-  emitProcessingCompleted(clickCount, attemptNumber);
+  emitProcessingCompleted(clickCount, attemptNumber, undefined, "failed");
 }
 
 /**
@@ -340,11 +343,11 @@ function handleNoQualityEvaluation(
     attemptNumber,
     result.summary,
     result.qualityEvaluationId,
-    false,
+    true,
     result.systemMessage,
   );
 
-  emitProcessingCompleted(clickCount, attemptNumber);
+  emitProcessingCompleted(clickCount, attemptNumber, undefined, "disabled");
 }
 
 /**
@@ -458,14 +461,22 @@ export async function processSummaryWithQuality(
       return;
     }
 
-    // Check if quality evaluation was performed
+    if (result.qualityStatus === "disabled") {
+      handleNoQualityEvaluation(clickCount, attemptNumber, result);
+      return;
+    }
+    // Missing/unknown status is never evidence of a successful review.
+    if (result.qualityStatus !== "passed" && result.qualityStatus !== "rejected") {
+      handleIncompleteQuality(clickCount, attemptNumber, result);
+      return;
+    }
     if (result.qualityEvaluationId && formValues.qualityProcess !== false) {
       console.log(
         `[TextQuality] Server-side quality evaluation performed for record ${result.qualityEvaluationId}`,
       );
 
       // Handle low quality score - retry needed
-      if (result.qualityScore !== undefined && result.needsResubmission) {
+      if (result.qualityScore !== undefined && result.qualityStatus === "rejected") {
         console.log(
           `[TextQuality] Quality score too low (${result.qualityScore}), will retry with attempt ${attemptNumber + 1}`,
         );
@@ -486,15 +497,14 @@ export async function processSummaryWithQuality(
       }
 
       // Handle acceptable quality score
-      if (result.qualityScore !== undefined && !result.needsResubmission) {
+      if (result.qualityScore !== undefined && result.qualityStatus === "passed") {
         handleAcceptableQuality(clickCount, attemptNumber, result);
       } else {
         // Handle incomplete quality evaluation
         handleIncompleteQuality(clickCount, attemptNumber, result);
       }
     } else {
-      // No quality evaluation (fast mode)
-      handleNoQualityEvaluation(clickCount, attemptNumber, result);
+      handleIncompleteQuality(clickCount, attemptNumber, result);
     }
   } catch (summaryError) {
     console.error("[TextQuality] Error getting summary:", summaryError);

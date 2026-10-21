@@ -56,6 +56,9 @@ async function fetchWebContent(url: string): Promise<string> {
   if (!content.trim()) {
     throw new Error("No content found in the response");
   }
+  if (data.data?.contentLength !== content.length) {
+    throw new Error("Den mottagna webbtexten är ofullständig.");
+  }
 
   return content;
 }

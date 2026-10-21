@@ -20,7 +20,7 @@ function initializeApplication(): void {
     initializeSummarizer({
       processAttachedFiles: processAttachedFilesWrapper,
     });
-    initializeFileUpload();
+    void initializeFileUpload().catch(error => window.alert(error.message));
   } catch (error) {
     console.error("Application initialization failed:", error);
   }

@@ -8,6 +8,7 @@ import type { NextFunction, Request, Response } from "express";
 import { config } from "../../config/app-config.js";
 import configService from "../../services/config/config-service.js";
 import { readRuntimeInteger } from "../runtime-number.js";
+import { apiRateLimitKey } from "./rate-limit-key.js";
 
 type RuntimeApiRateLimitConfig = {
   windowMs: number;
@@ -200,6 +201,7 @@ export function createApiRateLimiter(
   message: string = DEFAULT_RATE_LIMIT_MESSAGE,
 ): ReturnType<typeof rateLimit> {
   const options: Partial<Options> = {
+    keyGenerator: apiRateLimitKey,
     windowMs,
     max,
     standardHeaders: true,

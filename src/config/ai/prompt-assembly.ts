@@ -30,15 +30,10 @@ export async function buildSystemMessage({
   taskKey,
   taskPromptMode,
   senderIntent,
-  senderIntentSummary,
-  audiencePriorityMode,
-  textType,
-  rewriteBlueprint,
-  taskShapingMode,
   targetAudience,
   checkboxContent,
   rewritePlanDraft,
-  applyTaskPromptInRewriteStage,
+  repairInstructions,
 }: ProcessingOptions): Promise<string> {
   assert(
     targetAudience !== undefined && targetAudience !== null,
@@ -67,36 +62,6 @@ export async function buildSystemMessage({
   let message = rolePrompt;
   message += "\n\n";
 
-  if (senderIntentSummary && senderIntentSummary.trim().length > 0) {
-    message += `AVSÄNDARENS PRIORITERING: ${senderIntentSummary.trim()}`;
-    message += "\n\n";
-  }
-
-  if (audiencePriorityMode) {
-    if (audiencePriorityMode === "generic") {
-      message +=
-        "PRIORITERINGSSTRATEGI: Generic audience. Start with core message and most important facts first.";
-    } else {
-      message +=
-        "PRIORITERINGSSTRATEGI: Specific audience. Prioritize what matters most for the named target group first.";
-    }
-    message += "\n\n";
-  }
-
-  if (textType && textType.trim().length > 0) {
-    message += `TEXTTYP: ${textType.trim()}`;
-    message += "\n\n";
-  }
-
-  if (
-    taskShapingMode !== "task-shaping" &&
-    rewriteBlueprint &&
-    rewriteBlueprint.trim().length > 0
-  ) {
-    message += rewriteBlueprint;
-    message += "\n\n";
-  }
-
   message += senderIntentPrompt;
   message += "\n\n";
   message += targetPrompt;
@@ -109,7 +74,7 @@ export async function buildSystemMessage({
   message += "\n\n";
 
   if (
-    taskShapingMode !== "task-shaping" &&
+    !taskPromptMode &&
     rewritePlanDraft &&
     rewritePlanDraft.trim().length > 0
   ) {
@@ -118,16 +83,21 @@ export async function buildSystemMessage({
     message += "\n\n";
   }
 
-  if (taskShapingMode === "rewrite" && !applyTaskPromptInRewriteStage) {
-    const rewriteFallbackPrompt = await configService.getPrompt("rewriteFallback");
-    message += rewriteFallbackPrompt;
-  } else {
-    message += taskPrompt;
+  message += taskPrompt;
+
+  if (taskPromptMode) {
+    const selectedTask = await configService.getPrompt("task", { taskKey });
+    message += `\n\nVALD UPPGIFT (kontext för analysen, utför inte sluttexten nu):\n${selectedTask}`;
+    message += "\n\nGranska hela underlaget, även slutet. Ursprunglig placering är inte ett mått på vikt. Prioritera efter målgruppens behov och vald uppgift. Behåll ordningen om den redan fungerar; ändra annars dispositionen globalt.";
+  } else if (repairInstructions?.trim()) {
+    message += `\n\nKVALITETSREPARATION:\n${repairInstructions.trim()}`;
   }
 
   message += "\n\n";
   message +=
-    "Ge mig ENDAST den slutgiltiga versionen av den bearbetade texten UTAN dina kommentarer. Här är texten som ska skrivas om:";
+    taskPromptMode
+      ? "Returnera endast den begärda interna analysen, inte en sluttext. Här är hela underlaget som ska granskas:"
+      : "Ge mig ENDAST den slutgiltiga versionen av den bearbetade texten UTAN dina kommentarer. Följ omskrivningsutkastets disposition när ett utkast finns; uppgiftsprompten styr format och omfång. Här är texten som ska skrivas om:";
 
   return message;
 }

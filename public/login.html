@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logga in - Textverktyg</title>
+    <link rel="stylesheet" href="/css/app-main.css" />
+    <link rel="icon" href="/img/favicon.ico" />
+  </head>
+  <body>
+    <header class="flex flex-row flex-justify-content-center relative">
+      <div class="container flex flex-row flex-space-between flex-align-items-center">
+        <a href="https://www.regionstockholm.se/"><img src="/img/region-stockholm-logo-black.svg" alt="Region Stockholm logotyp" width="200" height="45" /></a>
+      </div>
+    </header>
+    <main>
+      <section class="flex flex-row flex-justify-content-center">
+        <div class="flex flex-column gap-6 pi-16">
+          <h1>Logga in till textverktyget</h1>
+          <p>Inskickad text loggas med användarnamn och tid i minst 30 dagar. Kontakta administratören för aktuell lagringstid.</p>
+          <form id="login-form" action="/auth/login" method="post" class="flex flex-column gap-4 login-form">
+            <label for="username">Användarnamn</label>
+            <input id="username" class="modal-input" name="username" autocomplete="username" required maxlength="100" />
+            <label for="password">Lösenord</label>
+            <input id="password" class="modal-input" name="password" type="password" autocomplete="current-password" required />
+            <p id="error-message" role="alert" aria-live="polite"></p>
+            <button id="login-button" type="submit" class="text-lg filled-blue outline-blue large-button">Logga in</button>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/script/login.js"></script>
+  </body>
+</html>

@@ -29,40 +29,54 @@ export type AggregateProviderConfig = {
 export type ProviderConfigAvgAggregateOutputType = {
   temperature: number | null
   maxOutputTokens: number | null
+  contextWindow: number | null
 }
 
 export type ProviderConfigSumAggregateOutputType = {
   temperature: number | null
   maxOutputTokens: number | null
+  contextWindow: number | null
 }
 
 export type ProviderConfigMinAggregateOutputType = {
   provider: string | null
   model: string | null
+  modelProfile: string | null
   temperature: number | null
   maxOutputTokens: number | null
   useWebSearch: boolean | null
   useThinking: boolean | null
+  contextWindow: number | null
+  taskModel: string | null
+  backgroundModel: string | null
   updatedAt: Date | null
 }
 
 export type ProviderConfigMaxAggregateOutputType = {
   provider: string | null
   model: string | null
+  modelProfile: string | null
   temperature: number | null
   maxOutputTokens: number | null
   useWebSearch: boolean | null
   useThinking: boolean | null
+  contextWindow: number | null
+  taskModel: string | null
+  backgroundModel: string | null
   updatedAt: Date | null
 }
 
 export type ProviderConfigCountAggregateOutputType = {
   provider: number
   model: number
+  modelProfile: number
   temperature: number
   maxOutputTokens: number
   useWebSearch: number
   useThinking: number
+  contextWindow: number
+  taskModel: number
+  backgroundModel: number
   updatedAt: number
   _all: number
 }
@@ -71,40 +85,54 @@ export type ProviderConfigCountAggregateOutputType = {
 export type ProviderConfigAvgAggregateInputType = {
   temperature?: true
   maxOutputTokens?: true
+  contextWindow?: true
 }
 
 export type ProviderConfigSumAggregateInputType = {
   temperature?: true
   maxOutputTokens?: true
+  contextWindow?: true
 }
 
 export type ProviderConfigMinAggregateInputType = {
   provider?: true
   model?: true
+  modelProfile?: true
   temperature?: true
   maxOutputTokens?: true
   useWebSearch?: true
   useThinking?: true
+  contextWindow?: true
+  taskModel?: true
+  backgroundModel?: true
   updatedAt?: true
 }
 
 export type ProviderConfigMaxAggregateInputType = {
   provider?: true
   model?: true
+  modelProfile?: true
   temperature?: true
   maxOutputTokens?: true
   useWebSearch?: true
   useThinking?: true
+  contextWindow?: true
+  taskModel?: true
+  backgroundModel?: true
   updatedAt?: true
 }
 
 export type ProviderConfigCountAggregateInputType = {
   provider?: true
   model?: true
+  modelProfile?: true
   temperature?: true
   maxOutputTokens?: true
   useWebSearch?: true
   useThinking?: true
+  contextWindow?: true
+  taskModel?: true
+  backgroundModel?: true
   updatedAt?: true
   _all?: true
 }
@@ -198,10 +226,14 @@ export type ProviderConfigGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type ProviderConfigGroupByOutputType = {
   provider: string
   model: string
+  modelProfile: string | null
   temperature: number
   maxOutputTokens: number
   useWebSearch: boolean
   useThinking: boolean
+  contextWindow: number | null
+  taskModel: string | null
+  backgroundModel: string | null
   updatedAt: Date
   _count: ProviderConfigCountAggregateOutputType | null
   _avg: ProviderConfigAvgAggregateOutputType | null
@@ -231,20 +263,28 @@ export type ProviderConfigWhereInput = {
   NOT?: Prisma.ProviderConfigWhereInput | Prisma.ProviderConfigWhereInput[]
   provider?: Prisma.StringFilter<"ProviderConfig"> | string
   model?: Prisma.StringFilter<"ProviderConfig"> | string
+  modelProfile?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
   temperature?: Prisma.FloatFilter<"ProviderConfig"> | number
   maxOutputTokens?: Prisma.IntFilter<"ProviderConfig"> | number
   useWebSearch?: Prisma.BoolFilter<"ProviderConfig"> | boolean
   useThinking?: Prisma.BoolFilter<"ProviderConfig"> | boolean
+  contextWindow?: Prisma.IntNullableFilter<"ProviderConfig"> | number | null
+  taskModel?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
+  backgroundModel?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"ProviderConfig"> | Date | string
 }
 
 export type ProviderConfigOrderByWithRelationInput = {
   provider?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProfile?: Prisma.SortOrderInput | Prisma.SortOrder
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
   useWebSearch?: Prisma.SortOrder
   useThinking?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskModel?: Prisma.SortOrderInput | Prisma.SortOrder
+  backgroundModel?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -254,20 +294,28 @@ export type ProviderConfigWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProviderConfigWhereInput[]
   NOT?: Prisma.ProviderConfigWhereInput | Prisma.ProviderConfigWhereInput[]
   model?: Prisma.StringFilter<"ProviderConfig"> | string
+  modelProfile?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
   temperature?: Prisma.FloatFilter<"ProviderConfig"> | number
   maxOutputTokens?: Prisma.IntFilter<"ProviderConfig"> | number
   useWebSearch?: Prisma.BoolFilter<"ProviderConfig"> | boolean
   useThinking?: Prisma.BoolFilter<"ProviderConfig"> | boolean
+  contextWindow?: Prisma.IntNullableFilter<"ProviderConfig"> | number | null
+  taskModel?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
+  backgroundModel?: Prisma.StringNullableFilter<"ProviderConfig"> | string | null
   updatedAt?: Prisma.DateTimeFilter<"ProviderConfig"> | Date | string
 }, "provider">
 
 export type ProviderConfigOrderByWithAggregationInput = {
   provider?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProfile?: Prisma.SortOrderInput | Prisma.SortOrder
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
   useWebSearch?: Prisma.SortOrder
   useThinking?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrderInput | Prisma.SortOrder
+  taskModel?: Prisma.SortOrderInput | Prisma.SortOrder
+  backgroundModel?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProviderConfigCountOrderByAggregateInput
   _avg?: Prisma.ProviderConfigAvgOrderByAggregateInput
@@ -282,125 +330,179 @@ export type ProviderConfigScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProviderConfigScalarWhereWithAggregatesInput | Prisma.ProviderConfigScalarWhereWithAggregatesInput[]
   provider?: Prisma.StringWithAggregatesFilter<"ProviderConfig"> | string
   model?: Prisma.StringWithAggregatesFilter<"ProviderConfig"> | string
+  modelProfile?: Prisma.StringNullableWithAggregatesFilter<"ProviderConfig"> | string | null
   temperature?: Prisma.FloatWithAggregatesFilter<"ProviderConfig"> | number
   maxOutputTokens?: Prisma.IntWithAggregatesFilter<"ProviderConfig"> | number
   useWebSearch?: Prisma.BoolWithAggregatesFilter<"ProviderConfig"> | boolean
   useThinking?: Prisma.BoolWithAggregatesFilter<"ProviderConfig"> | boolean
+  contextWindow?: Prisma.IntNullableWithAggregatesFilter<"ProviderConfig"> | number | null
+  taskModel?: Prisma.StringNullableWithAggregatesFilter<"ProviderConfig"> | string | null
+  backgroundModel?: Prisma.StringNullableWithAggregatesFilter<"ProviderConfig"> | string | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProviderConfig"> | Date | string
 }
 
 export type ProviderConfigCreateInput = {
   provider: string
   model: string
+  modelProfile?: string | null
   temperature: number
   maxOutputTokens: number
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: number | null
+  taskModel?: string | null
+  backgroundModel?: string | null
   updatedAt?: Date | string
 }
 
 export type ProviderConfigUncheckedCreateInput = {
   provider: string
   model: string
+  modelProfile?: string | null
   temperature: number
   maxOutputTokens: number
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: number | null
+  taskModel?: string | null
+  backgroundModel?: string | null
   updatedAt?: Date | string
 }
 
 export type ProviderConfigUpdateInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  modelProfile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   temperature?: Prisma.FloatFieldUpdateOperationsInput | number
   maxOutputTokens?: Prisma.IntFieldUpdateOperationsInput | number
   useWebSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   useThinking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contextWindow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taskModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProviderConfigUncheckedUpdateInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  modelProfile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   temperature?: Prisma.FloatFieldUpdateOperationsInput | number
   maxOutputTokens?: Prisma.IntFieldUpdateOperationsInput | number
   useWebSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   useThinking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contextWindow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taskModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProviderConfigCreateManyInput = {
   provider: string
   model: string
+  modelProfile?: string | null
   temperature: number
   maxOutputTokens: number
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: number | null
+  taskModel?: string | null
+  backgroundModel?: string | null
   updatedAt?: Date | string
 }
 
 export type ProviderConfigUpdateManyMutationInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  modelProfile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   temperature?: Prisma.FloatFieldUpdateOperationsInput | number
   maxOutputTokens?: Prisma.IntFieldUpdateOperationsInput | number
   useWebSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   useThinking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contextWindow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taskModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProviderConfigUncheckedUpdateManyInput = {
   provider?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  modelProfile?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   temperature?: Prisma.FloatFieldUpdateOperationsInput | number
   maxOutputTokens?: Prisma.IntFieldUpdateOperationsInput | number
   useWebSearch?: Prisma.BoolFieldUpdateOperationsInput | boolean
   useThinking?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contextWindow?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  taskModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  backgroundModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProviderConfigCountOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProfile?: Prisma.SortOrder
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
   useWebSearch?: Prisma.SortOrder
   useThinking?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrder
+  taskModel?: Prisma.SortOrder
+  backgroundModel?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProviderConfigAvgOrderByAggregateInput = {
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrder
 }
 
 export type ProviderConfigMaxOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProfile?: Prisma.SortOrder
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
   useWebSearch?: Prisma.SortOrder
   useThinking?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrder
+  taskModel?: Prisma.SortOrder
+  backgroundModel?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProviderConfigMinOrderByAggregateInput = {
   provider?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProfile?: Prisma.SortOrder
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
   useWebSearch?: Prisma.SortOrder
   useThinking?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrder
+  taskModel?: Prisma.SortOrder
+  backgroundModel?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProviderConfigSumOrderByAggregateInput = {
   temperature?: Prisma.SortOrder
   maxOutputTokens?: Prisma.SortOrder
+  contextWindow?: Prisma.SortOrder
 }
 
 export type FloatFieldUpdateOperationsInput = {
   set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -412,44 +514,60 @@ export type FloatFieldUpdateOperationsInput = {
 export type ProviderConfigSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   provider?: boolean
   model?: boolean
+  modelProfile?: boolean
   temperature?: boolean
   maxOutputTokens?: boolean
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: boolean
+  taskModel?: boolean
+  backgroundModel?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["providerConfig"]>
 
 export type ProviderConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   provider?: boolean
   model?: boolean
+  modelProfile?: boolean
   temperature?: boolean
   maxOutputTokens?: boolean
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: boolean
+  taskModel?: boolean
+  backgroundModel?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["providerConfig"]>
 
 export type ProviderConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   provider?: boolean
   model?: boolean
+  modelProfile?: boolean
   temperature?: boolean
   maxOutputTokens?: boolean
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: boolean
+  taskModel?: boolean
+  backgroundModel?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["providerConfig"]>
 
 export type ProviderConfigSelectScalar = {
   provider?: boolean
   model?: boolean
+  modelProfile?: boolean
   temperature?: boolean
   maxOutputTokens?: boolean
   useWebSearch?: boolean
   useThinking?: boolean
+  contextWindow?: boolean
+  taskModel?: boolean
+  backgroundModel?: boolean
   updatedAt?: boolean
 }
 
-export type ProviderConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"provider" | "model" | "temperature" | "maxOutputTokens" | "useWebSearch" | "useThinking" | "updatedAt", ExtArgs["result"]["providerConfig"]>
+export type ProviderConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"provider" | "model" | "modelProfile" | "temperature" | "maxOutputTokens" | "useWebSearch" | "useThinking" | "contextWindow" | "taskModel" | "backgroundModel" | "updatedAt", ExtArgs["result"]["providerConfig"]>
 
 export type $ProviderConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProviderConfig"
@@ -457,10 +575,14 @@ export type $ProviderConfigPayload<ExtArgs extends runtime.Types.Extensions.Inte
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     provider: string
     model: string
+    modelProfile: string | null
     temperature: number
     maxOutputTokens: number
     useWebSearch: boolean
     useThinking: boolean
+    contextWindow: number | null
+    taskModel: string | null
+    backgroundModel: string | null
     updatedAt: Date
   }, ExtArgs["result"]["providerConfig"]>
   composites: {}
@@ -887,10 +1009,14 @@ export interface Prisma__ProviderConfigClient<T, Null = never, ExtArgs extends r
 export interface ProviderConfigFieldRefs {
   readonly provider: Prisma.FieldRef<"ProviderConfig", 'String'>
   readonly model: Prisma.FieldRef<"ProviderConfig", 'String'>
+  readonly modelProfile: Prisma.FieldRef<"ProviderConfig", 'String'>
   readonly temperature: Prisma.FieldRef<"ProviderConfig", 'Float'>
   readonly maxOutputTokens: Prisma.FieldRef<"ProviderConfig", 'Int'>
   readonly useWebSearch: Prisma.FieldRef<"ProviderConfig", 'Boolean'>
   readonly useThinking: Prisma.FieldRef<"ProviderConfig", 'Boolean'>
+  readonly contextWindow: Prisma.FieldRef<"ProviderConfig", 'Int'>
+  readonly taskModel: Prisma.FieldRef<"ProviderConfig", 'String'>
+  readonly backgroundModel: Prisma.FieldRef<"ProviderConfig", 'String'>
   readonly updatedAt: Prisma.FieldRef<"ProviderConfig", 'DateTime'>
 }
     

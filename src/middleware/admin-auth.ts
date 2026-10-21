@@ -1,6 +1,6 @@
 /**
  * Admin Auth Middleware
- * Protects admin routes using a static API key (Bearer token)
+ * Protects admin routes using a bearer API key or a signed browser session.
  */
 
 import type { Request, Response, NextFunction } from "express";
@@ -8,6 +8,11 @@ import rateLimit from "express-rate-limit";
 import { timingSafeEqual } from "node:crypto";
 import { sendError } from "../utils/api/api-responses.js";
 import { validateApiKey } from "../utils/safety-utils.js";
+import { createAuthCooldown } from "./auth-cooldown.js";
+import { hasAdminSession } from "../auth/admin-session.js";
+import { requireSameOrigin } from "../auth/auth-middleware.js";
+
+const adminCooldown = createAuthCooldown();
 
 const AUTH_HEADER_PREFIX = "Bearer ";
 const DEFAULT_AUTH_WINDOW_MS = 10 * 60 * 1000;
@@ -107,7 +112,7 @@ function extractBearerToken(authorizationHeader?: string): string | null {
  * @param {Response} res - Express response object
  * @param {NextFunction} next - Express next middleware function
  */
-export const requireAdminAuth = (
+export const authenticateAdminKey = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -119,12 +124,23 @@ export const requireAdminAuth = (
     return;
   }
 
-  const token = extractBearerToken(req.headers.authorization);
+  adminCooldown.middleware(req, res, () => {
+    const token = extractBearerToken(req.headers.authorization);
+    if (!token || token.length > 4096 || !secureTokenCompare(token, adminApiKey)) {
+      adminCooldown.failure(req, res, 401, "Unauthorized");
+      return;
+    }
+    adminCooldown.success(req);
+    next();
+  });
+};
 
-  if (!token || !secureTokenCompare(token, adminApiKey)) {
-    sendError(res, 401, "Unauthorized");
+export const requireAdminAuth = (req: Request, res: Response, next: NextFunction): void => {
+  // An explicit bearer header always takes precedence over a browser cookie.
+  if (!req.headers.authorization && hasAdminSession(req)) {
+    if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) requireSameOrigin(req, res, next);
+    else next();
     return;
   }
-
-  next();
+  authenticateAdminKey(req, res, next);
 };

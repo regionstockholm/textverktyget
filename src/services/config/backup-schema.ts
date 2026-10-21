@@ -1,10 +1,8 @@
 import { AI_PROVIDERS, type AIProvider } from "../../config/ai/ai-config.js";
-import {
-  GEMINI_MODEL_WHITELIST,
-  normalizeGeminiModel,
-} from "../../config/ai/model-whitelist.js";
+import { normalizeProviderId, validateLlmSettings, type LlmSettings } from "../../config/ai/provider-registry.js";
+import { TASK_WEB_SEARCH_MODES, type TaskWebSearchMode } from "../../config/tasks/task-contract.js";
 
-export const BACKUP_SCHEMA_VERSION = 4 as const;
+export const BACKUP_SCHEMA_VERSION = 7 as const;
 export const BACKUP_APP_ID = "textverktyg" as const;
 
 export type BackupSystemPrompt = {
@@ -33,6 +31,8 @@ export type BackupTaskDefinition = {
   sortOrder: number;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
+  reasoningEnabled: boolean;
+  webSearchMode: TaskWebSearchMode;
   prompt: {
     content: string;
   };
@@ -54,7 +54,12 @@ export type BackupPayload = {
       runtimeSettings?: Record<string, unknown>;
     };
     providers: {
+      [provider: string]: LlmSettings;
       gemini: {
+        modelProfile?: string | null;
+        contextWindow?: number;
+        taskModel?: string | null;
+        backgroundModel?: string | null;
         model: string;
         temperature: number;
         maxOutputTokens: number;
@@ -71,7 +76,7 @@ export type BackupPayload = {
 };
 
 export type BackupValidationResult =
-  | { ok: true; payload: BackupPayload }
+  | { ok: true; payload: BackupPayload; upgradedFrom?: 4 | 5 | 6 }
   | { ok: false; errors: string[] };
 
 const REQUIRED_SYSTEM_PROMPTS = new Set<string>([
@@ -81,11 +86,35 @@ const REQUIRED_SYSTEM_PROMPTS = new Set<string>([
   "rewritePlan",
   "qualityEvaluation",
   "wordListUsage",
-  "rewriteFallback",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+/** Upgrade a current-version legacy backup without mutating the uploaded JSON. */
+export function upgradeLegacyBackup(value: unknown): unknown {
+  if (!isRecord(value) || ![4, 5, 6].includes(value.schemaVersion as number) || !isRecord(value.settings)) {
+    return value;
+  }
+  const tasks = value.settings.tasks;
+  return {
+    ...value,
+    schemaVersion: BACKUP_SCHEMA_VERSION,
+    settings: {
+      ...value.settings,
+      global: isRecord(value.settings.global) ? { ...value.settings.global, provider: value.settings.global.provider === "gemini-2.5-flash" ? "gemini" : value.settings.global.provider } : value.settings.global,
+      tasks: Array.isArray(tasks)
+        ? tasks.map((task) => isRecord(task) ? {
+          ...task,
+          reasoningEnabled: value.schemaVersion === 4 && task.reasoningEnabled === undefined
+            ? true
+            : task.reasoningEnabled,
+          webSearchMode: task.webSearchMode === undefined ? "inherit" : task.webSearchMode,
+        } : task)
+        : tasks,
+    },
+  };
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -283,6 +312,12 @@ function validateTasks(value: unknown, errors: string[]): void {
     if (typeof entry.rewritePlanEnabled !== "boolean") {
       errors.push(`settings.tasks[${index}].rewritePlanEnabled must be boolean.`);
     }
+    if (typeof entry.reasoningEnabled !== "boolean") {
+      errors.push(`settings.tasks[${index}].reasoningEnabled must be boolean.`);
+    }
+    if (!TASK_WEB_SEARCH_MODES.includes(entry.webSearchMode as TaskWebSearchMode)) {
+      errors.push(`settings.tasks[${index}].webSearchMode must be inherit, off or on.`);
+    }
 
     if (!isRecord(entry.prompt)) {
       errors.push(`settings.tasks[${index}].prompt must be an object.`);
@@ -323,13 +358,15 @@ function validateOrdlista(value: unknown, errors: string[]): void {
 
 export function validateBackupPayload(value: unknown): BackupValidationResult {
   const errors: string[] = [];
+  const upgradedFrom = isRecord(value) && (value.schemaVersion === 4 || value.schemaVersion === 5 || value.schemaVersion === 6) ? value.schemaVersion : undefined;
+  value = upgradeLegacyBackup(value);
 
   if (!isRecord(value)) {
     return { ok: false, errors: ["Payload must be an object."] };
   }
 
   if (value.schemaVersion !== BACKUP_SCHEMA_VERSION) {
-    errors.push(`schemaVersion must be ${BACKUP_SCHEMA_VERSION}.`);
+    errors.push(`schemaVersion must be 4, 5, 6 or ${BACKUP_SCHEMA_VERSION}.`);
   }
   if (value.app !== BACKUP_APP_ID) {
     errors.push("app must be textverktyg.");
@@ -373,8 +410,8 @@ export function validateBackupPayload(value: unknown): BackupValidationResult {
     } else {
       if (!isNonEmptyString(gemini.model)) {
         errors.push("settings.providers.gemini.model must be a string.");
-      } else if (!GEMINI_MODEL_WHITELIST.has(normalizeGeminiModel(gemini.model))) {
-        errors.push("settings.providers.gemini.model must be whitelisted.");
+      } else if (/[\x00-\x1f]/.test(gemini.model)) {
+        errors.push("settings.providers.gemini.model is invalid.");
       }
       if (
         typeof gemini.temperature !== "number" ||
@@ -394,6 +431,12 @@ export function validateBackupPayload(value: unknown): BackupValidationResult {
         errors.push("settings.providers.gemini.useThinking must be boolean.");
       }
     }
+    for (const [provider, settings] of Object.entries(providers)) {
+      try {
+        const id = normalizeProviderId(provider);
+        if (provider !== "gemini") validateLlmSettings(id, settings, { allowInactive: true });
+      } catch (error) { errors.push(`settings.providers.${provider}: ${error instanceof Error ? error.message : "Invalid settings"}`); }
+    }
   }
 
   validateSystemPrompts(settings.systemPrompts, errors);
@@ -409,5 +452,5 @@ export function validateBackupPayload(value: unknown): BackupValidationResult {
     return { ok: false, errors };
   }
 
-  return { ok: true, payload: value as BackupPayload };
+  return { ok: true, payload: value as BackupPayload, upgradedFrom };
 }

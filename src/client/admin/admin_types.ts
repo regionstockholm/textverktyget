@@ -43,6 +43,8 @@ export type TaskDefinition = {
   sortOrder: number;
   targetAudienceEnabled?: boolean;
   rewritePlanEnabled?: boolean;
+  reasoningEnabled?: boolean;
+  webSearchMode?: "inherit" | "off" | "on";
 };
 
 export type TargetAudienceCategory = {

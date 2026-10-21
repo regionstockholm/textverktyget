@@ -51,31 +51,33 @@ const buildOptions = {
  */
 function buildCSS() {
   try {
-    const scssFile = path.join(__dirname, "public", "css", "app-main.scss");
-    const cssFile = path.join(cssBuildDir, "app-main.css");
-    const mapFile = path.join(cssBuildDir, "app-main.css.map");
+    for (const stylesheet of ["app-main", "admin-ui"]) {
+      const scssFile = path.join(cssBuildDir, `${stylesheet}.scss`);
+      const cssFile = path.join(cssBuildDir, `${stylesheet}.css`);
+      const mapFile = path.join(cssBuildDir, `${stylesheet}.css.map`);
 
-    if (!fs.existsSync(scssFile)) {
-      throw new Error(`SCSS file not found: ${scssFile}`);
+      if (!fs.existsSync(scssFile)) {
+        throw new Error(`SCSS file not found: ${scssFile}`);
+      }
+
+      console.log(`🎨 Compiling ${stylesheet}.scss...`);
+
+      const result = sass.compile(scssFile, {
+        sourceMap: !isProduction,
+        style: isProduction ? "compressed" : "expanded",
+      });
+
+      // Write CSS file
+      fs.writeFileSync(cssFile, result.css);
+
+      // Write source map if available
+      if (result.sourceMap && !isProduction) {
+        fs.writeFileSync(mapFile, JSON.stringify(result.sourceMap));
+      }
+
+      console.log(`✅ ${stylesheet}.scss compiled successfully`);
+      console.log(`📦 Output: public/css/${stylesheet}.css`);
     }
-
-    console.log("🎨 Compiling SCSS...");
-
-    const result = sass.compile(scssFile, {
-      sourceMap: !isProduction,
-      style: isProduction ? "compressed" : "expanded",
-    });
-
-    // Write CSS file
-    fs.writeFileSync(cssFile, result.css);
-
-    // Write source map if available
-    if (result.sourceMap && !isProduction) {
-      fs.writeFileSync(mapFile, JSON.stringify(result.sourceMap));
-    }
-
-    console.log(`✅ SCSS compiled successfully`);
-    console.log(`📦 Output: public/css/app-main.css`);
   } catch (error) {
     console.error("❌ SCSS compilation failed:", error);
     process.exit(1);
@@ -140,6 +142,12 @@ async function buildJS() {
 
     console.log(`✅ Admin UI JavaScript build completed successfully`);
     console.log(`📦 Output: public/script/admin-ui.js`);
+    await Promise.all(["login", "logout", "admin-login"].map(name => esbuild.build({
+      ...buildOptions,
+      entryPoints: [`src/client/${name}.ts`],
+      outfile: path.join(scriptBuildDir, `${name}.js`),
+      format: "esm",
+    })));
   } catch (error) {
     console.error("❌ JavaScript build failed:", error);
     process.exit(1);

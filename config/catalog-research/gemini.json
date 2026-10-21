@@ -1,0 +1,3442 @@
+{
+  "provider": "gemini",
+  "capturedAt": "2026-10-04T08:22:39.052Z",
+  "sourceStatus": "complete",
+  "errors": [],
+  "evidence": [
+    {
+      "url": "https://ai.google.dev/gemini-api/docs/models",
+      "capturedAt": "2026-10-04T08:22:39.554Z",
+      "sha256": "430c5aa044d8b077ef861a3bb8872e945589e7c3f0546b7d0cfc0c007ddd5afb",
+      "text": "This guide introduces all the models available through the Gemini API.\nGemini 3\nStable\n spark\n Gemini 3.8 Flash\n Our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows.\n New Stable\n settings_voice\n Gemini 3.8 Live\n Default Live API model for most low-latency voice agent experiences without reasoning delays.\n New Stable\n psychology\n Gemini 3.8 Live Extended Thinking\n High-reasoning Live API model for voice interactions, recommended when higher background reasoning is required.\n New Stable\n graphic_eq\n Gemini 3.8 Flash TTS\n Flagship creative text-to-speech model for studio-grade voice fidelity, expressive acting, Voice design, and Voice replication.\n New Stable\n graphic_eq\n Gemini 3.8 Flash-Lite TTS\n Fast, cost-efficient text-to-speech model for high-volume production, real-time voice agent cascades, and Voice replication.\n New Stable\n spark\n Gemini 3.7 Flash\n Our previous-generation Flash model for complex coding, agentic workflows, and reliable multi-step execution.\n Stable\n spark\n Gemini 3.6 Flash\n Our previous-generation Flash model, balancing speed and multimodal capabilities across general agentic and everyday tasks.\n Stable\n spark\n Gemini 3.5 Flash\n Our legacy Flash model, providing baseline speed and foundational performance for routine, high-throughput workloads.\n Stable\n bolt\n Gemini 3.5 Flash-Lite\n Our fastest, most cost-effective 3.5 model for high-throughput execution.\n Stable\n bolt\n Gemini 3.1 Flash-Lite\n Frontier-class performance rivaling larger models at a fraction of the cost.\n Stable\n 🍌🍌\n Nano Banana 2\n Powerful, high-efficiency image generation and editing, optimized for speed and high-volume use cases.\n Stable\n 🍌\n Nano Banana 2 Lite\n Ultra-low latency and cost-effective image generation and editing, designed for high-volume interactive use cases.\n Stable\n 🍌\n Nano Banana Pro\n State-of-the-art image generation and editing models for highly contextual native image creation.\n Stable\n speech_to_text\n Gemini 3.5 Transcribe\n Low-latency speech-to-text model with utterance-based language detection, speaker diarization, and word timestamps.\n New Stable\nPreview\n auto_awesome\n Gemini 3.1 Pro\n Advanced intelligence, complex problem-solving skills, and powerful agentic and vibe coding capabilities.\n Preview\n spark\n Gemini 3 Flash\n Frontier-class performance rivaling larger models at a fraction of the cost.\n Preview\n translate\n Gemini 3.5 Live Translate\n Low-latency, real-time speech to speech translation model that supports 70+ languages.\n New\n settings_voice\n Gemini 3.1 Flash Live\n Legacy Live API preview model. We recommend updating to Gemini 3.8 Live.\n New\n graphic_eq\n Gemini 3.1 Flash TTS\n Legacy TTS preview model. We recommend updating to Gemini 3.8 Flash TTS or Gemini 3.8 Flash-Lite TTS.\n Preview\n movie_filter\n Gemini Omni Flash\n Fast video generation, editing, keyframe interpolation, and extension with native audio.\n New\nAll Gemini 3 models\nModel | \nEndpoint | \nGemini 3.8 Flash | \ngemini-3.8-flash\n | \nGemini 3.8 Live | \ngemini-3.8-live\n | \nGemini 3.8 Live Extended Thinking | \ngemini-3.8-live-extended-thinking\n | \nGemini 3.8 Flash TTS | \ngemini-3.8-flash-tts\n | \nGemini 3.8 Flash-Lite TTS | \ngemini-3.8-flash-lite-tts\n | \nGemini 3.7 Flash | \ngemini-3.7-flash\n | \nGemini 3.6 Flash | \ngemini-3.6-flash\n | \nGemini 3.5 Flash | \ngemini-3.5-flash\n | \nGemini 3.5 Flash-Lite | \ngemini-3.5-flash-lite\n | \nGemini 3.1 Flash-Lite | \ngemini-3.1-flash-lite\n | \nNano Banana 2 | \ngemini-3.1-flash-image\n | \nNano Banana 2 Lite | \ngemini-3.1-flash-lite-image\n | \nNano Banana Pro | \ngemini-3-pro-image\n | \nGemini 3.1 Pro | \ngemini-3.1-pro-preview\n | \nGemini 3 Flash | \ngemini-3-flash-preview\n | \nGemini 3.5 Live Translate | \ngemini-3.5-live-translate-preview\n | \nGemini 3.1 Flash Live | \ngemini-3.1-flash-live-preview\n | \nGemini 3.1 Flash TTS | \ngemini-3.1-flash-tts-preview\n | \nGemini Omni Flash | \ngemini-omni-1.1-flash\n | \nGemini 3.5 Transcribe | \ngemini-3.5-transcribegemini-3.5-transcribe-live\n | \nGemini 2.5 Flash\nModel | \nDescription | \nEndpoint | \nGemini 2.5 Flash | \nOur best price-performance model for low-latency, high-volume tasks that require reasoning. | \ngemini-2.5-flash\n | \nNano Banana | \nState-of-the-art native image generation and editing designed for fast, creative workflows. | \ngemini-2.5-flash-image\n | \nGemini 2.5 Flash Live | \nOptimized for real-time conversational agents with sub-second native audio streaming. | \ngemini-2.5-flash-native-audio-preview-12-2025\n | \nGemini 2.5 Flash TTS | \nControllable text-to-speech audio generation with fine control over style and pacing. | \ngemini-2.5-flash-preview-tts\n | \nGemini 2.5 Flash-Lite\nModel | \nDescription | \nEndpoint | \nGemini 2.5 Flash-Lite | \nThe fastest and most budget-friendly multimodal model in the 2.5 family. | \ngemini-2.5-flash-lite\n | \nGemini 2.5 Pro\nModel | \nDescription | \nEndpoint | \nGemini 2.5 Pro | \nOur most advanced model for complex tasks, featuring deep reasoning and coding capabilities in the 2.5 family. | \ngemini-2.5-pro\n | \nGemini 2.5 Pro TTS | \nHigh-fidelity speech synthesis optimized for quality in structured workflows like podcasts and audiobooks. | \ngemini-2.5-pro-preview-tts\n | \nAudio models\nThis section contains all audio models,\nincluding ones that may already be listed in other sections\nModel | \nDescription | \nEndpoint | \nGemini 3.8 Live | \nThe default option for most low-latency voice agent experiences and real-time dialogue without reasoning delays. | \ngemini-3.8-live\n | \nGemini 3.8 Live Extended Thinking | \nOur high-reasoning audio-to-audio model, recommended when higher background reasoning is required during live interactions. | \ngemini-3.8-live-extended-thinking\n | \nGemini 3.8 Flash TTS | \nFlagship creative text-to-speech model for studio-grade voice fidelity, expressive acting, and regional dialects across 130 languages. | \ngemini-3.8-flash-tts\n | \nGemini 3.8 Flash-Lite TTS | \nFast, cost-efficient text-to-speech model built for high-throughput production workloads across 101 languages. | \ngemini-3.8-flash-lite-tts\n | \nGemini 3.1 Flash Live | \nLegacy audio-to-audio preview model. We recommend updating to Gemini 3.8 Live. | \ngemini-3.1-flash-live-preview\n | \nGemini 3.1 Flash TTS | \nLegacy text-to-speech preview model. We recommend updating to Gemini 3.8 Flash TTS or Gemini 3.8 Flash-Lite TTS. | \ngemini-3.1-flash-tts-preview\n | \nGemini 3.5 Transcribe | \nLow-latency speech-to-text model with utterance-based language detection, speaker diarization, word-level timestamps, and custom vocabulary biasing. | \ngemini-3.5-transcribegemini-3.5-transcribe-live\n | \nGemini 2.5 Flash Live | \nOur flagship Live API model for low-latency, bidirectional voice and video agents with native audio reasoning. | \ngemini-2.5-flash-native-audio-preview-12-2025\n | \nGemini 2.5 Flash TTS | \nFast and controllable text-to-speech for low-latency, cost-efficient applications and real-time assistants. | \ngemini-2.5-flash-preview-tts\n | \nGemini 2.5 Pro TTS | \nHigh-fidelity speech synthesis optimized for quality in structured workflows like podcasts and audiobooks. | \ngemini-2.5-pro-preview-tts\n | \nGenerative media models\nThis section contains all generative media models,\nincluding ones that may already be listed in other sections\nModel | \nDescription | \nEndpoint | \nNano Banana 2 | \nHigh-efficiency production-scale visual creation, combining the intelligence of the Gemini 3 series with lightning-fast generation speeds. | \ngemini-3.1-flash-image\n | \nNano Banana 2 Lite | \nDesigned as the efficiency specialist of the image generation family, offering ultra-low latency and cost-effective image generation and editing. | \ngemini-3.1-flash-lite-image\n | \nVeo 3.1 | \nState-of-the-art cinematic video generation with advanced creative controls and natively synchronized audio. | \nveo-3.1-generate-preview\n | \nNano Banana Pro | \nA professional design engine with a reasoning core for studio-quality 4K visuals, complex layouts, and precise text rendering. | \ngemini-3-pro-image\n | \nVeo 3.1 Lite | \nHigh-efficiency, low-cost, developer-first video generation, editing, and cinematic control from the Veo 3.1 family. | \nveo-3.1-lite-generate-preview\n | \nGemini Omni Flash | \nFast video generation, editing, keyframe interpolation, and extension with native audio. | \ngemini-omni-1.1-flash\n | \nNano Banana | \nState-of-the-art native image generation and editing designed for fast, creative workflows. | \ngemini-2.5-flash-image\n | \nImagen 4 (Shut down) | \nText-to-image model featuring fast and ultra-fast generation (shut down). | \nimagen-4.0-generate\n | \nMusic generation models\nThis section contains all music generation models,\nincluding ones that may already be listed in other sections\nModel | \nDescription | \nEndpoint | \nLyria 3.5 | \nOur flagship music generation model, optimized for full-length songs with complex structural coherence. | \nlyria-3.5\n | \nLyria 3 Clip | \nOptimized for generating short musical clips, loops, and previews up to 30 seconds. | \nlyria-3-clip-preview\n | \nLyria 3 Pro | \nPrevious generation music generation model for full-length songs. | \nlyria-3-pro-preview\n | \nLyria RealTime | \nHigh-fidelity music generation model providing granular creative control and real-time streaming capabilities. | \nlyria-realtime-exp\n | \nTool and agent models\nModel | \nDescription | \nEndpoint | \nGemini Deep Research | \nAn agentic model that autonomously plans and executes multi-step research across hundreds of sources to produce cited, interactive reports. | \ndeep-research-preview-04-2026\n | \nGemini Deep Research Max | \nMaximum comprehensiveness for automated context gathering and synthesis across hundreds of sources. | \ndeep-research-max-preview-04-2026\n | \nAntigravity Agent | \nA general-purpose managed agent that autonomously plans, reasons, runs code, manages files, and browses the web inside a secure, isolated Linux sandbox. | \nantigravity-preview-09-2026\n | \nSpecialized task models\nModel | \nDescription | \nEndpoint | \nGemini Embedding 2 | \nOur first multimodal embedding model, mapping text, images, video, audio, and PDFs into a unified embedding space for advanced semantic search and RAG systems. | \ngemini-embedding-2-preview\n | \nGemini Embedding | \nHigh-dimensional vector representations for advanced semantic search, text classification, and RAG systems. | \ngemini-embedding-001\n | \nGemini Robotics ER 2 | \nEmbodied reasoning model delivering advanced video understanding, spatial reasoning, multi-step tool orchestration, and multi-robot collaboration for robotics tasks. | \ngemini-robotics-er-2-preview\n | \nGemini Robotics ER 1.6 | \nAdvanced embodied reasoning model that understands physical spaces and plans multi-step tasks for robotic agents with new capabilities like instrument reading, improved spatial and physical reasoning. | \ngemini-robotics-er-1.6-preview\n | \nPrevious models\nModel | \nDescription | \nEndpoint | \nComputer Use (Shut down) | \nA specialized model that can \"see\" a digital screen and perform UI actions like clicking, typing, and navigating to automate complex browser tasks. | \ngemini-2.5-computer-use-preview-10-2025\n | \nGemini 2.0 Flash (Shut down) | \nOur second generation workhorse model, with next-gen features and improved capabilities, including superior speed, native tool use, and a 1M token context window. | \ngemini-2.0-flash\n | \nGemini 2.0 Flash-Lite (Shut down) | \nOur fastest second generation model, optimized for cost efficiency and low latency. | \ngemini-2.0-flash-lite\n | \nGemini 3.1 Flash-Lite Preview (Shut down) | \nOur most cost-efficient multimodal model, offering the fastest performance for high-frequency, lightweight tasks. | \ngemini-3.1-flash-lite-preview\n | \nGemini 3 Pro Preview (Shut down) | \nOur state-of-the-art reasoning model, with advanced multimodal understanding. | \ngemini-3-pro-preview\n | \nModel version name patterns\nGemini models are available in either stable, preview, latest, or\nexperimental versions.\nStable\nPoints to a specific stable model. Stable models usually don't change. Most\nproduction apps should use a specific stable model.\nFor example: gemini-3.6-flash.\nPreview\nPoints to a preview model which may be used for production. Preview models will\ntypically have billing enabled, might come with more restrictive rate limits and\nwill be deprecated with at least 2 weeks notice.\nFor example: gemini-2.5-flash-preview-09-2025.\nLatest\nPoints to the latest release for a specific model variation. This can be a\nstable, preview or experimental release. This alias will get hot-swapped with\nevery new release of a specific model variation. For breaking changes, a\n2-week notice will be provided through email before the version behind\nlatest is changed.\nFor example: gemini-flash-latest.\nExperimental\nPoints to an experimental model which will typically be not be suitable for\nproduction use and come with more restrictive rate limits. We release\nexperimental models to gather feedback and get our latest updates into the hands\nof developers quickly.\nExperimental models are not stable and availability of model endpoints is\nsubject to change.\nModel deprecations\nFor information about model deprecations, visit the Gemini deprecations page.",
+      "links": [
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models#main-content",
+          "text": "Skip to main content"
+        },
+        {
+          "url": "https://ai.google.dev/",
+          "text": ""
+        },
+        {
+          "url": "https://aistudio.google.com/apikey",
+          "text": "Get API key"
+        },
+        {
+          "url": "https://github.com/google-gemini/cookbook",
+          "text": "Cookbook"
+        },
+        {
+          "url": "https://discuss.ai.google.dev/c/gemini-api/",
+          "text": "Community"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs",
+          "text": "Docs"
+        },
+        {
+          "url": "https://ai.google.dev/api",
+          "text": "API reference"
+        },
+        {
+          "url": "https://ai.google.dev/",
+          "text": ""
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs",
+          "text": "Gemini API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs",
+          "text": "Docs"
+        },
+        {
+          "url": "https://ai.google.dev/api",
+          "text": "API reference"
+        },
+        {
+          "url": "https://aistudio.google.com/apikey",
+          "text": "Get API key"
+        },
+        {
+          "url": "https://github.com/google-gemini/cookbook",
+          "text": "Cookbook"
+        },
+        {
+          "url": "https://discuss.ai.google.dev/c/gemini-api/",
+          "text": "Community"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/get-started",
+          "text": "Get started"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/api-key",
+          "text": "API keys"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/pricing",
+          "text": "Pricing"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/coding-agents",
+          "text": "Coding agent setup"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "text": "All models"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/latest-model",
+          "text": "Latest Gemini models"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/image-generation",
+          "text": "Nano Banana"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/veo",
+          "text": "Veo"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/omni",
+          "text": "Gemini Omni Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/music-generation",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/realtime-music-generation",
+          "text": "Lyria RealTime"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/lyria-prompt-guide",
+          "text": "Lyria prompt guide"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/speech-generation",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/voice-design",
+          "text": "Voice design"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/voice-replication",
+          "text": "Voice replication"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/transcribe",
+          "text": "Transcribe"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api",
+          "text": "Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/live-translate",
+          "text": "Live translate"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/embeddings",
+          "text": "Embeddings"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-overview",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-spatial",
+          "text": "Spatial reasoning"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-agentic",
+          "text": "Agentic vision"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-orchestration",
+          "text": "Task orchestration"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-streaming",
+          "text": "Robotics with streaming"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-video-progress",
+          "text": "Video understanding"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/text-generation",
+          "text": "Text"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/image-generation",
+          "text": "Image generation 🍌"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/image-understanding",
+          "text": "Image understanding"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/video",
+          "text": "Video overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/video-understanding",
+          "text": "Video understanding"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/document-processing",
+          "text": "Documents"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/speech-generation",
+          "text": "Speech generation"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/audio",
+          "text": "Audio understanding"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/transcribe",
+          "text": "Audio transcription"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/thinking",
+          "text": "Thinking"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/thought-signatures",
+          "text": "Thought signatures"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/structured-output",
+          "text": "Structured outputs"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/function-calling",
+          "text": "Function calling"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/long-context",
+          "text": "Long context"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/agents",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/managed-agents-quickstart",
+          "text": "Quickstart"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/antigravity-agent",
+          "text": "Antigravity agent"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/custom-agents",
+          "text": "Building managed agents"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/agent-environment",
+          "text": "Environments"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/agent-credentials",
+          "text": "Credentials"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/agent-hooks",
+          "text": "Hooks"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/deep-research",
+          "text": "Deep Research agent"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/tools",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/google-search",
+          "text": "Google Search"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/maps-grounding",
+          "text": "Google Maps"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/code-execution",
+          "text": "Code execution"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/url-context",
+          "text": "URL context"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/computer-use",
+          "text": "Computer use"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/file-search",
+          "text": "File search"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/tool-combination",
+          "text": "Combine tools and function calling"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/get-started-sdk",
+          "text": "Get started using the GenAI SDK"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/get-started-websocket",
+          "text": "Get started using raw WebSockets"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/capabilities",
+          "text": "Capabilities"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/thinking",
+          "text": "Thinking"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/live-transcribe",
+          "text": "Live transcription"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/live-translate",
+          "text": "Live translation"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/tools",
+          "text": "Tool use"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/session-management",
+          "text": "Session management"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens",
+          "text": "Ephemeral tokens"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/live-api/best-practices",
+          "text": "Best practices"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/optimization",
+          "text": "Overview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/batch-api",
+          "text": "Batch API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/webhooks",
+          "text": "Webhooks"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/flex-inference",
+          "text": "Flex inference"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/priority-inference",
+          "text": "Priority inference"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/caching",
+          "text": "Context caching"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/interactions-overview",
+          "text": "Interactions API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/streaming",
+          "text": "Streaming"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/background-execution",
+          "text": "Background execution"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/file-input-methods",
+          "text": "Input methods"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/files",
+          "text": "Files API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/openai",
+          "text": "OpenAI compatibility"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/media-resolution",
+          "text": "Media resolution"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/tokens",
+          "text": "Token counting"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/prompting-strategies",
+          "text": "Prompt engineering"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/logs-datasets",
+          "text": "Get started with logs"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/logs-policy",
+          "text": "Data logging and sharing"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/safety-settings",
+          "text": "Safety settings"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/safety-guidance",
+          "text": "Safety guidance"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/langgraph-example",
+          "text": "LangChain & LangGraph"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/crewai-example",
+          "text": "CrewAI"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/llama-index",
+          "text": "LlamaIndex"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/vercel-ai-sdk-example",
+          "text": "Vercel AI SDK"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/temporal-example",
+          "text": "Temporal"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/changelog",
+          "text": "Release notes"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/deprecations",
+          "text": "Deprecations"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/libraries",
+          "text": "Libraries"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/migrate",
+          "text": "Migrate to Gen AI SDK"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/migrate-to-interactions",
+          "text": "Migrate to Interactions API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026",
+          "text": "Interactions breaking changes (May 2026)"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/rate-limits",
+          "text": "Rate limits"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/billing",
+          "text": "Billing info"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/troubleshooting",
+          "text": "API troubleshooting"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/api-errors",
+          "text": "API errors"
+        },
+        {
+          "url": "https://aistudio.google.com/status",
+          "text": "Status"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/partner-integration",
+          "text": "Partner and library integrations"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/ai-studio-quickstart",
+          "text": "Quickstart"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/google-ai-plans",
+          "text": "Google AI plans"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/aistudio-build-mode",
+          "text": "Vibe code in Build mode"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/aistudio-fullstack",
+          "text": "Developing full-stack apps"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/aistudio-android",
+          "text": "Build Android apps"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/aistudio-deploying",
+          "text": "Deploying your app"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/aistudio-agents",
+          "text": "Agents in AI Studio Playground"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/learnlm",
+          "text": "Try out LearnLM"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/troubleshoot-ai-studio",
+          "text": "Troubleshooting"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/workspace",
+          "text": "Access for Workspace users"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/migrate-to-cloud",
+          "text": "Gemini Enterprise Agent Platform Gemini API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/oauth",
+          "text": "OAuth authentication"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "text": "Terms of service"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/available-regions",
+          "text": "Available regions"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/usage-policies",
+          "text": "Abuse monitoring"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/feedback-policies",
+          "text": "Feedback information"
+        },
+        {
+          "url": "https://aistudio.google.com/prompts/new_chat?model=gemini-3.8-flash",
+          "text": "Try it out"
+        },
+        {
+          "url": "https://ai.google.dev/",
+          "text": "Home"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api",
+          "text": "Gemini API"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs",
+          "text": "Docs"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+          "text": "spark\n      Gemini 3.8 Flash\n    \n    \n      Our most intelligent Flash model, engineered for long-horizon software engineering, autonomous agents, and complex enterprise workflows.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+          "text": "settings_voice\n      Gemini 3.8 Live\n    \n    \n      Default Live API model for most low-latency voice agent experiences without reasoning delays.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+          "text": "psychology\n      Gemini 3.8 Live Extended Thinking\n    \n    \n      High-reasoning Live API model for voice interactions, recommended when higher background reasoning is required.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+          "text": "graphic_eq\n      Gemini 3.8 Flash TTS\n    \n    \n      Flagship creative text-to-speech model for studio-grade voice fidelity, expressive acting, Voice design, and Voice replication.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts",
+          "text": "graphic_eq\n      Gemini 3.8 Flash-Lite TTS\n    \n    \n      Fast, cost-efficient text-to-speech model for high-volume production, real-time voice agent cascades, and Voice replication.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "text": "spark\n      Gemini 3.7 Flash\n    \n    \n      Our previous-generation Flash model for complex coding, agentic workflows, and reliable multi-step execution.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
+          "text": "spark\n      Gemini 3.6 Flash\n    \n    \n      Our previous-generation Flash model, balancing speed and multimodal capabilities across general agentic and everyday tasks.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "text": "spark\n      Gemini 3.5 Flash\n    \n    \n      Our legacy Flash model, providing baseline speed and foundational performance for routine, high-throughput workloads.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite",
+          "text": "bolt\n      Gemini 3.5 Flash-Lite\n    \n    \n      Our fastest, most cost-effective 3.5 model for high-throughput execution.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+          "text": "bolt\n      Gemini 3.1 Flash-Lite\n    \n    \n      Frontier-class performance rivaling larger models at a fraction of the cost.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+          "text": "🍌🍌\n      Nano Banana 2\n    \n    \n      Powerful, high-efficiency image generation and editing, optimized for speed and high-volume use cases.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image",
+          "text": "🍌\n      Nano Banana 2 Lite\n    \n    \n      Ultra-low latency and cost-effective image generation and editing, designed for high-volume interactive use cases.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+          "text": "🍌\n      Nano Banana Pro\n    \n    \n      State-of-the-art image generation and editing models for highly contextual native image creation.\n    \n    Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-transcribe",
+          "text": "speech_to_text\n      Gemini 3.5 Transcribe\n    \n    \n      Low-latency speech-to-text model with utterance-based language detection, speaker diarization, and word timestamps.\n    \n    New Stable"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
+          "text": "auto_awesome\n      Gemini 3.1 Pro\n    \n    \n      Advanced intelligence, complex problem-solving skills, and powerful agentic and vibe coding capabilities.\n    \n    Preview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+          "text": "spark\n      Gemini 3 Flash\n    \n    \n      Frontier-class performance rivaling larger models at a fraction of the cost.\n    \n    Preview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview",
+          "text": "translate\n      Gemini 3.5 Live Translate\n    \n    \n      Low-latency, real-time speech to speech translation model that supports 70+ languages.\n    \n    New"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
+          "text": "settings_voice\n      Gemini 3.1 Flash Live\n    \n    \n      Legacy Live API preview model. We recommend updating to Gemini 3.8 Live.\n    \n    New"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
+          "text": "graphic_eq\n      Gemini 3.1 Flash TTS\n    \n    \n      Legacy TTS preview model. We recommend updating to Gemini 3.8 Flash TTS or Gemini 3.8 Flash-Lite TTS.\n    \n    Preview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+          "text": "movie_filter\n      Gemini Omni Flash\n    \n    \n      Fast video generation, editing, keyframe interpolation, and extension with native audio.\n    \n    New"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+          "text": "Gemini 3.8 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+          "text": "Gemini 3.8 Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+          "text": "Gemini 3.8 Live Extended Thinking"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+          "text": "Gemini 3.8 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts",
+          "text": "Gemini 3.8 Flash-Lite TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "text": "Gemini 3.7 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
+          "text": "Gemini 3.6 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "text": "Gemini 3.5 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite",
+          "text": "Gemini 3.5 Flash-Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+          "text": "Gemini 3.1 Flash-Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+          "text": "Nano Banana 2"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image",
+          "text": "Nano Banana 2 Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+          "text": "Nano Banana Pro"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
+          "text": "Gemini 3.1 Pro"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+          "text": "Gemini 3 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview",
+          "text": "Gemini 3.5 Live Translate"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
+          "text": "Gemini 3.1 Flash Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
+          "text": "Gemini 3.1 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+          "text": "Gemini Omni Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-transcribe",
+          "text": "Gemini 3.5 Transcribe"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash",
+          "text": "Gemini 2.5 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-image",
+          "text": "Nano Banana"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-native-audio-preview-12-2025",
+          "text": "Gemini 2.5 Flash Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-preview-tts",
+          "text": "Gemini 2.5 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
+          "text": "Gemini 2.5 Flash-Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-pro",
+          "text": "Gemini 2.5 Pro"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-pro-preview-tts",
+          "text": "Gemini 2.5 Pro TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+          "text": "Gemini 3.8 Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+          "text": "Gemini 3.8 Live Extended Thinking"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+          "text": "Gemini 3.8 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts",
+          "text": "Gemini 3.8 Flash-Lite TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
+          "text": "Gemini 3.1 Flash Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
+          "text": "Gemini 3.1 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-transcribe",
+          "text": "Gemini 3.5 Transcribe"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-native-audio-preview-12-2025",
+          "text": "Gemini 2.5 Flash Live"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-preview-tts",
+          "text": "Gemini 2.5 Flash TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-pro-preview-tts",
+          "text": "Gemini 2.5 Pro TTS"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+          "text": "Nano Banana 2"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image",
+          "text": "Nano Banana 2 Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/veo-3.1-generate-preview",
+          "text": "Veo 3.1"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+          "text": "Nano Banana Pro"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/veo-3.1-lite-generate-preview",
+          "text": "Veo 3.1 Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash",
+          "text": "Gemini Omni Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-image",
+          "text": "Nano Banana"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/lyria-3.5",
+          "text": "Lyria 3.5"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/lyria-3-clip-preview",
+          "text": "Lyria 3 Clip"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/lyria-3-pro-preview",
+          "text": "Lyria 3 Pro"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/lyria-realtime-exp",
+          "text": "Lyria RealTime"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/deep-research-preview-04-2026",
+          "text": "Gemini Deep Research"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/deep-research-max-preview-04-2026",
+          "text": "Gemini Deep Research Max"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/antigravity-preview-09-2026",
+          "text": "Antigravity Agent"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-embedding-2",
+          "text": "Gemini Embedding 2"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-embedding-001",
+          "text": "Gemini Embedding"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-overview",
+          "text": "Gemini Robotics ER 2"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-robotics-er-1.6-preview",
+          "text": "Gemini Robotics ER 1.6"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/deprecations",
+          "text": "deprecated"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-computer-use-preview-10-2025",
+          "text": "Computer Use"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.0-flash",
+          "text": "Gemini 2.0 Flash"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.0-flash-lite",
+          "text": "Gemini 2.0 Flash-Lite"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-preview",
+          "text": "Gemini 3.1 Flash-Lite Preview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-preview",
+          "text": "Gemini 3 Pro Preview"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/deprecations",
+          "text": "Gemini deprecations"
+        },
+        {
+          "url": "https://creativecommons.org/licenses/by/4.0/",
+          "text": "Creative Commons Attribution 4.0 License"
+        },
+        {
+          "url": "https://www.apache.org/licenses/LICENSE-2.0",
+          "text": "Apache 2.0 License"
+        },
+        {
+          "url": "https://developers.google.com/site-policies",
+          "text": "Google Developers Site Policies"
+        },
+        {
+          "url": "https://policies.google.com/terms",
+          "text": "Terms"
+        },
+        {
+          "url": "https://policies.google.com/privacy",
+          "text": "Privacy"
+        },
+        {
+          "url": "https://ai.google.dev/gemini-api/docs/models#",
+          "text": "Manage cookies"
+        }
+      ]
+    },
+    {
+      "url": "https://generativelanguage.googleapis.com/v1beta/models",
+      "capturedAt": "2026-10-04T08:22:39.841Z",
+      "sha256": "add7e228ebaac2430f1d53c206623bd8b341e21b8b721b32eccf427ee4a8d9b5",
+      "text": "",
+      "links": [],
+      "json": {
+        "models": [
+          {
+            "name": "models/gemini-2.5-flash",
+            "version": "001",
+            "displayName": "Gemini 2.5 Flash",
+            "description": "Stable version of Gemini 2.5 Flash, our mid-size multimodal model that supports up to 1 million tokens, released in June of 2025.",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-pro",
+            "version": "2.5",
+            "displayName": "Gemini 2.5 Pro",
+            "description": "Stable release (June 17th, 2025) of Gemini 2.5 Pro",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-flash-preview-tts",
+            "version": "gemini-2.5-flash-exp-tts-2025-05-19",
+            "displayName": "Gemini 2.5 Flash Preview TTS",
+            "description": "Gemini 2.5 Flash Preview TTS",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 16384,
+            "supportedGenerationMethods": [
+              "countTokens",
+              "generateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-2.5-pro-preview-tts",
+            "version": "gemini-2.5-pro-preview-tts-2025-05-19",
+            "displayName": "Gemini 2.5 Pro Preview TTS",
+            "description": "Gemini 2.5 Pro Preview TTS",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 16384,
+            "supportedGenerationMethods": [
+              "countTokens",
+              "generateContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemma-4-26b-a4b-it",
+            "version": "001",
+            "displayName": "Gemma 4 26B A4B IT",
+            "description": "Gemma 4 26B A4B IT",
+            "inputTokenLimit": 262144,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemma-4-31b-it",
+            "version": "001",
+            "displayName": "Gemma 4 31B IT",
+            "description": "Gemma 4 31B IT",
+            "inputTokenLimit": 262144,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-flash-latest",
+            "version": "Gemini Flash Latest",
+            "displayName": "Gemini Flash Latest",
+            "description": "Latest release of Gemini Flash",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-flash-lite-latest",
+            "version": "Gemini Flash-Lite Latest",
+            "displayName": "Gemini Flash-Lite Latest",
+            "description": "Latest release of Gemini Flash-Lite",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-pro-latest",
+            "version": "Gemini Pro Latest",
+            "displayName": "Gemini Pro Latest",
+            "description": "Latest release of Gemini Pro",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-flash-lite",
+            "version": "001",
+            "displayName": "Gemini 2.5 Flash-Lite",
+            "description": "Stable version of Gemini 2.5 Flash-Lite, released in July of 2025",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-flash-image",
+            "version": "2.0",
+            "displayName": "Nano Banana",
+            "description": "Gemini 2.5 Flash Preview Image",
+            "inputTokenLimit": 32768,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1
+          },
+          {
+            "name": "models/gemini-3-flash-preview",
+            "version": "3-flash-preview-12-2025",
+            "displayName": "Gemini 3 Flash Preview",
+            "description": "Gemini 3 Flash Preview",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-pro-preview",
+            "version": "3.1-pro-preview-01-2026",
+            "displayName": "Gemini 3.1 Pro Preview",
+            "description": "Gemini 3.1 Pro Preview",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-pro-preview-customtools",
+            "version": "3.1-pro-preview-01-2026",
+            "displayName": "Gemini 3.1 Pro Preview Custom Tools",
+            "description": "Gemini 3.1 Pro Preview optimized for custom tool usage",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-lite-preview",
+            "version": "3.1-flash-lite-preview-03-2026",
+            "displayName": "Gemini 3.1 Flash Lite Preview",
+            "description": "Gemini 3.1 Flash Lite Preview",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-lite",
+            "version": "3.1-flash-lite-05-2026",
+            "displayName": "Gemini 3.1 Flash Lite",
+            "description": "Gemini 3.1 Flash Lite",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3-pro-image-preview",
+            "version": "3.0",
+            "displayName": "Nano Banana Pro",
+            "description": "Gemini 3 Pro Image Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3-pro-image",
+            "version": "3.0",
+            "displayName": "Nano Banana Pro",
+            "description": "Gemini 3 Pro Image",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/nano-banana-pro-preview",
+            "version": "3.0",
+            "displayName": "Nano Banana Pro",
+            "description": "Gemini 3 Pro Image Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-image-preview",
+            "version": "3.0",
+            "displayName": "Nano Banana 2",
+            "description": "Gemini 3.1 Flash Image Preview.",
+            "inputTokenLimit": 65536,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-image",
+            "version": "3.0",
+            "displayName": "Nano Banana 2",
+            "description": "Gemini 3.1 Flash Image.",
+            "inputTokenLimit": 65536,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-lite-image",
+            "version": "3.0",
+            "displayName": "Nano Banana 2 Lite",
+            "description": "Gemini 3.1 Flash Lite Image.",
+            "inputTokenLimit": 65536,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 1,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.5-flash",
+            "version": "3.5-flash-05-2026",
+            "displayName": "Gemini 3.5 Flash",
+            "description": "Gemini 3.5 Flash",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.5-flash-lite",
+            "version": "3.5-flash-lite-07-2026",
+            "displayName": "Gemini 3.5 Flash Lite",
+            "description": "Gemini 3.5 Flash Lite",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-omni-flash-preview",
+            "version": "001",
+            "displayName": "Gemini Omni Flash Preview",
+            "description": "Gemini Omni Flash Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-omni-1.1-flash",
+            "version": "001",
+            "displayName": "Gemini Omni 1.1 Flash",
+            "description": "Gemini Omni 1.1 Flash ",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.5-transcribe",
+            "version": "3.5-transcribe-08-2026",
+            "displayName": "Gemini 3.5 Transcribe",
+            "description": "Gemini 3.5 Transcribe",
+            "inputTokenLimit": 98304,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.6-flash",
+            "version": "3.6-flash-07-2026",
+            "displayName": "Gemini 3.6 Flash",
+            "description": "Gemini 3.6 Flash",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.7-flash",
+            "version": "3.7-flash-08-2026",
+            "displayName": "Gemini 3.7 Flash",
+            "description": "Gemini 3.7 Flash",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.8-flash",
+            "version": "3.0",
+            "displayName": "Gemini 3.8 Flash",
+            "description": "Gemini 3.8 Flash",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/lyria-3-clip-preview",
+            "version": "lyria-3-clip-preview",
+            "displayName": "Lyria 3 Clip Preview",
+            "description": "Lyria 3 30s model Preview",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/lyria-3-pro-preview",
+            "version": "lyria-3-pro-preview",
+            "displayName": "Lyria 3 Pro Preview",
+            "description": "Lyria 3 Pro Preview",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/lyria-3.5",
+            "version": "3.5",
+            "displayName": "Lyria 3.5",
+            "description": "Music Generation model",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-3.1-flash-tts-preview",
+            "version": "3.1-flash-tts-preview",
+            "displayName": "Gemini 3.1 Flash TTS Preview",
+            "description": "Gemini 3.1 Flash TTS Preview",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 16384,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.8-flash-tts",
+            "version": "3.8-flash-tts",
+            "displayName": "Gemini 3.8 Flash TTS",
+            "description": "Gemini 3.8 Flash TTS",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 16384,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-3.8-flash-lite-tts",
+            "version": "3.8-flash-lite-tts",
+            "displayName": "Gemini 3.8 Flash Lite TTS",
+            "description": "Gemini 3.8 Flash Lite TTS",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 16384,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-robotics-er-2-preview",
+            "version": "2-preview",
+            "displayName": "Gemini Robotics-ER 2 Preview",
+            "description": "Gemini Robotics-ER 2 Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens",
+              "createCachedContent",
+              "batchGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-computer-use-preview-10-2025",
+            "version": "Gemini 2.5 Computer Use Preview 10-2025",
+            "displayName": "Gemini 2.5 Computer Use Preview 10-2025",
+            "description": "Gemini 2.5 Computer Use Preview 10-2025",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/antigravity-preview-05-2026",
+            "version": "0.1",
+            "displayName": "Antigravity Agent Preview",
+            "description": "Preview release of Antigravity Agent (05-2026)",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ]
+          },
+          {
+            "name": "models/antigravity-preview-09-2026",
+            "version": "0.1",
+            "displayName": "Antigravity Agent Preview",
+            "description": "Preview release of Antigravity Agent (09-2026)",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ]
+          },
+          {
+            "name": "models/antigravity-preview-latest",
+            "version": "Antigravity Agent Preview Latest",
+            "displayName": "Antigravity Agent Preview Latest",
+            "description": "Latest preview release of Antigravity Agent",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ]
+          },
+          {
+            "name": "models/deep-research-max-preview-04-2026",
+            "version": "deepthink-exp-05-20",
+            "displayName": "Deep Research Max Preview (Apr-21-2026)",
+            "description": "Preview release (April 21st, 2026) of Deep Research Max",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/deep-research-preview-04-2026",
+            "version": "deepthink-exp-05-20",
+            "displayName": "Deep Research Preview (Apr-21-2026)",
+            "description": "Preview release (April 21th, 2026) of Deep Research",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/deep-research-pro-preview-12-2025",
+            "version": "deepthink-exp-05-20",
+            "displayName": "Deep Research Pro Preview (Dec-12-2025)",
+            "description": "Preview release (December 12th, 2025) of Deep Research Pro",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "generateContent",
+              "countTokens"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-embedding-001",
+            "version": "001",
+            "displayName": "Gemini Embedding 001",
+            "description": "Obtain a distributed representation of a text.",
+            "inputTokenLimit": 2048,
+            "outputTokenLimit": 1,
+            "supportedGenerationMethods": [
+              "embedContent",
+              "countTextTokens",
+              "countTokens",
+              "asyncBatchEmbedContent"
+            ]
+          },
+          {
+            "name": "models/gemini-embedding-2-preview",
+            "version": "2",
+            "displayName": "Gemini Embedding 2 Preview",
+            "description": "Obtain a distributed representation of multimodal content.",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 1,
+            "supportedGenerationMethods": [
+              "embedContent",
+              "countTextTokens",
+              "countTokens",
+              "asyncBatchEmbedContent"
+            ]
+          },
+          {
+            "name": "models/gemini-embedding-2",
+            "version": "2",
+            "displayName": "Gemini Embedding 2",
+            "description": "Obtain a distributed representation of multimodal content.",
+            "inputTokenLimit": 8192,
+            "outputTokenLimit": 1,
+            "supportedGenerationMethods": [
+              "embedContent",
+              "countTextTokens",
+              "countTokens",
+              "asyncBatchEmbedContent"
+            ]
+          },
+          {
+            "name": "models/aqa",
+            "version": "001",
+            "displayName": "Model that performs Attributed Question Answering.",
+            "description": "Model trained to return answers to questions that are grounded in provided sources, along with estimating answerable probability.",
+            "inputTokenLimit": 7168,
+            "outputTokenLimit": 1024,
+            "supportedGenerationMethods": [
+              "generateAnswer"
+            ],
+            "temperature": 0.2,
+            "topP": 1,
+            "topK": 40
+          },
+          {
+            "name": "models/veo-3.1-generate-preview",
+            "version": "3.1",
+            "displayName": "Veo 3.1",
+            "description": "Veo 3.1",
+            "inputTokenLimit": 480,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "predictLongRunning"
+            ]
+          },
+          {
+            "name": "models/veo-3.1-fast-generate-preview",
+            "version": "3.1",
+            "displayName": "Veo 3.1 fast",
+            "description": "Veo 3.1 fast",
+            "inputTokenLimit": 480,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "predictLongRunning"
+            ]
+          }
+        ],
+        "nextPageToken": "CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc="
+      }
+    },
+    {
+      "url": "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D",
+      "capturedAt": "2026-10-04T08:22:39.995Z",
+      "sha256": "feb71786f80665092dd2a2187e88d549470d2ce9a4dc0f777ef3e0f321c4cba9",
+      "text": "",
+      "links": [],
+      "json": {
+        "models": [
+          {
+            "name": "models/veo-3.1-lite-generate-preview",
+            "version": "3.1",
+            "displayName": "Veo 3.1 lite",
+            "description": "Veo 3.1 lite",
+            "inputTokenLimit": 480,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "predictLongRunning"
+            ]
+          },
+          {
+            "name": "models/gemini-3.5-transcribe-live",
+            "version": "3.5-transcribe-live-08-2026",
+            "displayName": "Gemini 3.5 Transcribe Live",
+            "description": "Gemini 3.5 Transcribe Live",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-2.5-flash-native-audio-latest",
+            "version": "Gemini 2.5 Flash Native Audio Latest",
+            "displayName": "Gemini 2.5 Flash Native Audio Latest",
+            "description": "Latest release of Gemini 2.5 Flash Native Audio",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "countTokens",
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-flash-native-audio-preview-09-2025",
+            "version": "gemini-2.5-flash-preview-native-audio-dialog-2025-05-19",
+            "displayName": "Gemini 2.5 Flash Native Audio Preview 09-2025",
+            "description": "Gemini 2.5 Flash Native Audio Preview 09-2025",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "countTokens",
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-2.5-flash-native-audio-preview-12-2025",
+            "version": "12-2025",
+            "displayName": "Gemini 2.5 Flash Native Audio Preview 12-2025",
+            "description": "Gemini 2.5 Flash Native Audio Preview 12-2025",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 8192,
+            "supportedGenerationMethods": [
+              "countTokens",
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-3.1-flash-live-preview",
+            "version": "3.1-flash-live-03-2026",
+            "displayName": "Gemini 3.1 Flash Live Preview",
+            "description": "Gemini 3.1 Flash Live Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-3.8-live",
+            "version": "3.1-flash-live-03-2026",
+            "displayName": "Gemini 3.8 Live",
+            "description": "Gemini 3.8 Live",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-3.8-live-extended-thinking",
+            "version": "3.1-flash-live-03-2026",
+            "displayName": "Gemini 3.8 Live Extended Thinking",
+            "description": "Gemini 3.8 Live Extended Thinking",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2,
+            "thinking": true
+          },
+          {
+            "name": "models/gemini-robotics-er-2-streaming-preview",
+            "version": "2-streaming-preview",
+            "displayName": "Gemini Robotics-ER 2 Streaming Preview",
+            "description": "Gemini Robotics-ER 2 Streaming Preview",
+            "inputTokenLimit": 131072,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/gemini-3.5-live-translate-preview",
+            "version": "3.5-live-translate-06-2026",
+            "displayName": "Gemini 3.5 Live Translate Preview",
+            "description": "Gemini 3.5 Live Translate Preview",
+            "inputTokenLimit": 16384,
+            "outputTokenLimit": 32768,
+            "supportedGenerationMethods": [
+              "bidiGenerateContent"
+            ],
+            "temperature": 1,
+            "topP": 0.95,
+            "topK": 64,
+            "maxTemperature": 2
+          },
+          {
+            "name": "models/lyria-realtime-exp",
+            "version": "lyria-realtime-exp",
+            "displayName": "Lyria Realtime Experimental",
+            "description": "Lyria Realtime Experimental",
+            "inputTokenLimit": 1048576,
+            "outputTokenLimit": 65536,
+            "supportedGenerationMethods": [
+              "bidiGenerateMusic"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "records": [
+    {
+      "id": "antigravity-preview-05-2026",
+      "name": "Antigravity Agent Preview",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "antigravity-preview-05-2026",
+        "displayName": "Antigravity Agent Preview",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "antigravity-preview-09-2026",
+      "name": "Antigravity Agent Preview",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "antigravity-preview-09-2026",
+        "displayName": "Antigravity Agent Preview",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "antigravity-preview-latest",
+      "name": "Antigravity Agent Preview Latest",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "antigravity-preview-latest",
+        "displayName": "Antigravity Agent Preview Latest",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "aqa",
+      "name": "Model that performs Attributed Question Answering.",
+      "disposition": "excluded",
+      "reason": "Does not support text content generation",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "deep-research-max-preview-04-2026",
+      "name": "Deep Research Max Preview (Apr-21-2026)",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "deep-research-max-preview-04-2026",
+        "displayName": "Deep Research Max Preview (Apr-21-2026)",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "deep-research-preview-04-2026",
+      "name": "Deep Research Preview (Apr-21-2026)",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "deep-research-preview-04-2026",
+        "displayName": "Deep Research Preview (Apr-21-2026)",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "deep-research-pro-preview-12-2025",
+      "name": "Deep Research Pro Preview (Dec-12-2025)",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "deep-research-pro-preview-12-2025",
+        "displayName": "Deep Research Pro Preview (Dec-12-2025)",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-computer-use-preview-10-2025",
+      "name": "Gemini 2.5 Computer Use Preview 10-2025",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-2.5-computer-use-preview-10-2025",
+        "displayName": "Gemini 2.5 Computer Use Preview 10-2025",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "name": "Gemini 2.5 Flash",
+      "disposition": "existing",
+      "reason": "Listed in provider API; request-policy review is recorded separately; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-2.5-flash",
+        "displayName": "Gemini 2.5 Flash",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-budget",
+          "enabledBudget": -1,
+          "disabledBudget": 0,
+          "canDisable": true
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-image",
+      "name": "Nano Banana",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "name": "Gemini 2.5 Flash-Lite",
+      "disposition": "existing",
+      "reason": "Listed in provider API; request-policy review is recorded separately; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-2.5-flash-lite",
+        "displayName": "Gemini 2.5 Flash-Lite",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-budget",
+          "enabledBudget": -1,
+          "disabledBudget": 0,
+          "canDisable": true
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-native-audio-latest",
+      "name": "Gemini 2.5 Flash Native Audio Latest",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-native-audio-preview-09-2025",
+      "name": "Gemini 2.5 Flash Native Audio Preview 09-2025",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-native-audio-preview-12-2025",
+      "name": "Gemini 2.5 Flash Native Audio Preview 12-2025",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-flash-preview-tts",
+      "name": "Gemini 2.5 Flash Preview TTS",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "name": "Gemini 2.5 Pro",
+      "disposition": "existing",
+      "reason": "Listed in provider API; request-policy review is recorded separately; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-2.5-pro",
+        "displayName": "Gemini 2.5 Pro",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-budget",
+          "enabledBudget": -1,
+          "disabledBudget": 128,
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-2.5-pro-preview-tts",
+      "name": "Gemini 2.5 Pro Preview TTS",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3-flash-preview",
+      "name": "Gemini 3 Flash Preview",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3-flash-preview",
+        "displayName": "Gemini 3 Flash Preview",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3-pro-image",
+      "name": "Nano Banana Pro",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3-pro-image-preview",
+      "name": "Nano Banana Pro",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-image",
+      "name": "Nano Banana 2",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-image-preview",
+      "name": "Nano Banana 2",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "name": "Gemini 3.1 Flash Lite",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.1-flash-lite",
+        "displayName": "Gemini 3.1 Flash Lite",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-lite-image",
+      "name": "Nano Banana 2 Lite",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-lite-preview",
+      "name": "Gemini 3.1 Flash Lite Preview",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.1-flash-lite-preview",
+        "displayName": "Gemini 3.1 Flash Lite Preview",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-live-preview",
+      "name": "Gemini 3.1 Flash Live Preview",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-flash-tts-preview",
+      "name": "Gemini 3.1 Flash TTS Preview",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "name": "Gemini 3.1 Pro Preview",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.1-pro-preview",
+        "displayName": "Gemini 3.1 Pro Preview",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.1-pro-preview-customtools",
+      "name": "Gemini 3.1 Pro Preview Custom Tools",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.1-pro-preview-customtools",
+        "displayName": "Gemini 3.1 Pro Preview Custom Tools",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "name": "Gemini 3.5 Flash",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.5-flash",
+        "displayName": "Gemini 3.5 Flash",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.5-flash-lite",
+      "name": "Gemini 3.5 Flash Lite",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.5-flash-lite",
+        "displayName": "Gemini 3.5 Flash Lite",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.5-live-translate-preview",
+      "name": "Gemini 3.5 Live Translate Preview",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.5-transcribe",
+      "name": "Gemini 3.5 Transcribe",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.5-transcribe-live",
+      "name": "Gemini 3.5 Transcribe Live",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.6-flash",
+      "name": "Gemini 3.6 Flash",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.6-flash",
+        "displayName": "Gemini 3.6 Flash",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "name": "Gemini 3.7 Flash",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.7-flash",
+        "displayName": "Gemini 3.7 Flash",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.8-flash",
+      "name": "Gemini 3.8 Flash",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-3.8-flash",
+        "displayName": "Gemini 3.8 Flash",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "gemini-level",
+          "enabledLevel": "low",
+          "disabledLevel": "low",
+          "canDisable": false
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification. Uses the documented Gemini 3 thinking-level API; low is selected and full disabling is not assumed."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.8-flash-lite-tts",
+      "name": "Gemini 3.8 Flash Lite TTS",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.8-flash-tts",
+      "name": "Gemini 3.8 Flash TTS",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.8-live",
+      "name": "Gemini 3.8 Live",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-3.8-live-extended-thinking",
+      "name": "Gemini 3.8 Live Extended Thinking",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-embedding-001",
+      "name": "Gemini Embedding 001",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-embedding-2",
+      "name": "Gemini Embedding 2",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-embedding-2-preview",
+      "name": "Gemini Embedding 2 Preview",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-flash-latest",
+      "name": "Gemini Flash Latest",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-flash-latest",
+        "displayName": "Gemini Flash Latest",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-flash-lite-latest",
+      "name": "Gemini Flash-Lite Latest",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-flash-lite-latest",
+        "displayName": "Gemini Flash-Lite Latest",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-omni-1.1-flash",
+      "name": "Gemini Omni 1.1 Flash",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-omni-1.1-flash",
+        "displayName": "Gemini Omni 1.1 Flash",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-omni-flash-preview",
+      "name": "Gemini Omni Flash Preview",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-omni-flash-preview",
+        "displayName": "Gemini Omni Flash Preview",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-pro-latest",
+      "name": "Gemini Pro Latest",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-pro-latest",
+        "displayName": "Gemini Pro Latest",
+        "limits": {
+          "contextWindow": 1048576,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-robotics-er-2-preview",
+      "name": "Gemini Robotics-ER 2 Preview",
+      "disposition": "needs-review",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemini-robotics-er-2-preview",
+        "displayName": "Gemini Robotics-ER 2 Preview",
+        "limits": {
+          "contextWindow": 131072,
+          "maxOutputTokens": 65536,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "preview",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "pending",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemini-robotics-er-2-streaming-preview",
+      "name": "Gemini Robotics-ER 2 Streaming Preview",
+      "disposition": "excluded",
+      "reason": "Does not support text content generation",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemma-4-26b-a4b-it",
+      "name": "Gemma 4 26B A4B IT",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemma-4-26b-a4b-it",
+        "displayName": "Gemma 4 26B A4B IT",
+        "limits": {
+          "contextWindow": 262144,
+          "maxOutputTokens": 32768,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "gemma-4-31b-it",
+      "name": "Gemma 4 31B IT",
+      "disposition": "included",
+      "reason": "Listed in provider API; request-policy review is recorded separately",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "definition": {
+        "provider": "gemini",
+        "id": "gemma-4-31b-it",
+        "displayName": "Gemma 4 31B IT",
+        "limits": {
+          "contextWindow": 262144,
+          "maxOutputTokens": 32768,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://generativelanguage.googleapis.com/v1beta/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested. The model-list API supplied identity but no per-model request specification."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "lyria-3-clip-preview",
+      "name": "Lyria 3 Clip Preview",
+      "disposition": "excluded",
+      "reason": "Specialized music, image, or speech generation model",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "lyria-3-pro-preview",
+      "name": "Lyria 3 Pro Preview",
+      "disposition": "excluded",
+      "reason": "Specialized music, image, or speech generation model",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "lyria-3.5",
+      "name": "Lyria 3.5",
+      "disposition": "excluded",
+      "reason": "Specialized music, image, or speech generation model",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "lyria-realtime-exp",
+      "name": "Lyria Realtime Experimental",
+      "disposition": "excluded",
+      "reason": "Specialized music, image, or speech generation model",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "nano-banana-pro-preview",
+      "name": "Nano Banana Pro",
+      "disposition": "excluded",
+      "reason": "Specialized music, image, or speech generation model",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "veo-3.1-fast-generate-preview",
+      "name": "Veo 3.1 fast",
+      "disposition": "excluded",
+      "reason": "Does not support text content generation",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "veo-3.1-generate-preview",
+      "name": "Veo 3.1",
+      "disposition": "excluded",
+      "reason": "Does not support text content generation",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models"
+      ],
+      "accountVisibility": "listed"
+    },
+    {
+      "id": "veo-3.1-lite-generate-preview",
+      "name": "Veo 3.1 lite",
+      "disposition": "excluded",
+      "reason": "Does not support text content generation",
+      "sources": [
+        "https://generativelanguage.googleapis.com/v1beta/models?pageToken=CiRtb2RlbHMvdmVvLTMuMS1mYXN0LWdlbmVyYXRlLXByZXZpZXc%3D"
+      ],
+      "accountVisibility": "listed"
+    }
+  ]
+}

@@ -89,6 +89,10 @@ export async function applyDefaultConfigIfDatabaseEmpty(
       where: { provider: "gemini" },
       create: {
         provider: "gemini",
+        modelProfile: config.settings.providers.gemini.modelProfile,
+        contextWindow: config.settings.providers.gemini.contextWindow,
+        taskModel: config.settings.providers.gemini.taskModel,
+        backgroundModel: config.settings.providers.gemini.backgroundModel,
         model: config.settings.providers.gemini.model,
         temperature: config.settings.providers.gemini.temperature,
         maxOutputTokens: config.settings.providers.gemini.maxOutputTokens,
@@ -97,12 +101,20 @@ export async function applyDefaultConfigIfDatabaseEmpty(
       },
       update: {
         model: config.settings.providers.gemini.model,
+        modelProfile: config.settings.providers.gemini.modelProfile,
+        contextWindow: config.settings.providers.gemini.contextWindow,
+        taskModel: config.settings.providers.gemini.taskModel,
+        backgroundModel: config.settings.providers.gemini.backgroundModel,
         temperature: config.settings.providers.gemini.temperature,
         maxOutputTokens: config.settings.providers.gemini.maxOutputTokens,
         useWebSearch: config.settings.providers.gemini.useWebSearch,
         useThinking: config.settings.providers.gemini.useThinking,
       },
     });
+    for (const [provider, settings] of Object.entries(config.settings.providers)) {
+      if (provider === "gemini") continue;
+      await tx.providerConfig.upsert({ where: { provider }, create: { provider, ...settings }, update: settings });
+    }
 
     for (const taskConfig of config.settings.tasks.sort(
       (a, b) => a.sortOrder - b.sortOrder,
@@ -116,6 +128,8 @@ export async function applyDefaultConfigIfDatabaseEmpty(
           settings: {
             targetAudienceEnabled: taskConfig.targetAudienceEnabled,
             rewritePlanEnabled: taskConfig.rewritePlanEnabled,
+            reasoningEnabled: taskConfig.reasoningEnabled,
+            webSearchMode: taskConfig.webSearchMode,
           },
         },
         tx,

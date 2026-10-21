@@ -42,11 +42,6 @@ export const DEFAULT_RUNTIME_AUTO_MIN_SAMPLES = 20;
 export const DEFAULT_RUNTIME_AUTO_ESCALATE_CONSECUTIVE = 2;
 export const DEFAULT_RUNTIME_AUTO_RELAX_CONSECUTIVE = 8;
 
-export const EASY_TO_READ_TASK_ALIASES = new Set([
-  "easytoread",
-  "easy-to-read",
-]);
-
 export const EMPTY_TARGET_AUDIENCE_CATALOG: TargetAudienceCatalog = {
   categories: [],
   audiences: [],

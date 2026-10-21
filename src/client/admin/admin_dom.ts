@@ -1,5 +1,4 @@
 export type DomRefs = {
-  tokenInput: HTMLInputElement;
   statusEl: HTMLElement;
   hintEl: HTMLElement;
   checkButton: HTMLButtonElement;
@@ -20,28 +19,12 @@ export type DomRefs = {
   taskDefEnabled: HTMLInputElement;
   taskDefTargetAudienceEnabled: HTMLInputElement;
   taskDefRewritePlanEnabled: HTMLInputElement;
+  taskDefReasoningEnabled: HTMLInputElement;
+  taskDefWebSearchMode: HTMLSelectElement;
   taskDefCreateButton: HTMLButtonElement;
   taskDefDeleteButton: HTMLButtonElement;
   taskDefMoveUpButton: HTMLButtonElement;
   taskDefMoveDownButton: HTMLButtonElement;
-  easyReadTaskEnabled: HTMLInputElement;
-  easyReadWorkflowEnabled: HTMLInputElement;
-  easyReadWorkflowUseRewriteDraft: HTMLInputElement;
-  saveEasyReadSettingsButton: HTMLButtonElement;
-  easyReadPromptTask: HTMLTextAreaElement;
-  easyReadPromptImportantRules: HTMLTextAreaElement;
-  easyReadPromptRole: HTMLTextAreaElement;
-  easyReadPromptSenderIntent: HTMLTextAreaElement;
-  easyReadPromptRewritePlan: HTMLTextAreaElement;
-  easyReadPromptQualityEvaluation: HTMLTextAreaElement;
-  easyReadPromptWordListUsage: HTMLTextAreaElement;
-  easyReadPromptRewriteFallback: HTMLTextAreaElement;
-  easyReadPromptTargetAudienceFallback: HTMLTextAreaElement;
-  easyReadTargetAudienceSelect: HTMLSelectElement;
-  easyReadTargetAudienceGroup: HTMLElement;
-  easyReadTargetAudiencePromptLabel: HTMLElement;
-  easyReadTargetAudiencePrompt: HTMLTextAreaElement;
-  easyReadTargetAudienceSaveButton: HTMLButtonElement;
   targetAudienceSelect: HTMLSelectElement;
   targetAudienceGroup: HTMLElement;
   targetAudienceCategorySelect: HTMLSelectElement;
@@ -120,14 +103,13 @@ export type DomRefs = {
   backupDownloadButton: HTMLButtonElement;
   backupUploadInput: HTMLInputElement;
   backupImportButton: HTMLButtonElement;
-  viewInputs: NodeListOf<HTMLInputElement>;
+  viewInputs: NodeListOf<HTMLAnchorElement>;
   views: NodeListOf<HTMLElement>;
 };
 
 type ElementRefs = Omit<DomRefs, "viewInputs" | "views">;
 
 const elementIds: { [Key in keyof ElementRefs]: string } = {
-  tokenInput: "admin-token",
   statusEl: "admin-status",
   hintEl: "admin-hint",
   checkButton: "check-config",
@@ -148,28 +130,12 @@ const elementIds: { [Key in keyof ElementRefs]: string } = {
   taskDefEnabled: "task-def-enabled",
   taskDefTargetAudienceEnabled: "task-def-target-audience-enabled",
   taskDefRewritePlanEnabled: "task-def-rewrite-plan-enabled",
+  taskDefReasoningEnabled: "task-def-reasoning-enabled",
+  taskDefWebSearchMode: "task-def-web-search-mode",
   taskDefCreateButton: "task-def-create",
   taskDefDeleteButton: "task-def-delete",
   taskDefMoveUpButton: "task-def-move-up",
   taskDefMoveDownButton: "task-def-move-down",
-  easyReadTaskEnabled: "easy-read-task-enabled",
-  easyReadWorkflowEnabled: "easy-read-workflow-enabled",
-  easyReadWorkflowUseRewriteDraft: "easy-read-workflow-use-rewrite-draft",
-  saveEasyReadSettingsButton: "save-easy-read-settings",
-  easyReadPromptTask: "easy-read-prompt-task",
-  easyReadPromptImportantRules: "easy-read-prompt-importantRules",
-  easyReadPromptRole: "easy-read-prompt-role",
-  easyReadPromptSenderIntent: "easy-read-prompt-senderIntent",
-  easyReadPromptRewritePlan: "easy-read-prompt-rewritePlan",
-  easyReadPromptQualityEvaluation: "easy-read-prompt-qualityEvaluation",
-  easyReadPromptWordListUsage: "easy-read-prompt-wordListUsage",
-  easyReadPromptRewriteFallback: "easy-read-prompt-rewriteFallback",
-  easyReadPromptTargetAudienceFallback: "easy-read-prompt-targetAudience-fallback",
-  easyReadTargetAudienceSelect: "easy-read-target-audience-select",
-  easyReadTargetAudienceGroup: "easy-read-target-audience-group",
-  easyReadTargetAudiencePromptLabel: "easy-read-target-audience-prompt-label",
-  easyReadTargetAudiencePrompt: "easy-read-target-audience-prompt",
-  easyReadTargetAudienceSaveButton: "save-easy-read-target-audience",
   targetAudienceSelect: "target-audience-select",
   targetAudienceGroup: "target-audience-group",
   targetAudienceCategorySelect: "target-audience-category-select",
@@ -277,8 +243,8 @@ export function initRefs(root: Document = document): DomRefs | null {
 
   return {
     ...(refs as ElementRefs),
-    viewInputs: root.querySelectorAll<HTMLInputElement>(
-      'input[type="radio"][data-view-target]',
+    viewInputs: root.querySelectorAll<HTMLAnchorElement>(
+      'a[data-view-target]',
     ),
     views: root.querySelectorAll<HTMLElement>("[data-view]"),
   };

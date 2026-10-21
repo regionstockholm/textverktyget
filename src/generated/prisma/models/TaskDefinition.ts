@@ -47,11 +47,12 @@ export type TaskDefinitionMinAggregateOutputType = {
   description: string | null
   enabled: boolean | null
   sortOrder: number | null
-  outputMode: string | null
   bulletCount: number | null
   maxChars: number | null
   targetAudienceEnabled: boolean | null
   rewritePlanEnabled: boolean | null
+  reasoningEnabled: boolean | null
+  webSearchMode: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,11 +64,12 @@ export type TaskDefinitionMaxAggregateOutputType = {
   description: string | null
   enabled: boolean | null
   sortOrder: number | null
-  outputMode: string | null
   bulletCount: number | null
   maxChars: number | null
   targetAudienceEnabled: boolean | null
   rewritePlanEnabled: boolean | null
+  reasoningEnabled: boolean | null
+  webSearchMode: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -79,11 +81,12 @@ export type TaskDefinitionCountAggregateOutputType = {
   description: number
   enabled: number
   sortOrder: number
-  outputMode: number
   bulletCount: number
   maxChars: number
   targetAudienceEnabled: number
   rewritePlanEnabled: number
+  reasoningEnabled: number
+  webSearchMode: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -111,11 +114,12 @@ export type TaskDefinitionMinAggregateInputType = {
   description?: true
   enabled?: true
   sortOrder?: true
-  outputMode?: true
   bulletCount?: true
   maxChars?: true
   targetAudienceEnabled?: true
   rewritePlanEnabled?: true
+  reasoningEnabled?: true
+  webSearchMode?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -127,11 +131,12 @@ export type TaskDefinitionMaxAggregateInputType = {
   description?: true
   enabled?: true
   sortOrder?: true
-  outputMode?: true
   bulletCount?: true
   maxChars?: true
   targetAudienceEnabled?: true
   rewritePlanEnabled?: true
+  reasoningEnabled?: true
+  webSearchMode?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -143,11 +148,12 @@ export type TaskDefinitionCountAggregateInputType = {
   description?: true
   enabled?: true
   sortOrder?: true
-  outputMode?: true
   bulletCount?: true
   maxChars?: true
   targetAudienceEnabled?: true
   rewritePlanEnabled?: true
+  reasoningEnabled?: true
+  webSearchMode?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -246,11 +252,12 @@ export type TaskDefinitionGroupByOutputType = {
   description: string | null
   enabled: boolean
   sortOrder: number
-  outputMode: string
   bulletCount: number | null
   maxChars: number | null
   targetAudienceEnabled: boolean
   rewritePlanEnabled: boolean
+  reasoningEnabled: boolean
+  webSearchMode: string
   createdAt: Date
   updatedAt: Date
   _count: TaskDefinitionCountAggregateOutputType | null
@@ -285,11 +292,12 @@ export type TaskDefinitionWhereInput = {
   description?: Prisma.StringNullableFilter<"TaskDefinition"> | string | null
   enabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
   sortOrder?: Prisma.IntFilter<"TaskDefinition"> | number
-  outputMode?: Prisma.StringFilter<"TaskDefinition"> | string
   bulletCount?: Prisma.IntNullableFilter<"TaskDefinition"> | number | null
   maxChars?: Prisma.IntNullableFilter<"TaskDefinition"> | number | null
   targetAudienceEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
   rewritePlanEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
+  reasoningEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
+  webSearchMode?: Prisma.StringFilter<"TaskDefinition"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskDefinition"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskDefinition"> | Date | string
 }
@@ -301,11 +309,12 @@ export type TaskDefinitionOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   enabled?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  outputMode?: Prisma.SortOrder
   bulletCount?: Prisma.SortOrderInput | Prisma.SortOrder
   maxChars?: Prisma.SortOrderInput | Prisma.SortOrder
   targetAudienceEnabled?: Prisma.SortOrder
   rewritePlanEnabled?: Prisma.SortOrder
+  reasoningEnabled?: Prisma.SortOrder
+  webSearchMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -320,11 +329,12 @@ export type TaskDefinitionWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"TaskDefinition"> | string | null
   enabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
   sortOrder?: Prisma.IntFilter<"TaskDefinition"> | number
-  outputMode?: Prisma.StringFilter<"TaskDefinition"> | string
   bulletCount?: Prisma.IntNullableFilter<"TaskDefinition"> | number | null
   maxChars?: Prisma.IntNullableFilter<"TaskDefinition"> | number | null
   targetAudienceEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
   rewritePlanEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
+  reasoningEnabled?: Prisma.BoolFilter<"TaskDefinition"> | boolean
+  webSearchMode?: Prisma.StringFilter<"TaskDefinition"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskDefinition"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskDefinition"> | Date | string
 }, "id" | "key">
@@ -336,11 +346,12 @@ export type TaskDefinitionOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   enabled?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  outputMode?: Prisma.SortOrder
   bulletCount?: Prisma.SortOrderInput | Prisma.SortOrder
   maxChars?: Prisma.SortOrderInput | Prisma.SortOrder
   targetAudienceEnabled?: Prisma.SortOrder
   rewritePlanEnabled?: Prisma.SortOrder
+  reasoningEnabled?: Prisma.SortOrder
+  webSearchMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TaskDefinitionCountOrderByAggregateInput
@@ -360,11 +371,12 @@ export type TaskDefinitionScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"TaskDefinition"> | string | null
   enabled?: Prisma.BoolWithAggregatesFilter<"TaskDefinition"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"TaskDefinition"> | number
-  outputMode?: Prisma.StringWithAggregatesFilter<"TaskDefinition"> | string
   bulletCount?: Prisma.IntNullableWithAggregatesFilter<"TaskDefinition"> | number | null
   maxChars?: Prisma.IntNullableWithAggregatesFilter<"TaskDefinition"> | number | null
   targetAudienceEnabled?: Prisma.BoolWithAggregatesFilter<"TaskDefinition"> | boolean
   rewritePlanEnabled?: Prisma.BoolWithAggregatesFilter<"TaskDefinition"> | boolean
+  reasoningEnabled?: Prisma.BoolWithAggregatesFilter<"TaskDefinition"> | boolean
+  webSearchMode?: Prisma.StringWithAggregatesFilter<"TaskDefinition"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskDefinition"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskDefinition"> | Date | string
 }
@@ -375,11 +387,12 @@ export type TaskDefinitionCreateInput = {
   description?: string | null
   enabled?: boolean
   sortOrder: number
-  outputMode?: string
   bulletCount?: number | null
   maxChars?: number | null
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -391,11 +404,12 @@ export type TaskDefinitionUncheckedCreateInput = {
   description?: string | null
   enabled?: boolean
   sortOrder: number
-  outputMode?: string
   bulletCount?: number | null
   maxChars?: number | null
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -406,11 +420,12 @@ export type TaskDefinitionUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  outputMode?: Prisma.StringFieldUpdateOperationsInput | string
   bulletCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxChars?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   targetAudienceEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rewritePlanEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reasoningEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  webSearchMode?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -422,11 +437,12 @@ export type TaskDefinitionUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  outputMode?: Prisma.StringFieldUpdateOperationsInput | string
   bulletCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxChars?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   targetAudienceEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rewritePlanEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reasoningEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  webSearchMode?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -438,11 +454,12 @@ export type TaskDefinitionCreateManyInput = {
   description?: string | null
   enabled?: boolean
   sortOrder: number
-  outputMode?: string
   bulletCount?: number | null
   maxChars?: number | null
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -453,11 +470,12 @@ export type TaskDefinitionUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  outputMode?: Prisma.StringFieldUpdateOperationsInput | string
   bulletCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxChars?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   targetAudienceEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rewritePlanEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reasoningEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  webSearchMode?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -469,11 +487,12 @@ export type TaskDefinitionUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  outputMode?: Prisma.StringFieldUpdateOperationsInput | string
   bulletCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   maxChars?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   targetAudienceEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rewritePlanEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reasoningEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  webSearchMode?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -485,11 +504,12 @@ export type TaskDefinitionCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  outputMode?: Prisma.SortOrder
   bulletCount?: Prisma.SortOrder
   maxChars?: Prisma.SortOrder
   targetAudienceEnabled?: Prisma.SortOrder
   rewritePlanEnabled?: Prisma.SortOrder
+  reasoningEnabled?: Prisma.SortOrder
+  webSearchMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -508,11 +528,12 @@ export type TaskDefinitionMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  outputMode?: Prisma.SortOrder
   bulletCount?: Prisma.SortOrder
   maxChars?: Prisma.SortOrder
   targetAudienceEnabled?: Prisma.SortOrder
   rewritePlanEnabled?: Prisma.SortOrder
+  reasoningEnabled?: Prisma.SortOrder
+  webSearchMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -524,11 +545,12 @@ export type TaskDefinitionMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   enabled?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-  outputMode?: Prisma.SortOrder
   bulletCount?: Prisma.SortOrder
   maxChars?: Prisma.SortOrder
   targetAudienceEnabled?: Prisma.SortOrder
   rewritePlanEnabled?: Prisma.SortOrder
+  reasoningEnabled?: Prisma.SortOrder
+  webSearchMode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -540,14 +562,6 @@ export type TaskDefinitionSumOrderByAggregateInput = {
   maxChars?: Prisma.SortOrder
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 
 
 export type TaskDefinitionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -557,11 +571,12 @@ export type TaskDefinitionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   description?: boolean
   enabled?: boolean
   sortOrder?: boolean
-  outputMode?: boolean
   bulletCount?: boolean
   maxChars?: boolean
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["taskDefinition"]>
@@ -573,11 +588,12 @@ export type TaskDefinitionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   description?: boolean
   enabled?: boolean
   sortOrder?: boolean
-  outputMode?: boolean
   bulletCount?: boolean
   maxChars?: boolean
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["taskDefinition"]>
@@ -589,11 +605,12 @@ export type TaskDefinitionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   description?: boolean
   enabled?: boolean
   sortOrder?: boolean
-  outputMode?: boolean
   bulletCount?: boolean
   maxChars?: boolean
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["taskDefinition"]>
@@ -605,16 +622,17 @@ export type TaskDefinitionSelectScalar = {
   description?: boolean
   enabled?: boolean
   sortOrder?: boolean
-  outputMode?: boolean
   bulletCount?: boolean
   maxChars?: boolean
   targetAudienceEnabled?: boolean
   rewritePlanEnabled?: boolean
+  reasoningEnabled?: boolean
+  webSearchMode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "label" | "description" | "enabled" | "sortOrder" | "outputMode" | "bulletCount" | "maxChars" | "targetAudienceEnabled" | "rewritePlanEnabled" | "createdAt" | "updatedAt", ExtArgs["result"]["taskDefinition"]>
+export type TaskDefinitionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "label" | "description" | "enabled" | "sortOrder" | "bulletCount" | "maxChars" | "targetAudienceEnabled" | "rewritePlanEnabled" | "reasoningEnabled" | "webSearchMode" | "createdAt" | "updatedAt", ExtArgs["result"]["taskDefinition"]>
 
 export type $TaskDefinitionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TaskDefinition"
@@ -626,11 +644,12 @@ export type $TaskDefinitionPayload<ExtArgs extends runtime.Types.Extensions.Inte
     description: string | null
     enabled: boolean
     sortOrder: number
-    outputMode: string
     bulletCount: number | null
     maxChars: number | null
     targetAudienceEnabled: boolean
     rewritePlanEnabled: boolean
+    reasoningEnabled: boolean
+    webSearchMode: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["taskDefinition"]>
@@ -1062,11 +1081,12 @@ export interface TaskDefinitionFieldRefs {
   readonly description: Prisma.FieldRef<"TaskDefinition", 'String'>
   readonly enabled: Prisma.FieldRef<"TaskDefinition", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"TaskDefinition", 'Int'>
-  readonly outputMode: Prisma.FieldRef<"TaskDefinition", 'String'>
   readonly bulletCount: Prisma.FieldRef<"TaskDefinition", 'Int'>
   readonly maxChars: Prisma.FieldRef<"TaskDefinition", 'Int'>
   readonly targetAudienceEnabled: Prisma.FieldRef<"TaskDefinition", 'Boolean'>
   readonly rewritePlanEnabled: Prisma.FieldRef<"TaskDefinition", 'Boolean'>
+  readonly reasoningEnabled: Prisma.FieldRef<"TaskDefinition", 'Boolean'>
+  readonly webSearchMode: Prisma.FieldRef<"TaskDefinition", 'String'>
   readonly createdAt: Prisma.FieldRef<"TaskDefinition", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaskDefinition", 'DateTime'>
 }

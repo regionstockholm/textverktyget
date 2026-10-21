@@ -95,7 +95,9 @@ export async function processAttachedFiles(
   assert(typeof initialText === "string", "Initial text must be a string");
   assert(typeof clickCount === "number", "Click count must be a number");
 
-  const fileCount = attachedFiles.size;
+  // Freeze this submission's source set even if attachments change during reads.
+  const submittedFiles = [...attachedFiles.entries()];
+  const fileCount = submittedFiles.length;
   console.log(`[AppState] Number of attached files: ${fileCount}`);
 
   // If there are attached files, skip the textarea content
@@ -114,7 +116,7 @@ export async function processAttachedFiles(
 
   console.log(`[AppState] Processing ${fileCount} file(s)...`);
 
-  for (const [fileId, fileInfo] of attachedFiles.entries()) {
+  for (const [fileId, fileInfo] of submittedFiles) {
     try {
       console.log(`[AppState] Processing file ID: ${fileId}`);
 
@@ -137,6 +139,7 @@ export async function processAttachedFiles(
       const endTime = performance.now();
 
       assert(typeof fileContent === "string", "File content must be a string");
+      assert(fileContent.trim().length > 0, "Filen gav inget läsbart textinnehåll");
 
       const processingTimeSeconds = ((endTime - startTime) / 1000).toFixed(2);
       console.log(
@@ -173,10 +176,8 @@ export async function processAttachedFiles(
         console.error(`[AppState] Error stack:`, error.stack);
       }
 
-      alert(
-        `Det gick inte att läsa filen ${
-          typedFileInfo?.fileName || fileId
-        }. ${errorMessage}`,
+      throw new Error(
+        `Det gick inte att läsa filen ${typedFileInfo?.fileName || fileId}. ${errorMessage}. Bearbetningen har stoppats; inga filer har utelämnats.`,
       );
     }
   }

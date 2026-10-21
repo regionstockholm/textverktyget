@@ -13,10 +13,13 @@ import { fileLimits } from "../../../config/shared-config.js";
  */
 interface ServerResponseData {
   text?: string;
+  textLength?: number;
+  extractionWarnings?: string[];
   data?: {
     text: string;
     originalLength?: number;
     textLength?: number;
+    extractionWarnings?: string[];
   };
   success?: boolean;
   [key: string]: any;
@@ -134,7 +137,8 @@ function validateServerResponse(data: ServerResponseData): string {
   assert(data !== null, "Server response cannot be null");
   assert(typeof data === "object", "Server response must be an object");
   assert(typeof data.text === "string", "Server response must contain text");
-  assert(data.text.length > 0, "Extracted text cannot be empty");
+  assert(data.text.trim().length > 0, "Extracted text cannot be empty");
+  assert(data.textLength === undefined || data.textLength === data.text.length, "Den mottagna dokumenttexten är ofullständig");
 
   return data.text;
 }
@@ -180,6 +184,12 @@ async function sendFileToServer(
   }
 
   const data = (await response.json()) as ServerResponseData;
+  const warnings = data.data?.extractionWarnings ?? data.extractionWarnings;
+  if (Array.isArray(warnings) && warnings.length > 0) {
+    if (!window.confirm(`${fileName}:\n${warnings.join("\n")}\n\nVill du fortsätta med den extraherade texten?`)) {
+      throw new Error("Bearbetningen avbröts eftersom dokumentets fullständighet behöver kontrolleras.");
+    }
+  }
   // Check for data.data for backward compatibility
   if (data.data && typeof data.data.text === "string") {
     return validateServerResponse(data.data);

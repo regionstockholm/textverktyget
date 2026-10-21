@@ -1,0 +1,531 @@
+{
+  "provider": "xai",
+  "capturedAt": "2026-10-04T08:35:39.433Z",
+  "sourceStatus": "complete",
+  "errors": [],
+  "evidence": [
+    {
+      "url": "https://docs.x.ai/developers/models",
+      "capturedAt": "2026-10-04T08:35:39.915Z",
+      "sha256": "10bb96ececf67ebe4a8d755fe9bfb8551efde2b65c2b99bb8896f6425fa412ba",
+      "text": "#### Key Information\n\n# Models\n\n### Text API Pricing\n\n| Model | Context | Input / 1M tokens | Cached input / 1M tokens | Output / 1M tokens |\n| --- | --- | --- | --- | --- |\n| grok-4.7 (< 200k prompt tokens) | 500k | $2.00 | $0.50 | $6.00 |\n| grok-4.7 (≥ 200k prompt tokens) | 500k | $4.00 | $1.00 | $12.00 |\n| grok-4.6 (< 200k prompt tokens) | 500k | $2.00 | $0.50 | $6.00 |\n| grok-4.6 (≥ 200k prompt tokens) | 500k | $4.00 | $1.00 | $12.00 |\n| grok-4.5 (< 200k prompt tokens) | 500k | $2.00 | $0.30 | $6.00 |\n| grok-4.5 (≥ 200k prompt tokens) | 500k | $4.00 | $0.60 | $12.00 |\n| grok-4.3 (< 200k prompt tokens) | 1M | $1.25 | $0.20 | $2.50 |\n| grok-4.3 (≥ 200k prompt tokens) | 1M | $2.50 | $0.40 | $5.00 |\n| grok-4.20-0309-reasoning (< 200k prompt tokens) | 1M | $1.25 | $0.20 | $2.50 |\n| grok-4.20-0309-reasoning (≥ 200k prompt tokens) | 1M | $2.50 | $0.40 | $5.00 |\n| grok-4.20-0309-non-reasoning (< 200k prompt tokens) | 1M | $1.25 | $0.20 | $2.50 |\n| grok-4.20-0309-non-reasoning (≥ 200k prompt tokens) | 1M | $2.50 | $0.40 | $5.00 |\n| grok-build-0.1 (< 200k prompt tokens) | 256k | $1.00 | $0.20 | $2.00 |\n| grok-build-0.1 (≥ 200k prompt tokens) | 256k | $2.00 | $0.40 | $4.00 |\n| grok-4.20-multi-agent-0309 (< 200k prompt tokens) | 1M | $1.25 | $0.20 | $2.50 |\n| grok-4.20-multi-agent-0309 (≥ 200k prompt tokens) | 1M | $2.50 | $0.40 | $5.00 |\n\n*Prices shown per million tokens. Models listed with two rows use long context pricing: requests whose prompt reaches the listed token threshold are billed at the higher rate for all tokens in the request.*\n\n### Imagine Pricing\n\n| Model | Cost |\n| --- | --- |\n| grok-imagine-image | $0.02 / image |\n| grok-imagine-image-quality | $0.05 / image |\n| grok-imagine-image-2.0 | $0.04 / image |\n| grok-imagine-video-1.5-lite | $0.020 / sec |\n| grok-imagine-video-1.5 | $0.080 / sec |\n| grok-imagine-video | $0.050 / sec |\n\n### Voice Pricing\n\n| Mode | Cost |\n| --- | --- |\n| Speech to Speech (grok-voice-think-fast-2.0) | $0.08 / min ($4.80 / hr)<br />$0.004 / text input |\n| Speech to Text | $0.10 / hr (REST), $0.20 / hr (Streaming) |\n| Text to Speech | $15.00 / 1M chars |\n\n## Which model should I choose?\n\nYour choice depends on your use case. We have dedicated models and APIs for audio, image, and video capabilities. For everything else, including code, use Grok 4.7. It is the most capable model we’ve built.\n\nCode: [Grok 4.7](/developers/models/grok-4.7)\n\nChat: [Grok 4.7](/developers/models/grok-4.7)\n\nImages: [Grok Imagine Image 2.0](/developers/models/grok-imagine-image-2.0)\n\nVideos: [Grok Imagine Video 1.5](/developers/models/grok-imagine-video-1.5)\n\nVoice: [Grok Voice API](/developers/model-capabilities/audio/voice)\n\n## Additional Information Regarding Models\n\n* **No access to realtime events without search tools enabled**\n  * Grok has no knowledge of current events or data beyond what was present in its training data.\n  * To incorporate realtime data with your request, enable server-side search tools (Web Search / X Search). See [Web Search](/developers/tools/web-search) and [X Search](/developers/tools/x-search).\n* **Chat models**\n  * No role order limitation: You can mix `system`, `user`, or `assistant` roles in any sequence for your conversation context.\n  * `logprobs` and `top_logprobs` are not supported by models `grok-4.20` and newer. These fields will be silently ignored if set.\n* **Image input models**\n  * Maximum image size: `20MiB`\n  * Maximum number of images: No limit\n  * Supported image file types: `jpg/jpeg` or `png`.\n  * Any image/text input order is accepted (e.g. text prompt can precede image prompt)\n* **Batch API**\n  * Not every model accepts [Batch API](/developers/advanced-api-usage/batch-api) requests. See Details on each model page.\n* **Encrypted reasoning**\n  * On the [Responses API](/developers/rest-api-reference/inference/responses#create-new-response), `grok-4.7` always returns `reasoning.encrypted_content`, even when `include` does not list it. See [Encrypted reasoning content](/developers/model-capabilities/text/reasoning#encrypted-reasoning-content).\n\n> [!NOTE]\n>\n> The knowledge cut-off date of Grok 4.7 is May 2026.\n\n## Model Aliases\n\nSome models have aliases to help users automatically migrate to the next version of the same model. In general:\n\n* `<modelname>` is aliased to the latest stable version.\n* `<modelname>-latest` is aliased to the latest version. This is suitable for users who want to access the latest features.\n* `<modelname>-<date>` refers directly to a specific model release. This will not be updated and is for workflows that demand consistency.\n\nFor most users, the aliased `<modelname>` or `<modelname>-latest` are recommended, as you would receive the latest features automatically.\n",
+      "links": [
+        {
+          "url": "https://docs.x.ai/developers/models/grok-4.7",
+          "text": "[Grok 4.7](/developers/models/grok-4.7)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/models/grok-4.7",
+          "text": "[Grok 4.7](/developers/models/grok-4.7)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+          "text": "[Grok Imagine Image 2.0](/developers/models/grok-imagine-image-2.0)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/models/grok-imagine-video-1.5",
+          "text": "[Grok Imagine Video 1.5](/developers/models/grok-imagine-video-1.5)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/model-capabilities/audio/voice",
+          "text": "[Grok Voice API](/developers/model-capabilities/audio/voice)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/tools/web-search",
+          "text": "[Web Search](/developers/tools/web-search)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/tools/x-search",
+          "text": "[X Search](/developers/tools/x-search)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/advanced-api-usage/batch-api",
+          "text": "[Batch API](/developers/advanced-api-usage/batch-api)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/rest-api-reference/inference/responses#create-new-response",
+          "text": "[Responses API](/developers/rest-api-reference/inference/responses#create-new-response)"
+        },
+        {
+          "url": "https://docs.x.ai/developers/model-capabilities/text/reasoning#encrypted-reasoning-content",
+          "text": "[Encrypted reasoning content](/developers/model-capabilities/text/reasoning#encrypted-reasoning-content)"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.7",
+      "capturedAt": "2026-10-04T08:35:40.204Z",
+      "sha256": "3ed635f3374714d627a45b4632753004c43b09418529273f8c75075a5ae6c3e4",
+      "text": "# Grok 4.7\n\nSpaceXAI's frontier model for coding, agentic tasks, and knowledge work.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 500,000 tokens\n- **Model name:** `grok-4.7`\n- **Batch API:** Not supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n- **Reasoning efforts (supported):** `low`, `medium`, `high`, `xhigh`\n- **Reasoning efforts (default):** `high`\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $2.00 | $4.00 |\n| Cached input | $0.50 | $1.00 |\n| Output | $6.00 | $12.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 150 |\n| Tokens per minute | 50,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2, us-central-1\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.3",
+      "capturedAt": "2026-10-04T08:35:40.247Z",
+      "sha256": "9bcd456b37a6fa5bb1b1fed6acd53a2d8128e8f1b60d3eea76f44e3badc4ebc2",
+      "text": "# Grok 4.3\n\nFast, reliable model with strong tool calling and instruction following capabilities.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 1,000,000 tokens\n- **Model name:** `grok-4.3`\n- **Aliases:** `grok-4.3-latest`\n- **Batch API:** Supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n- **Reasoning efforts (supported):** `none`, `low`, `medium`, `high`, `xhigh`\n- **Reasoning efforts (default):** `low`\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $1.25 | $2.50 |\n| Cached input | $0.20 | $0.40 |\n| Output | $2.50 | $5.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n[Batch API](/developers/advanced-api-usage/batch-api) requests are billed at a 20% discount to standard rates.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 37 |\n| Tokens per minute | 10,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, eu-west-1, us-west-2\n",
+      "links": [
+        {
+          "url": "https://docs.x.ai/developers/advanced-api-usage/batch-api",
+          "text": "[Batch API](/developers/advanced-api-usage/batch-api)"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.5",
+      "capturedAt": "2026-10-04T08:35:40.247Z",
+      "sha256": "81ddddf9109893f5a84c92cf524984afe446009043dada7aeb4b85cbbb781b2b",
+      "text": "# Grok 4.5\n\nSpaceXAI's intelligent coding model for agentic software, engineering, and workflow tasks. Trained in SpaceXAI's data centers in Memphis with new datasets spanning science, engineering, and math.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 500,000 tokens\n- **Model name:** `grok-4.5`\n- **Aliases:** `grok-4.5-latest`, `grok-build-latest`\n- **Batch API:** Not supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n- **Reasoning efforts (supported):** `low`, `medium`, `high`, `xhigh`\n- **Reasoning efforts (default):** `high`\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $2.00 | $4.00 |\n| Cached input | $0.30 | $0.60 |\n| Output | $6.00 | $12.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 150 |\n| Tokens per minute | 50,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+      "capturedAt": "2026-10-04T08:35:40.337Z",
+      "sha256": "b96853a986641254b5b19a59fdc60e5ea0cacbe880f08ca7ed73037beabd4b23",
+      "text": "# grok-imagine-image-2.0\n\n## At a glance\n\n- **Modalities:** text, image → image\n- **Model name:** `grok-imagine-image-2.0`\n- **Batch API:** Supported\n\n## Pricing\n\n- **Output:** $0.04 per image\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 6 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-imagine-video-1.5",
+      "capturedAt": "2026-10-04T08:35:40.338Z",
+      "sha256": "13844019b570ad815e3ad6896913c78e23b2d8280a72e415b30dcdfa74bd6a63",
+      "text": "# grok-imagine-video-1.5\n\n## At a glance\n\n- **Modalities:** text, image → video\n- **Model name:** `grok-imagine-video-1.5`\n- **Aliases:** `grok-imagine-video-1.5-preview`, `grok-imagine-video-1.5-2026-05-30`\n- **Batch API:** Supported in us-east-1, us-west-2\n\n## Pricing\n\n- **Output:** $0.080 per second\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 10 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2, us-saltlake-2\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.6",
+      "capturedAt": "2026-10-04T08:35:40.385Z",
+      "sha256": "0c227f45a9c4c7c6c86e671fbeaf2284138e0fbbc36d57918400e25e5801b679",
+      "text": "# Grok 4.6\n\nSpaceXAI's frontier model for coding, agentic tasks, and knowledge work.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 500,000 tokens\n- **Model name:** `grok-4.6`\n- **Batch API:** Not supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n- **Reasoning efforts (supported):** `low`, `medium`, `high`, `xhigh`\n- **Reasoning efforts (default):** `high`\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $2.00 | $4.00 |\n| Cached input | $0.50 | $1.00 |\n| Output | $6.00 | $12.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 150 |\n| Tokens per minute | 50,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2, us-central-1\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-build-0.1",
+      "capturedAt": "2026-10-04T08:35:40.517Z",
+      "sha256": "e8c0cbcb733852896245ef05be4475e4bf08e54d741b47a5d031fd7d213baef0",
+      "text": "# Grok Build 0.1\n\nSpaceXAI's intelligent coding model for agentic software, engineering, and workflow tasks.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 256,000 tokens\n- **Model name:** `grok-build-0.1`\n- **Aliases:** `grok-code-fast-1`, `grok-code-fast`, `grok-code-fast-1-0825`\n- **Batch API:** Not supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $1.00 | $2.00 |\n| Cached input | $0.20 | $0.40 |\n| Output | $2.00 | $4.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 37 |\n| Tokens per minute | 10,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": []
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.20-0309-non-reasoning",
+      "capturedAt": "2026-10-04T08:35:40.563Z",
+      "sha256": "4077bae7964e9b5942763b4d95958234879f82720a3eb5ed37b83347ee1024a8",
+      "text": "# Grok 4.20 (Non-Reasoning)\n\nGrok 4.20 is a high-performance model with industry-leading speed and agentic tool calling capabilities. It combines the lowest hallucination rate on the market with strict prompt adherence, delivering consistently precise and truthful responses.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 1,000,000 tokens\n- **Model name:** `grok-4.20-0309-non-reasoning`\n- **Aliases:** `grok-4.20-non-reasoning`, `grok-4.20-non-reasoning-latest`, `grok-4.20-beta-non-reasoning`, `grok-4.20-beta-latest-non-reasoning`, `grok-4.20-experimental-beta-0304-non-reasoning`, `grok-4.20-experimental-beta-non-reasoning-latest`, `grok-4.20-beta-0309-non-reasoning`, `grok-4.20-non-reasoning-gv2`\n- **Batch API:** Supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** No\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $1.25 | $2.50 |\n| Cached input | $0.20 | $0.40 |\n| Output | $2.50 | $5.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n[Batch API](/developers/advanced-api-usage/batch-api) requests are billed at a 20% discount to standard rates.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 37 |\n| Tokens per minute | 10,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": [
+        {
+          "url": "https://docs.x.ai/developers/advanced-api-usage/batch-api",
+          "text": "[Batch API](/developers/advanced-api-usage/batch-api)"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.20-multi-agent-0309",
+      "capturedAt": "2026-10-04T08:35:40.673Z",
+      "sha256": "6de12a68529773f220cb4bde47f13c452fa6df66fa5171e834b5a0ff52a87ee2",
+      "text": "# Grok 4.20 Multi-Agent Beta\n\nMultiple agents collaborate in parallel to perform deep research tasks.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 1,000,000 tokens\n- **Model name:** `grok-4.20-multi-agent-0309`\n- **Aliases:** `grok-4.20-multi-agent`, `grok-4.20-multi-agent-latest`, `grok-4.20-multi-agent-beta-latest`, `grok-4.20-multi-agent-experimental-beta-0304`, `grok-4.20-multi-agent-experimental-beta-latest`, `grok-4.20-multi-agent-beta-0309`\n- **Batch API:** Supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $1.25 | $2.50 |\n| Cached input | $0.20 | $0.40 |\n| Output | $2.50 | $5.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n[Batch API](/developers/advanced-api-usage/batch-api) requests are billed at a 20% discount to standard rates.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 9 |\n| Tokens per minute | 2,500,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": [
+        {
+          "url": "https://docs.x.ai/developers/advanced-api-usage/batch-api",
+          "text": "[Batch API](/developers/advanced-api-usage/batch-api)"
+        }
+      ]
+    },
+    {
+      "url": "https://docs.x.ai/developers/models/grok-4.20-0309-reasoning",
+      "capturedAt": "2026-10-04T08:35:40.723Z",
+      "sha256": "99057608aeb1a4e6ace5d87bf6c4b27b3bff4af5248babad475500da31fdc2e3",
+      "text": "# Grok 4.20\n\nGrok 4.20 is a high-performance model with industry-leading speed and agentic tool calling capabilities. It combines the lowest hallucination rate on the market with strict prompt adherence, delivering consistently precise and truthful responses.\n\n## At a glance\n\n- **Modalities:** text, image → text\n- **Context window:** 1,000,000 tokens\n- **Model name:** `grok-4.20-0309-reasoning`\n- **Aliases:** `grok-4.20-reasoning-latest`, `grok-4.20`, `grok-4.20-reasoning`, `grok-4.20-0309`, `grok-4.20-beta-0309-reasoning`, `grok-4.20-beta`, `grok-4.20-beta-0309`, `grok-4.20-beta-latest`, `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-reasoning`, `grok-4.20-experimental-beta-0304-reasoning`, `grok-4.20-experimental-beta-0304`, `grok-4.20-experimental-beta-reasoning-latest`, `grok-4.20-experimental-beta-latest`, `grok-4.20-reasoning-gv2`\n- **Batch API:** Supported\n\n## Capabilities\n\n- **Function calling:** Yes\n- **Structured outputs:** Yes\n- **Reasoning:** Yes\n\n## Pricing\n\n| Type | < 200k prompt tokens (per 1M tokens) | ≥ 200k prompt tokens (per 1M tokens) |\n| --- | --- | --- |\n| Input | $1.25 | $2.50 |\n| Cached input | $0.20 | $0.40 |\n| Output | $2.50 | $5.00 |\n\nRequests whose prompt reaches 200k tokens are billed at the higher rate for all tokens in the request.\n\n[Batch API](/developers/advanced-api-usage/batch-api) requests are billed at a 20% discount to standard rates.\n\n## Rate limits\n\n| Limit | Value |\n| --- | --- |\n| Requests per second | 37 |\n| Tokens per minute | 10,000,000 |\n\n## Regions\n\nAvailable in: us-east-1, us-west-2\n",
+      "links": [
+        {
+          "url": "https://docs.x.ai/developers/advanced-api-usage/batch-api",
+          "text": "[Batch API](/developers/advanced-api-usage/batch-api)"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "grok-4.20-0309-non-reasoning",
+      "name": "grok-4.20-0309-non-reasoning",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.20-0309-non-reasoning",
+        "displayName": "grok-4.20-0309-non-reasoning",
+        "limits": {
+          "contextWindow": 1000000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.20-0309-reasoning",
+      "name": "grok-4.20-0309-reasoning",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.20-0309-reasoning",
+        "displayName": "grok-4.20-0309-reasoning",
+        "limits": {
+          "contextWindow": 1000000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.20-multi-agent-0309",
+      "name": "grok-4.20-multi-agent-0309",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.20-multi-agent-0309",
+        "displayName": "grok-4.20-multi-agent-0309",
+        "limits": {
+          "contextWindow": 1000000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.3",
+      "name": "grok-4.3",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.3",
+        "displayName": "grok-4.3",
+        "limits": {
+          "contextWindow": 1000000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.5",
+      "name": "grok-4.5",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.5",
+        "displayName": "grok-4.5",
+        "limits": {
+          "contextWindow": 500000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.6",
+      "name": "grok-4.6",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.6",
+        "displayName": "grok-4.6",
+        "limits": {
+          "contextWindow": 500000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-4.7",
+      "name": "grok-4.7",
+      "disposition": "existing",
+      "reason": "Official catalog table entry; per-model enrichment follows; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-4.7",
+        "displayName": "grok-4.7",
+        "limits": {
+          "contextWindow": 500000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "effort",
+          "enabledEffort": "low",
+          "disabledEffort": "low",
+          "canDisable": false
+        },
+        "temperature": "unsupported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-build-0.1",
+      "name": "grok-build-0.1",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "definition": {
+        "provider": "xai",
+        "id": "grok-build-0.1",
+        "displayName": "grok-build-0.1",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.x.ai/developers/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-image",
+      "name": "grok-imagine-image",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-image-2.0",
+      "name": "grok-imagine-image-2.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-image-quality",
+      "name": "grok-imagine-image-quality",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-video",
+      "name": "grok-imagine-video",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-video-1.5",
+      "name": "grok-imagine-video-1.5",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "grok-imagine-video-1.5-lite",
+      "name": "grok-imagine-video-1.5-lite",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.x.ai/developers/models"
+      ],
+      "accountVisibility": "not-tested"
+    }
+  ]
+}

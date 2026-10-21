@@ -1,9 +1,8 @@
-import { timeLimits } from "../config/shared-config.js";
 import { assert } from "./safety-utils.js";
 
 const DEFAULT_TIME_WINDOW_MS = 60 * 1000;
 const MIN_REQUESTS_PER_MINUTE = 1;
-const MAX_REQUESTS_PER_MINUTE = 1000;
+const MAX_REQUESTS_PER_MINUTE = 10000;
 
 export interface RateLimiter {
   getRequestCount(): number;
@@ -32,38 +31,6 @@ function validateRateLimiterParams(requestsPerMinute: number): void {
   );
 }
 
-function calculateWaitTime(
-  currentTime: number,
-  lastRequestTime: number,
-  timeWindow: number,
-): number {
-  assert(typeof currentTime === "number", "Current time must be a number");
-  assert(
-    typeof lastRequestTime === "number",
-    "Last request time must be a number",
-  );
-  assert(typeof timeWindow === "number", "Time window must be a number");
-  assert(timeWindow > 0, "Time window must be positive");
-
-  const waitTime = timeWindow - (currentTime - lastRequestTime);
-  return Math.min(Math.max(0, waitTime), timeLimits.maxTimeoutDuration);
-}
-
-async function wait(waitTime: number): Promise<void> {
-  assert(typeof waitTime === "number", "Wait time must be a number");
-  assert(waitTime >= 0, "Wait time must be non-negative");
-  assert(
-    waitTime <= timeLimits.maxTimeoutDuration,
-    `Wait time must not exceed ${timeLimits.maxTimeoutDuration}ms`,
-  );
-
-  if (waitTime <= 0) {
-    return;
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, waitTime));
-}
-
 export function createRateLimiter(
   requestsPerMinute: number,
   _options?: RateLimiterOptions,
@@ -73,6 +40,7 @@ export function createRateLimiter(
   let requestCount = 0;
   let lastRequestTime = Date.now();
   const timeWindow = DEFAULT_TIME_WINDOW_MS;
+  let pending: Promise<void> = Promise.resolve();
 
   return {
     getRequestCount(): number {
@@ -88,30 +56,23 @@ export function createRateLimiter(
       lastRequestTime = Date.now();
     },
 
-    async checkLimit(): Promise<void> {
-      const currentTime = Date.now();
-
-      if (currentTime - lastRequestTime > timeWindow) {
-        requestCount = 0;
-        lastRequestTime = currentTime;
-        return;
-      }
-
-      if (requestCount >= requestsPerMinute) {
-        const waitTime = calculateWaitTime(
-          currentTime,
-          lastRequestTime,
-          timeWindow,
-        );
-
-        if (waitTime > 0) {
-          await wait(waitTime);
-          requestCount = 0;
-          lastRequestTime = Date.now();
+    checkLimit(): Promise<void> {
+      const admitted = pending.then(async () => {
+        while (true) {
+          const now = Date.now();
+          if (now - lastRequestTime >= timeWindow) {
+            requestCount = 0;
+            lastRequestTime = now;
+          }
+          if (requestCount < requestsPerMinute) {
+            requestCount++;
+            return;
+          }
+          await new Promise(resolve => setTimeout(resolve, Math.max(1, lastRequestTime + timeWindow - now)));
         }
-      }
-
-      requestCount++;
+      });
+      pending = admitted.catch(() => {});
+      return admitted;
     },
   };
 }

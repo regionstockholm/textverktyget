@@ -1,5 +1,11 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
+import { normalizeProviderId, validateLlmSettings, type LlmSettings } from "./ai/provider-registry.js";
+import { TASK_WEB_SEARCH_MODES, type TaskWebSearchMode } from "./tasks/task-contract.js";
+import {
+  BACKUP_SCHEMA_VERSION,
+  upgradeLegacyBackup,
+} from "../services/config/backup-schema.js";
 
 export interface DefaultConfigSystemPrompt {
   name: string;
@@ -27,13 +33,15 @@ export interface DefaultConfigTask {
   sortOrder: number;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
+  reasoningEnabled: boolean;
+  webSearchMode: TaskWebSearchMode;
   prompt: {
     content: string;
   };
 }
 
 export interface DefaultConfigPayload {
-  schemaVersion: 4;
+  schemaVersion: 7;
   app: string;
   exportedAt: string;
   settings: {
@@ -43,7 +51,12 @@ export interface DefaultConfigPayload {
       runtimeSettings?: Record<string, unknown>;
     };
     providers: {
+      [provider: string]: LlmSettings;
       gemini: {
+        modelProfile?: string | null;
+        contextWindow?: number;
+        taskModel?: string | null;
+        backgroundModel?: string | null;
         model: string;
         temperature: number;
         maxOutputTokens: number;
@@ -61,7 +74,7 @@ export interface DefaultConfigPayload {
 
 const DEFAULT_CONFIG_ENV_KEY = "DEFAULT_CONFIG_JSON_PATH";
 const DEFAULT_CONFIG_RELATIVE_PATH = "config/default-config.json";
-const CANONICAL_SCHEMA_VERSION = 4;
+const CANONICAL_SCHEMA_VERSION = BACKUP_SCHEMA_VERSION;
 
 let cachedPath: string | null = null;
 let cachedConfig: DefaultConfigPayload | null = null;
@@ -106,7 +119,7 @@ function resolveDefaultConfigPath(): string {
 }
 
 function parseDefaultConfig(content: string, path: string): DefaultConfigPayload {
-  const parsed = JSON.parse(content) as Record<string, unknown>;
+  const parsed = upgradeLegacyBackup(JSON.parse(content));
   if (!isRecord(parsed)) {
     throw new Error(`Invalid default config JSON shape in ${path}`);
   }
@@ -355,7 +368,16 @@ function parseDefaultConfig(content: string, path: string): DefaultConfigPayload
       );
     }
 
+    if (typeof entry.reasoningEnabled !== "boolean") {
+      throw new Error(
+        `settings.tasks[${index}].reasoningEnabled must be boolean in ${path}`,
+      );
+    }
+
     const promptValue = entry.prompt;
+    if (!TASK_WEB_SEARCH_MODES.includes(entry.webSearchMode as TaskWebSearchMode)) {
+      throw new Error(`settings.tasks[${index}].webSearchMode must be inherit, off or on in ${path}`);
+    }
     if (!isRecord(promptValue)) {
       throw new Error(`settings.tasks[${index}].prompt must be object in ${path}`);
     }
@@ -379,6 +401,8 @@ function parseDefaultConfig(content: string, path: string): DefaultConfigPayload
       sortOrder,
       targetAudienceEnabled: entry.targetAudienceEnabled,
       rewritePlanEnabled: entry.rewritePlanEnabled,
+      reasoningEnabled: entry.reasoningEnabled,
+      webSearchMode: entry.webSearchMode as TaskWebSearchMode,
       prompt: {
         content: promptContent,
       },
@@ -426,7 +450,12 @@ function parseDefaultConfig(content: string, path: string): DefaultConfigPayload
         runtimeSettings,
       },
       providers: {
+        ...Object.fromEntries(Object.entries(providers).filter(([id]) => id !== "gemini").map(([id, settings]) => [normalizeProviderId(id), validateLlmSettings(normalizeProviderId(id), settings, { allowInactive: true })])),
         gemini: {
+          modelProfile: typeof gemini.modelProfile === "string" ? gemini.modelProfile : null,
+          contextWindow: typeof gemini.contextWindow === "number" ? gemini.contextWindow : undefined,
+          taskModel: typeof gemini.taskModel === "string" ? gemini.taskModel : null,
+          backgroundModel: typeof gemini.backgroundModel === "string" ? gemini.backgroundModel : null,
           model: normalizeNonEmptyString(
             gemini.model,
             "settings.providers.gemini.model",

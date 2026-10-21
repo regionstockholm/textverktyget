@@ -1,0 +1,2 @@
+import type { OpenrouterModelInput } from "./types.js";
+export const template: OpenrouterModelInput = { provider: "openrouter", id: "replace-model-id", displayName: "New routed model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "deployment-dependent" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://openrouter.ai/docs/guides/overview/models"], notes: "Check endpoint-specific limits, not just the publisher's model card." } };

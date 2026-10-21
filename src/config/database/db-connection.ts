@@ -5,7 +5,6 @@
  */
 
 import { Pool, type PoolConfig } from "pg";
-import { ensureDatabaseStructure } from "./db-schema.js";
 import {
   getPostgresSslConfig,
   maskDatabaseUrl,
@@ -77,10 +76,6 @@ async function initializeDatabase(): Promise<Pool> {
           }
 
           console.log("[Database] Successfully connected to Postgres database");
-
-          // Initialize database structure
-          await ensureDatabaseStructure(pool);
-          console.log("[Database] Database structure initialization completed");
 
           dbInstance = pool;
           return pool;

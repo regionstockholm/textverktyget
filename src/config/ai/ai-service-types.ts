@@ -9,15 +9,10 @@
  */
 export interface ProcessingOptions {
   taskKey?: string;
-  taskOutputMode?: "rewrite" | "summary" | "bullets";
-  taskPromptMode?: "rewritePlanDraft";
+  taskPromptMode?: "rewritePlanDraft" | "sourceAnalysis";
   paragraphCount?: number | string;
   senderIntent?: string;
-  senderIntentSummary?: string;
-  audiencePriorityMode?: "generic" | "specific";
-  textType?: string;
-  rewriteBlueprint?: string;
-  maxChunks?: number;
+  repairInstructions?: string;
   targetAudience: string;
   checkboxContent: string | string[];
   requestId?: string;
@@ -27,10 +22,9 @@ export interface ProcessingOptions {
   previousQualityId?: number;
   rewritePlanDraft?: string;
   rewritePlanEnabled?: boolean;
-  easyToReadWorkflowEnabled?: boolean;
-  easyToReadWorkflowUseRewriteDraft?: boolean;
-  taskShapingMode?: "rewrite" | "task-shaping";
-  applyTaskPromptInRewriteStage?: boolean;
+  reasoningEnabled?: boolean;
+  webSearchMode?: "inherit" | "off" | "on";
+  aiCallPurpose?: "task" | "background";
   [key: string]: string | number | boolean | string[] | undefined;
 }
 

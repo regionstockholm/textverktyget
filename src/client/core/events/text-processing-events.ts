@@ -1,3 +1,5 @@
+import type { QualityStatus } from "../../../types/quality-status.js";
+
 export enum TextProcessingEventType {
   PROCESSING_STARTED = "processing-started",
   TEXT_RECEIVED_FROM_DATABASE = "text-received-from-database",
@@ -20,6 +22,7 @@ export type TextReceivedEventData = TextProcessingEventData & {
 };
 
 export type ProcessingCompletedEventData = TextProcessingEventData & {
+  qualityStatus?: QualityStatus;
   finalScore?: number;
   totalAttempts: number;
 };

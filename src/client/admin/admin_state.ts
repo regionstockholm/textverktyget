@@ -11,7 +11,6 @@ import type {
 
 export type AdminState = {
   lastTargetAudience: string;
-  lastEasyToReadTargetAudience: string;
   lastTaskPrompt: string;
   rewritePlanTasks: RewritePlanTaskSettings;
   runtimeSettings: RuntimeSettings;
@@ -22,7 +21,6 @@ export type AdminState = {
 export function createAdminState(): AdminState {
   return {
     lastTargetAudience: "",
-    lastEasyToReadTargetAudience: "",
     lastTaskPrompt: "",
     rewritePlanTasks: getDefaultRewritePlanTasks(),
     runtimeSettings: {},

@@ -1,4 +1,9 @@
-import { lookup } from "node:dns/promises";
+import dns from "node:dns/promises";
+import http, { type IncomingMessage } from "node:http";
+import https from "node:https";
+import { pipeline, type Readable } from "node:stream";
+import { createBrotliDecompress, createUnzip } from "node:zlib";
+import type { LookupAddress } from "node:dns";
 import { isIP } from "node:net";
 
 export type UrlFetchGuardErrorCode =
@@ -11,6 +16,8 @@ export type UrlFetchGuardErrorCode =
   | "TOO_MANY_REDIRECTS"
   | "MISSING_REDIRECT_LOCATION"
   | "UNSUPPORTED_CONTENT_TYPE"
+  | "INCOMPLETE_CONTENT"
+  | "INVALID_TEXT_ENCODING"
   | "CONTENT_TOO_LARGE";
 
 export class UrlFetchGuardError extends Error {
@@ -130,6 +137,7 @@ function isPrivateOrReservedIpv6Address(address: string): boolean {
   if (normalized.startsWith("fc") || normalized.startsWith("fd")) {
     return true;
   }
+  if (normalized.startsWith("ff")) return true;
 
   if (
     normalized.startsWith("fe8") ||
@@ -166,7 +174,7 @@ export function isPrivateOrReservedIpAddress(address: string): boolean {
 async function assertUrlCanBeFetched(
   url: URL,
   allowPrivateNetwork: boolean,
-): Promise<void> {
+): Promise<LookupAddress[] | undefined> {
   if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
     throw new UrlFetchGuardError(
       "UNSUPPORTED_PROTOCOL",
@@ -186,7 +194,7 @@ async function assertUrlCanBeFetched(
     );
   }
 
-  const hostname = normalizeHost(url.hostname);
+  const hostname = normalizeHost(url.hostname.replace(/^\[|\]$/g, ""));
   if (!hostname) {
     throw new UrlFetchGuardError("UNSAFE_HOST", "URL hostname is invalid");
   }
@@ -206,12 +214,12 @@ async function assertUrlCanBeFetched(
         "Private or reserved IP addresses are not allowed",
       );
     }
-    return;
+    return [{ address: hostname, family: ipVersion }];
   }
 
-  let resolvedAddresses: Array<{ address: string }> = [];
+  let resolvedAddresses: LookupAddress[] = [];
   try {
-    resolvedAddresses = await lookup(hostname, { all: true, verbatim: true });
+    resolvedAddresses = await dns.lookup(hostname, { all: true, verbatim: true });
   } catch {
     throw new UrlFetchGuardError(
       "DNS_LOOKUP_FAILED",
@@ -234,6 +242,25 @@ async function assertUrlCanBeFetched(
       "Private or reserved IP addresses are not allowed",
     );
   }
+  return resolvedAddresses;
+}
+
+function requestWebContent(url: URL, addresses: LookupAddress[] | undefined, signal: AbortSignal, userAgent: string): Promise<IncomingMessage> {
+  signal.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const request = (url.protocol === "https:" ? https : http).request(url, {
+      signal,
+      agent: false,
+      headers: { "User-Agent": userAgent, "Accept-Encoding": "gzip, deflate, br" },
+      // Keep the hostname for TLS/Host, but never resolve it again after validation.
+      ...(addresses ? { lookup: (_hostname, options, callback) => {
+        if (options.all) callback(null, addresses);
+        else callback(null, addresses[0]!.address, addresses[0]!.family);
+      } } satisfies Pick<http.RequestOptions, "lookup"> : {}),
+    }, resolve);
+    request.once("error", reject);
+    request.end();
+  });
 }
 
 function isRedirectStatus(status: number): boolean {
@@ -246,10 +273,10 @@ function isAllowedContentType(contentType: string): boolean {
 }
 
 async function readLimitedResponseBodyAsText(
-  response: Response,
+  response: IncomingMessage,
   maxResponseBytes: number,
 ): Promise<string> {
-  const contentLengthHeader = response.headers.get("content-length");
+  const contentLengthHeader = response.headers["content-length"];
   if (contentLengthHeader) {
     const parsedLength = Number.parseInt(contentLengthHeader, 10);
     if (Number.isInteger(parsedLength) && parsedLength > maxResponseBytes) {
@@ -260,32 +287,31 @@ async function readLimitedResponseBodyAsText(
     }
   }
 
-  if (!response.body) {
-    return "";
+  let source: Readable = response;
+  const encoding = response.headers["content-encoding"];
+  if (encoding && encoding !== "identity") {
+    const decoder = encoding === "br" ? createBrotliDecompress()
+      : encoding === "gzip" || encoding === "deflate" ? createUnzip() : null;
+    if (!decoder) throw new UrlFetchGuardError("INVALID_TEXT_ENCODING", "Unsupported response compression");
+    source = decoder;
+    pipeline(response, decoder, () => {});
   }
-
-  const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      break;
+  try {
+    for await (const value of source) {
+      totalBytes += value.byteLength;
+      if (totalBytes > maxResponseBytes) {
+        throw new UrlFetchGuardError(
+          "CONTENT_TOO_LARGE",
+          "Response body exceeds size limit",
+        );
+      }
+      chunks.push(value);
     }
-
-    if (!value) {
-      continue;
-    }
-
-    totalBytes += value.byteLength;
-    if (totalBytes > maxResponseBytes) {
-      throw new UrlFetchGuardError(
-        "CONTENT_TOO_LARGE",
-        "Response body exceeds size limit",
-      );
-    }
-    chunks.push(value);
+  } finally {
+    source.destroy();
   }
 
   const buffer = new Uint8Array(totalBytes);
@@ -295,7 +321,16 @@ async function readLimitedResponseBodyAsText(
     offset += chunk.byteLength;
   }
 
-  return new TextDecoder("utf-8").decode(buffer);
+  if (!response.complete || (contentLengthHeader && !encoding && Number(contentLengthHeader) !== totalBytes)) {
+    throw new UrlFetchGuardError("INCOMPLETE_CONTENT", "Webbsvaret är ofullständigt. Ingen deltext används.");
+  }
+  const contentType = response.headers["content-type"] || "";
+  const charset = /charset\s*=\s*["']?([^\s;"']+)/i.exec(contentType)?.[1] || "utf-8";
+  try {
+    return new TextDecoder(charset, { fatal: true }).decode(buffer);
+  } catch {
+    throw new UrlFetchGuardError("INVALID_TEXT_ENCODING", "Webbtextens teckenkodning kunde inte läsas utan informationsförlust.");
+  }
 }
 
 function normalizeInputUrl(rawUrl: string): URL {
@@ -305,7 +340,9 @@ function normalizeInputUrl(rawUrl: string): URL {
   }
 
   try {
-    return new URL(trimmed);
+    const url = new URL(trimmed);
+    if (url.username || url.password) throw new Error("Credentials are not allowed in web URLs");
+    return url;
   } catch {
     throw new UrlFetchGuardError("INVALID_URL", "Invalid URL format");
   }
@@ -321,58 +358,46 @@ export async function fetchPublicWebContent(
 
   try {
     for (let redirectCount = 0; redirectCount <= options.maxRedirects; redirectCount++) {
-      await assertUrlCanBeFetched(currentUrl, options.allowPrivateNetwork);
-
-      const response = await fetch(currentUrl.toString(), {
-        headers: {
-          "User-Agent": options.userAgent,
-        },
-        signal: controller.signal,
-        redirect: "manual",
-      });
-
-      if (isRedirectStatus(response.status)) {
-        const locationHeader = response.headers.get("location");
-        if (!locationHeader) {
-          throw new UrlFetchGuardError(
-            "MISSING_REDIRECT_LOCATION",
-            "Redirect response missing location header",
-          );
+      const addresses = await assertUrlCanBeFetched(currentUrl, options.allowPrivateNetwork);
+      const response = await requestWebContent(currentUrl, addresses, controller.signal, options.userAgent);
+      try {
+        const status = response.statusCode!;
+        if (isRedirectStatus(status)) {
+          const locationHeader = response.headers.location;
+          if (!locationHeader) {
+            throw new UrlFetchGuardError(
+              "MISSING_REDIRECT_LOCATION",
+              "Redirect response missing location header",
+            );
+          }
+          if (redirectCount >= options.maxRedirects) {
+            throw new UrlFetchGuardError(
+              "TOO_MANY_REDIRECTS",
+              "Too many redirects",
+            );
+          }
+          currentUrl = normalizeInputUrl(new URL(locationHeader, currentUrl).toString());
+          continue;
         }
 
-        if (redirectCount >= options.maxRedirects) {
+        if (status < 200 || status >= 300) {
+          throw new UrlFetchHttpError(status, response.statusMessage || "HTTP error");
+        }
+        if (status === 206 || response.headers["content-range"] !== undefined) {
+          throw new UrlFetchGuardError("INCOMPLETE_CONTENT", "Webbservern skickade bara en del av innehållet. Ingen deltext används.");
+        }
+        const contentType = response.headers["content-type"] || "";
+        if (!isAllowedContentType(contentType)) {
           throw new UrlFetchGuardError(
-            "TOO_MANY_REDIRECTS",
-            "Too many redirects",
+            "UNSUPPORTED_CONTENT_TYPE",
+            "Unsupported response content type",
           );
         }
-
-        currentUrl = new URL(locationHeader, currentUrl);
-        continue;
+        const body = await readLimitedResponseBodyAsText(response, options.maxResponseBytes);
+        return { finalUrl: currentUrl.toString(), contentType, body };
+      } finally {
+        response.destroy();
       }
-
-      if (!response.ok) {
-        throw new UrlFetchHttpError(response.status, response.statusText);
-      }
-
-      const contentType = response.headers.get("content-type") || "";
-      if (!isAllowedContentType(contentType)) {
-        throw new UrlFetchGuardError(
-          "UNSUPPORTED_CONTENT_TYPE",
-          "Unsupported response content type",
-        );
-      }
-
-      const body = await readLimitedResponseBodyAsText(
-        response,
-        options.maxResponseBytes,
-      );
-
-      return {
-        finalUrl: currentUrl.toString(),
-        contentType,
-        body,
-      };
     }
 
     throw new UrlFetchGuardError("TOO_MANY_REDIRECTS", "Too many redirects");

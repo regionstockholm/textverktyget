@@ -80,7 +80,7 @@ async function getTextToProcess(
   clickCount: number,
   processAttachedFiles?: ProcessAttachedFiles,
 ): Promise<string> {
-  const text = textInput.value.trim();
+  const text = textInput.value;
 
   if (!processAttachedFiles) {
     return text;
@@ -105,7 +105,9 @@ function getProcessingError(error: unknown): {
       error instanceof Error
         ? error
         : new Error("Unknown summarization error"),
-    message: "Ett fel uppstod vid bearbetningen. Försök igen senare.",
+    message: error instanceof Error && error.message.startsWith("Det gick inte att läsa filen")
+      ? error.message
+      : "Ett fel uppstod vid bearbetningen. Försök igen senare.",
   };
 }
 

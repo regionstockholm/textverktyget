@@ -5,6 +5,7 @@
  */
 
 import { assert } from "../../utils/safety-utils.js";
+import { PROVIDERS, defaultProviderSettings, type ProviderId } from "./provider-registry.js";
 
 function readPositiveIntEnv(key: string, fallback: number): number {
   const raw = process.env[key];
@@ -21,10 +22,11 @@ function readPositiveIntEnv(key: string, fallback: number): number {
 }
 
 // Define the AI provider types as a string literal union type
-export type AIProvider = "openai" | "gemini-2.5-flash";
+export type AIProvider = ProviderId | "gemini-2.5-flash";
 
 // Define the AI providers object with proper typing
 export const AI_PROVIDERS = Object.freeze({
+  ...Object.fromEntries(Object.keys(PROVIDERS).map(id => [id.toUpperCase(), id])) as Record<Uppercase<ProviderId>, AIProvider>,
   OPENAI: "openai" as AIProvider,
   GEMINI_2_5_FLASH: "gemini-2.5-flash" as AIProvider,
 });
@@ -36,6 +38,7 @@ export const DEFAULT_PROVIDER = AI_PROVIDERS.GEMINI_2_5_FLASH;
 // Define the interface for AI configuration
 export interface AIProviderConfig {
   MODEL: string;
+  TASK_MODEL?: string;
   MAX_INPUT_TOKENS: number;
   MAX_OUTPUT_TOKENS: number;
   MAX_CHUNK_SIZE: number;
@@ -51,6 +54,10 @@ export interface AIProviderConfig {
 // Also need testing using open source models that run locally.
 export const AI_CONFIG: Readonly<Record<AIProvider, AIProviderConfig>> =
   Object.freeze({
+    ...Object.fromEntries(Object.keys(PROVIDERS).map(id => {
+      const settings = defaultProviderSettings(id as ProviderId);
+      return [id, { MODEL: settings.model || "configure-model-in-admin", MAX_INPUT_TOKENS: settings.contextWindow!, MAX_OUTPUT_TOKENS: settings.maxOutputTokens, MAX_CHUNK_SIZE: settings.contextWindow! * 2, MAX_RETRIES: 2, RETRY_DELAY: 15000, RPM_LIMIT: 60 }];
+    })) as Record<ProviderId, AIProviderConfig>,
     "gemini-2.5-flash": {
       MODEL: "models/gemini-2.5-flash",
       MAX_INPUT_TOKENS: 1048576, // ~1M tokens input limit
@@ -64,6 +71,7 @@ export const AI_CONFIG: Readonly<Record<AIProvider, AIProviderConfig>> =
     },
     openai: {
       MODEL: "gpt-4o",
+      TASK_MODEL: "gpt-5.4",
       MAX_INPUT_TOKENS: 128000,
       MAX_OUTPUT_TOKENS: 16384,
       MAX_CHUNK_SIZE: 512000, // ~128K tokens (4 chars per token)

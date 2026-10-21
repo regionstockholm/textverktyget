@@ -86,7 +86,7 @@ export function initOrdlistaPanel({
     refs.ordlistaEmpty.hidden = true;
     sorted.forEach((entry) => {
       const row = document.createElement("div");
-      row.className = "flex flex-row flex-wrap gap-2 word-list-row";
+      row.className = "word-list-row";
 
       const from = document.createElement("span");
       from.className = "text-base flex-even flex-align-content-center";
@@ -101,7 +101,9 @@ export function initOrdlistaPanel({
 
       const remove = document.createElement("button");
       remove.className =
-        "flex flex-row flex-justify-content-center flex-align-items-center text-base filled-white outline-blue large-button";
+        "admin-danger";
+      remove.type = "button";
+      remove.setAttribute("aria-label", `Ta bort ordet ${entry.fromWord}`);
       remove.textContent = "Ta bort";
       remove.addEventListener("click", async () => {
         try {

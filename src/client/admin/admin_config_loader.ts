@@ -14,6 +14,7 @@ type ConfigLoaderDependencies = {
   runtime: RuntimeSettingsPanel;
   targetAudiences: TargetAudiencePanel;
   tasks: TaskPanel;
+  ai: { load(): Promise<void> };
 };
 
 export type AdminConfigLoader = {
@@ -30,10 +31,12 @@ export function initAdminConfigLoader(
   const load = async (): Promise<void> => {
     try {
       setStatus("Hämtar konfiguration...");
+      context.refs.checkButton.disabled = true;
       const data = await request<AdminConfigResponse>("GET", "/admin/config");
       resetLoadState();
       dependencies.prompts.setFields(data?.prompts);
       dependencies.runtime.applyConfig(data?.global, data?.providers?.gemini);
+      await dependencies.ai.load();
       state.rewritePlanTasks = data?.global
         ? resolveRewritePlanTasks(data.global.rewritePlanTasks)
         : getDefaultRewritePlanTasks();
@@ -46,12 +49,13 @@ export function initAdminConfigLoader(
           ? error.message
           : "Kunde inte hämta konfiguration.",
       );
+    } finally {
+      context.refs.checkButton.disabled = false;
     }
   };
 
   function resetLoadState(): void {
     state.lastTargetAudience = "";
-    state.lastEasyToReadTargetAudience = "";
     state.lastTaskPrompt = "";
   }
 

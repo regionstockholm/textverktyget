@@ -4,6 +4,8 @@
  * @module summarizer/interfaces
  */
 
+import type { QualityStatus } from "../../../types/quality-status.js";
+
 export type FormValues = {
   taskKey?: string;
   processId?: string;
@@ -23,4 +25,5 @@ export type SummarizationResponse = {
   qualityAttempts?: number;
   needsResubmission?: boolean;
   maxQualityAttempts?: number;
+  qualityStatus?: QualityStatus;
 };

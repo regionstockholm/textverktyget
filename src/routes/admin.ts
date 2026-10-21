@@ -16,17 +16,14 @@ import {
 } from "../utils/api/api-responses.js";
 import configService, {
   type PromptName,
-  type ProviderName,
 } from "../services/config/config-service.js";
 import { getPrismaClient } from "../config/database/prisma-client.js";
 import {
-  GEMINI_MODEL_WHITELIST,
   normalizeGeminiModel,
 } from "../config/ai/model-whitelist.js";
 import {
   AI_PROVIDERS,
   type AIProvider,
-  getProviderConfig,
 } from "../config/ai/ai-config.js";
 import {
   encryptSecretValue,
@@ -52,6 +49,12 @@ import {
 } from "../services/target-audiences/target-audience-catalog-service.js";
 import { registerAdminOrdlistaRoutes } from "./admin/ordlista-routes.js";
 import { registerAdminRuntimeReadRoutes } from "./admin/runtime-routes.js";
+import { registerAdminAiRoutes } from "./admin/ai-routes.js";
+import { normalizeProviderId, assertProviderConfigured, validateLlmSettings } from "../config/ai/provider-registry.js";
+import { requireModelDefinition } from "../config/ai/catalog/index.js";
+import { registerAdminUserRoutes } from "./admin/users-routes.js";
+import { registerUserBackupRoutes } from "./admin/user-backup-routes.js";
+import { registerSubmissionLogRoutes } from "./admin/submission-log-routes.js";
 
 const router = express.Router();
 const prisma = getPrismaClient();
@@ -65,7 +68,6 @@ const PROMPT_NAMES = new Set<PromptName>([
   "rewritePlan",
   "qualityEvaluation",
   "wordListUsage",
-  "rewriteFallback",
 ]);
 
 const GLOBAL_CONFIG_KEY = "global";
@@ -79,7 +81,6 @@ const SYSTEM_PROMPT_NAMES = [
   "rewritePlan",
   "qualityEvaluation",
   "wordListUsage",
-  "rewriteFallback",
 ] as const;
 
 function readOptionalBoolean(value: unknown): boolean | undefined {
@@ -346,6 +347,8 @@ async function buildBackupPayload(): Promise<BackupPayload> {
       sortOrder: task.sortOrder,
       targetAudienceEnabled: task.targetAudienceEnabled,
       rewritePlanEnabled: task.rewritePlanEnabled,
+      reasoningEnabled: task.reasoningEnabled,
+      webSearchMode: task.webSearchMode as BackupPayload["settings"]["tasks"][number]["webSearchMode"],
       prompt: {
         content:
           activePromptMap.get(`${TASK_PROMPT_PREFIX}${task.key}`) ||
@@ -365,7 +368,12 @@ async function buildBackupPayload(): Promise<BackupPayload> {
         runtimeSettings: globalConfig.runtimeSettings,
       },
       providers: {
+        ...Object.fromEntries((await prisma.providerConfig.findMany()).filter(row => row.provider !== "gemini").map(({ provider, updatedAt, ...settings }) => [provider, settings])),
         gemini: {
+          modelProfile: geminiConfig.modelProfile,
+          contextWindow: geminiConfig.contextWindow,
+          taskModel: geminiConfig.taskModel,
+          backgroundModel: geminiConfig.backgroundModel,
           model: geminiConfig.model,
           temperature: geminiConfig.temperature,
           maxOutputTokens: geminiConfig.maxOutputTokens,
@@ -389,6 +397,7 @@ async function importBackupPayload(
   payload: BackupPayload,
   actor: string,
 ): Promise<{ prompts: number; tasks: number; ordlista: number }> {
+  assertProviderConfigured(normalizeProviderId(payload.settings.global.provider));
   const systemPromptEntries = payload.settings.systemPrompts;
   const targetAudienceCategoryEntries =
     payload.settings.targetAudienceCategories;
@@ -423,6 +432,10 @@ async function importBackupPayload(
     });
 
     const createProviderData = {
+      modelProfile: payload.settings.providers.gemini.modelProfile,
+      contextWindow: payload.settings.providers.gemini.contextWindow,
+      taskModel: payload.settings.providers.gemini.taskModel,
+      backgroundModel: payload.settings.providers.gemini.backgroundModel,
       provider: "gemini",
       model: geminiModel,
       temperature: payload.settings.providers.gemini.temperature,
@@ -432,6 +445,10 @@ async function importBackupPayload(
     } as Prisma.ProviderConfigUncheckedCreateInput;
 
     const updateProviderData = {
+      modelProfile: payload.settings.providers.gemini.modelProfile ?? null,
+      contextWindow: payload.settings.providers.gemini.contextWindow ?? null,
+      taskModel: payload.settings.providers.gemini.taskModel ?? null,
+      backgroundModel: payload.settings.providers.gemini.backgroundModel ?? null,
       model: geminiModel,
       temperature: payload.settings.providers.gemini.temperature,
       maxOutputTokens: payload.settings.providers.gemini.maxOutputTokens,
@@ -444,6 +461,12 @@ async function importBackupPayload(
       create: createProviderData,
       update: updateProviderData,
     });
+    for (const [provider, input] of Object.entries(payload.settings.providers)) {
+      if (provider === "gemini") continue;
+      const id = normalizeProviderId(provider);
+      const settings = validateLlmSettings(id, input, { allowInactive: true });
+      await tx.providerConfig.upsert({ where: { provider: id }, create: { provider: id, ...settings }, update: settings });
+    }
 
     await tx.taskDefinition.deleteMany();
     const createdTaskRecords: Array<{
@@ -463,6 +486,8 @@ async function importBackupPayload(
           settings: {
             targetAudienceEnabled: task.targetAudienceEnabled,
             rewritePlanEnabled: task.rewritePlanEnabled,
+            reasoningEnabled: task.reasoningEnabled,
+            webSearchMode: task.webSearchMode,
           },
         },
         tx,
@@ -582,6 +607,10 @@ async function importBackupPayload(
 
 router.use(adminAuthLimiter);
 router.use(requireAdminAuth);
+registerAdminUserRoutes(router);
+registerUserBackupRoutes(router);
+registerSubmissionLogRoutes(router);
+registerAdminAiRoutes(router);
 
 router.get("/tasks", async (_req: Request, res: Response): Promise<void> => {
   try {
@@ -607,6 +636,7 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
     const rewritePlanEnabled = readOptionalBoolean(
       req.body?.rewritePlanEnabled,
     );
+    const reasoningEnabled = req.body?.reasoningEnabled;
 
     const settings: Record<string, unknown> = {};
     if (targetAudienceEnabled !== undefined) {
@@ -615,6 +645,10 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
     if (rewritePlanEnabled !== undefined) {
       settings.rewritePlanEnabled = rewritePlanEnabled;
     }
+    if (reasoningEnabled !== undefined) {
+      settings.reasoningEnabled = reasoningEnabled;
+    }
+    if (req.body?.webSearchMode !== undefined) settings.webSearchMode = req.body.webSearchMode;
 
     const actor = getActor(req);
     const promptContentInput = req.body?.promptContent;
@@ -671,9 +705,10 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
           label: task.label,
           enabled: task.enabled,
           sortOrder: task.sortOrder,
-          outputMode: task.outputMode,
           targetAudienceEnabled: task.targetAudienceEnabled,
           rewritePlanEnabled: task.rewritePlanEnabled,
+          reasoningEnabled: task.reasoningEnabled,
+          webSearchMode: task.webSearchMode,
         });
 
         await logAudit(
@@ -753,6 +788,7 @@ router.put(
       const rewritePlanEnabled = readOptionalBoolean(
         req.body?.rewritePlanEnabled,
       );
+      const reasoningEnabled = req.body?.reasoningEnabled;
 
       const settings: Record<string, unknown> = {};
       if (targetAudienceEnabled !== undefined) {
@@ -761,6 +797,10 @@ router.put(
       if (rewritePlanEnabled !== undefined) {
         settings.rewritePlanEnabled = rewritePlanEnabled;
       }
+      if (reasoningEnabled !== undefined) {
+        settings.reasoningEnabled = reasoningEnabled;
+      }
+      if (req.body?.webSearchMode !== undefined) settings.webSearchMode = req.body.webSearchMode;
 
       const updated = await updateTaskDefinition(taskKey, {
         label: req.body?.label,
@@ -781,9 +821,10 @@ router.put(
           label: updated.label,
           enabled: updated.enabled,
           sortOrder: updated.sortOrder,
-          outputMode: updated.outputMode,
           targetAudienceEnabled: updated.targetAudienceEnabled,
           rewritePlanEnabled: updated.rewritePlanEnabled,
+          reasoningEnabled: updated.reasoningEnabled,
+          webSearchMode: updated.webSearchMode,
         },
       );
 
@@ -956,12 +997,14 @@ router.post("/backup", async (req: Request, res: Response): Promise<void> => {
   }
 
   const payload = result.payload;
+  try { assertProviderConfigured(normalizeProviderId(payload.settings.global.provider)); }
+  catch (error) { sendError(res, 400, error instanceof Error ? error.message : "Provider is not configured"); return; }
   const actor = getActor(req);
 
   try {
     const imported = await importBackupPayload(payload, actor);
     configService.refresh();
-    sendSuccess(res, { imported });
+    sendSuccess(res, { imported, upgradedFrom: result.upgradedFrom });
   } catch (error) {
     sendError(res, 500, "Failed to import backup");
   }
@@ -1252,6 +1295,16 @@ router.put(
       }
 
       normalizedProvider = provider as AIProvider;
+      try {
+        normalizedProvider = normalizeProviderId(provider);
+        assertProviderConfigured(normalizedProvider);
+        const settings = await configService.getProviderConfig(normalizedProvider);
+        if (!settings.model) throw new Error("Select and save a model before activating this provider");
+        requireModelDefinition(normalizedProvider, settings.model, settings.modelProfile);
+      } catch (error) {
+        sendError(res, 400, error instanceof Error ? error.message : "Provider is not configured");
+        return;
+      }
     }
 
     let normalizedRetryCount: number | null = null;
@@ -1322,6 +1375,11 @@ router.put(
     if (!runtimeSettings) {
       sendError(res, 400, "Invalid runtime settings payload");
       return;
+    }
+    const fallback = runtimeSettings.aiFallback as { enabled?: boolean; provider?: string } | undefined;
+    if (fallback?.enabled) {
+      try { assertProviderConfigured(normalizeProviderId(fallback.provider || "")); }
+      catch (error) { sendError(res, 400, error instanceof Error ? error.message : "Fallback provider is not configured"); return; }
     }
 
     try {
@@ -1509,134 +1567,14 @@ router.post(
 );
 
 router.put(
-  "/providers/gemini",
-  async (req: Request, res: Response): Promise<void> => {
-    const { model, temperature, maxOutputTokens, useWebSearch, useThinking } =
-      req.body ?? {};
-
-    if (typeof model !== "string" || model.trim().length === 0) {
-      sendError(res, 400, "Invalid model");
-      return;
-    }
-
-    if (typeof temperature !== "number" || !Number.isFinite(temperature)) {
-      sendError(res, 400, "Invalid temperature");
-      return;
-    }
-
-    if (
-      typeof maxOutputTokens !== "number" ||
-      !Number.isInteger(maxOutputTokens) ||
-      maxOutputTokens <= 0
-    ) {
-      sendError(res, 400, "Invalid maxOutputTokens");
-      return;
-    }
-
-    const normalizedModel = normalizeGeminiModel(String(model));
-    if (!GEMINI_MODEL_WHITELIST.has(normalizedModel)) {
-      sendError(res, 400, "Unsupported model");
-      return;
-    }
-
-    if (useWebSearch !== undefined && typeof useWebSearch !== "boolean") {
-      sendError(res, 400, "Invalid useWebSearch");
-      return;
-    }
-
-    if (useThinking !== undefined && typeof useThinking !== "boolean") {
-      sendError(res, 400, "Invalid useThinking");
-      return;
-    }
-
-    try {
-      const actor = getActor(req);
-      const provider: ProviderName = "gemini";
-      const defaultProviderConfig = getProviderConfig(
-        AI_PROVIDERS.GEMINI_2_5_FLASH,
-      );
-      const defaultUseWebSearch = Boolean(
-        defaultProviderConfig.USE_GOOGLE_SEARCH_GROUNDING,
-      );
-      const defaultUseThinking =
-        defaultProviderConfig.THINKING_BUDGET !== undefined &&
-        defaultProviderConfig.THINKING_BUDGET !== 0;
-
-      const existing = (await prisma.providerConfig.findUnique({
-        where: { provider },
-      })) as { useWebSearch?: boolean; useThinking?: boolean } | null;
-
-      const nextUseWebSearch =
-        typeof useWebSearch === "boolean"
-          ? useWebSearch
-          : (existing?.useWebSearch ?? defaultUseWebSearch);
-      const nextUseThinking =
-        typeof useThinking === "boolean"
-          ? useThinking
-          : (existing?.useThinking ?? defaultUseThinking);
-
-      const createData = {
-        provider,
-        model: normalizedModel,
-        temperature,
-        maxOutputTokens,
-        useWebSearch: nextUseWebSearch,
-        useThinking: nextUseThinking,
-      } as Prisma.ProviderConfigUncheckedCreateInput;
-
-      const updateData = {
-        model: normalizedModel,
-        temperature,
-        maxOutputTokens,
-        useWebSearch: nextUseWebSearch,
-        useThinking: nextUseThinking,
-      } as Prisma.ProviderConfigUncheckedUpdateInput;
-
-      const updated = await prisma.providerConfig.upsert({
-        where: { provider },
-        create: createData,
-        update: updateData,
-      });
-
-      await logAudit(
-        prisma,
-        "provider.update",
-        actor,
-        "provider_config",
-        provider,
-        {
-          provider,
-          model: normalizedModel,
-          temperature,
-          maxOutputTokens,
-          useWebSearch: nextUseWebSearch,
-          useThinking: nextUseThinking,
-        },
-      );
-
-      configService.refresh();
-      const updatedConfig = updated as typeof updated & {
-        useWebSearch: boolean;
-        useThinking: boolean;
-      };
-      sendSuccess(res, {
-        model: updatedConfig.model,
-        temperature: updatedConfig.temperature,
-        maxOutputTokens: updatedConfig.maxOutputTokens,
-        useWebSearch: updatedConfig.useWebSearch,
-        useThinking: updatedConfig.useThinking,
-      });
-    } catch (error) {
-      sendError(res, 500, "Failed to update Gemini provider config");
-    }
-  },
-);
-
-router.put(
   "/secrets/:name",
   async (req: Request, res: Response): Promise<void> => {
     const rawName = req.params.name;
     const secretName = Array.isArray(rawName) ? rawName[0] : rawName;
+    if (secretName && (/API_KEY|HF_TOKEN|AWS_|GOOGLE_/i.test(secretName))) {
+      sendError(res, 400, "AI credentials must be configured in the server environment.");
+      return;
+    }
 
     if (!secretName || secretName.trim().length === 0) {
       sendError(res, 400, "Invalid secret name");
@@ -1684,7 +1622,7 @@ router.put(
 
 router.get("/secrets", async (_req: Request, res: Response): Promise<void> => {
   try {
-    const maskedSecrets = await configService.listMaskedSecrets();
+    const maskedSecrets = (await configService.listMaskedSecrets()).filter(secret => !/API_KEY|HF_TOKEN|AWS_|GOOGLE_/i.test(secret.name));
     sendSuccess(res, maskedSecrets);
   } catch (error) {
     sendError(res, 500, "Failed to load secrets");

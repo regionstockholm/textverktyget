@@ -1,0 +1,338 @@
+{
+  "provider": "ai21",
+  "capturedAt": "2026-10-04T08:35:41.439Z",
+  "sourceStatus": "complete",
+  "errors": [],
+  "evidence": [
+    {
+      "url": "https://docs.ai21.com/docs/jamba-foundation-models.md",
+      "capturedAt": "2026-10-04T08:35:41.784Z",
+      "sha256": "7f45ecd4912b79598e42e0481d536a3153db10e5582e9cfa367fe11102978661",
+      "text": "> ## Documentation Index\n> Fetch the complete documentation index at: https://docs.ai21.com/llms.txt\n> Use this file to discover all available pages before exploring further.\n\n# Jamba\n\n> Introducing the Jamba Family of Open Models.\n\n## Overview\n\nBuilt on the novel Mamba-Transformer architecture, these highly efficient and powerful models push the boundaries of AI. They deliver unmatched speed and quality and feature the longest context window (256K tokens) among open models.\n\n<CardGroup cols={2}>\n  <Card title=\"Jamba Large\" icon=\"rocket\" iconType=\"solid\">\n    Our most powerful and advanced model, designed to handle complex tasks at enterprise scale with superior performance.\n  </Card>\n\n  <Card title=\"Jamba2 Mini\" icon=\"bolt\" iconType=\"solid\">\n    Jamba2 Mini blends efficiency and steerability into a 12B-active parameters model, delivering reliable output on core enterprise workflows.\n  </Card>\n\n  <Card title=\"Jamba2 3B\" icon=\"Microchip\" iconType=\"solid\">\n    Jamba2 3B packs reliability and steerability into a compact 3B model, powering on-device applications and supporting agentic systems.\n  </Card>\n</CardGroup>\n\n## Key Benefits\n\n<CardGroup cols={2}>\n  <Card title=\"Privately deployable without compromising on quality\" icon=\"square-1\" iconType=\"solid\">\n    Retain total control over your data, with zero data visibility for the model vendor by deploying Jamba privately in your VPC or on-premises. Ideal for organizations or use cases handling regulated data (e.g., in finance or healthcare) or confidential proprietary data. With comparable quality to market-leading models, you get superior quality with total data privacy.\n  </Card>\n\n  <Card title=\"Open models\" icon=\"square-2\" iconType=\"solid\">\n    With the weights available to be downloaded into your environment, Jamba can be customized to your domain and use case. This is a model that's fully yours.\n  </Card>\n</CardGroup>\n\n<CardGroup cols={1}>\n  <Card title=\"Long context performance\" icon=\"square-3\" iconType=\"solid\">\n    With a 256K context window, Jamba excels on the kinds of use cases enterprises rely on in their workflows, from analyzing lengthy documents to enhancing RAG workflows at the retrieval stage. And due to its efficiency-optimized hybrid architecture, it can do all this at a lower cost than competitors.\n  </Card>\n</CardGroup>\n\n## Self Deployment Options\n\nJamba models are ideal for enterprises that need to maintain full control over data and performance. Deployment options include:\n\n* **Cloud-hosted VPC** – Isolate and scale your deployment in a virtual private cloud environment.\n* **On-premises environments** – Run Jamba entirely within your own infrastructure to meet strict compliance or latency requirements.\n* **Custom hybrid solutions** – Combine cloud and on-premises capabilities to fit your architecture, performance, and governance needs.\n\n## Supported Languages\n\nJamba models officially support 9 languages:\n\n* English, Spanish, French, Portuguese, Italian, Dutch, German, Arabic, Hebrew.\n\n## Model Details\n\n| Model | Model Size | Max Tokens | Version | Snapshot | API Endpoint |\n| - | - | - | - | - | - |\n| Jamba Large | 398B parameters <br />(94B active) | 256K | 1.7 | 2025-07 | `jamba-large` |\n| Jamba Mini | 52B parameters <br />(12B active) | 256K | 2 | 2026-01 | `jamba-mini` |\n| Jamba 3B | 3B parameters | 256K | 2 | 2026-01 | N/A |\n\nEngineers and data scientists at AI21 labs created the model to help developers and businesses leverage AI to build real-world products with tangible value. The Jamba model family supports multi-language and zero-shot instruction-following.\n\n* **Organization developing model:** AI21 Labs\n* **Model type:** Joint Attention and Mamba (Jamba)\n* **Knowledge cutoff date** August 22nd, 2024\n* **Input Modality:** Text\n* **Output Modality:** Text\n* **Contact:** [info@ai21.com](mailto:info@ai21.com)\n\n## API Versioning\n\nWe advise using dated versions of the Jamba API to avoid disruptions from model updates and breaking changes.\n\nHere are the details of the available versions:\n\n* `jamba-large` currently points to `jamba-large-1.7-2025-07`\n* `jamba-mini` currently points to `jamba-mini-2-2026-01`\n* `jamba-large-1.7` points to `jamba-large-1.7-2025-07`\n* `jamba-mini-2` points to `jamba-mini-2-2026-01`\n\n## Model Deprecation\n\n| Model | Snapshot | API Endpoint | Deprecation Date |\n| - | - | - | - |\n| Jamba Mini 1.7 | 2025-07 | `jamba-mini-1.7-2025-08` | 2026-02-01 |\n| Jamba Large 1.6 | 2025-03 | `jamba-large-1.6-2025-03` | 2025-08-03 |\n| Jamba Mini 1.6 | 2025-03 | `jamba-mini-1.6-2025-03` | 2025-08-03 |\n| Jamba Large 1.5 | 2024-08 | `jamba-large-1.5-2024-08` | 2025-05-06 |\n| Jamba Mini 1.5 | 2024-08 | `jamba-mini-1.5-2024-08` | 2025-05-06 |\n\n## Model Compliance and Certifications\n\n* [**SOC 2 compliance**](https://www.ai21.com/blog/soc-2-report)\n* **ISO 27001, ISO 27017, and ISO 27018 certifications**\n* [**Trust Center**](https://trust.ai21.com/?_gl=1*l2aasw*_gcl_aw*R0NMLjE3NDMzMTc1MTkuQ2owS0NRand0SjZfQmhEV0FSSXNBR2FubUtleDU5blZFaW9lRWctVG5HQno3Q092d2RoSUluVWpUdURPRWR1My1BdlBhRURGcWY0LVFzY2FBaFduRUFMd193Y0I.*_gcl_au*MTgyMTk2NzA0MS4xNzQyMjg0MjU3)\n\n## Ethical Considerations\n\nAI21 Labs is on a mission to supercharge human productivity with machines working alongside humans as thought partners, thereby promoting human welfare and prosperity. To deliver its promise, this technology must be deployed and used in a responsible and sustainable way, taking into consideration potential risks, including malicious use by bad actors, accidental misuse, and broader societal harms. We take these risks extremely seriously and put measures in place to mitigate them.\n\nAI21 provides open access to Jamba that can be used to power a large variety of useful applications. We believe it is important to ensure that this technology is used in a responsible way, while allowing developers the freedom they need to experiment rapidly and deploy solutions at scale. Overall, we view the safe implementation of this technology as a partnership and collaboration between AI21 and our customers and encourage engagement and dialogue to raise the bar on responsible usage.\n\nIn order to use Jamba, you are required to comply with our [Terms of Service](https://lp.ai21.com/hubfs/resources/AI21-Models-Terms-of-Service.pdf?_gl=1*jr1jnx*_gcl_au*MTg4MDYzNjU4MC4xNzM0NTA4MjE4) and with the following [Usage Guidelines](/docs/responsible-use-1#usage-guidelines).\n\nPlease check these usage guidelines periodically, as they may be updated from time to time. For any questions, clarifications or concerns, please contact [safety@ai21.com.](mailto:safety@ai21.com)\n\n## Limitations\n\nThere are a number of limitations inherent to neural networks technology that apply to Jamba. These limitations require explanation and carry important caveats for the application and usage of Jamba.\n\n* **Accuracy:** Jamba, like other large pretrained language models, lacks important context about the world because it is trained on textual data and is not grounded in other modalities of experience such as video, real-world physical interaction, and human feedback. Like all language models, Jamba is far more accurate when responding to inputs similar to its training datasets. Novel inputs tend to generate higher variance in its output.\n* **Coherence and consistency:** Responses from Jamba are sometimes inconsistent, contradictory, or contain seemingly random sentences and paragraphs.\n* **Western/English bias:** Jamba is trained primarily on English-language text from the internet, and is best suited to classifying, searching, summarizing, and generating English text. Furthermore, Jamba has a tendency to hold and amplify the biases contained in its training dataset. As a result, groups of people who were not involved in the creation of the training data can be underrepresented, and stereotypes and prejudices can be perpetuated. Racial, religious, gender, socioeconomic, and other categorizations of human groups can be considered among these factors.\n* **Explainability:** It is difficult to explain or predict how Jamba will respond without additional training and fine tuning. This is a common issue with neural networks of this scope and scale.\n* **Recency:** Jamba was trained on a dataset created in March 2024, and therefore has no knowledge of events that have occurred after that date. We update our models regularly to keep them as current as possible, but there are notable gaps and inaccuracies in responses as a result of this lack of recency.\n\n**Ready to take your projects to the next level?**\\\nAccess Jamba via the [AI21 Studio API](/reference/jamba-1-6-api-ref) or [deploy privately](/docs/self-deployment).\\\nSee our [Quick Start Guide](/docs/sdk) for integration steps, SDKs, and sample code.\\\nExplore Jamba in action on the [AI21 Studio Playground](https://studio.ai21.com/v2?tab=jamba_playground).\n",
+      "links": [
+        {
+          "url": "mailto:info@ai21.com",
+          "text": "[info@ai21.com](mailto:info@ai21.com)"
+        },
+        {
+          "url": "https://www.ai21.com/blog/soc-2-report",
+          "text": "[**SOC 2 compliance**](https://www.ai21.com/blog/soc-2-report)"
+        },
+        {
+          "url": "https://trust.ai21.com/?_gl=1*l2aasw*_gcl_aw*R0NMLjE3NDMzMTc1MTkuQ2owS0NRand0SjZfQmhEV0FSSXNBR2FubUtleDU5blZFaW9lRWctVG5HQno3Q092d2RoSUluVWpUdURPRWR1My1BdlBhRURGcWY0LVFzY2FBaFduRUFMd193Y0I.*_gcl_au*MTgyMTk2NzA0MS4xNzQyMjg0MjU3",
+          "text": "[**Trust Center**](https://trust.ai21.com/?_gl=1*l2aasw*_gcl_aw*R0NMLjE3NDMzMTc1MTkuQ2owS0NRand0SjZfQmhEV0FSSXNBR2FubUtleDU5blZFaW9lRWctVG5HQno3Q092d2RoSUluVWpUdURPRWR1My1BdlBhRURGcWY0LVFzY2FBaFduRUFMd193Y0I.*_gcl_au*MTgyMTk2NzA0MS4xNzQyMjg0MjU3)"
+        },
+        {
+          "url": "https://lp.ai21.com/hubfs/resources/AI21-Models-Terms-of-Service.pdf?_gl=1*jr1jnx*_gcl_au*MTg4MDYzNjU4MC4xNzM0NTA4MjE4",
+          "text": "[Terms of Service](https://lp.ai21.com/hubfs/resources/AI21-Models-Terms-of-Service.pdf?_gl=1*jr1jnx*_gcl_au*MTg4MDYzNjU4MC4xNzM0NTA4MjE4)"
+        },
+        {
+          "url": "https://docs.ai21.com/docs/responsible-use-1#usage-guidelines",
+          "text": "[Usage Guidelines](/docs/responsible-use-1#usage-guidelines)"
+        },
+        {
+          "url": "mailto:safety@ai21.com",
+          "text": "[safety@ai21.com.](mailto:safety@ai21.com)"
+        },
+        {
+          "url": "https://docs.ai21.com/reference/jamba-1-6-api-ref",
+          "text": "[AI21 Studio API](/reference/jamba-1-6-api-ref)"
+        },
+        {
+          "url": "https://docs.ai21.com/docs/self-deployment",
+          "text": "[deploy privately](/docs/self-deployment)"
+        },
+        {
+          "url": "https://docs.ai21.com/docs/sdk",
+          "text": "[Quick Start Guide](/docs/sdk)"
+        },
+        {
+          "url": "https://studio.ai21.com/v2?tab=jamba_playground",
+          "text": "[AI21 Studio Playground](https://studio.ai21.com/v2?tab=jamba_playground)"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "jamba-large",
+      "name": "jamba-large",
+      "disposition": "existing",
+      "reason": "Official catalog table entry; per-model enrichment follows; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-large",
+        "displayName": "jamba-large",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-object",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-large-1.5-2024-08",
+      "name": "jamba-large-1.5-2024-08",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-large-1.5-2024-08",
+        "displayName": "jamba-large-1.5-2024-08",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-large-1.6-2025-03",
+      "name": "jamba-large-1.6-2025-03",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-large-1.6-2025-03",
+        "displayName": "jamba-large-1.6-2025-03",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-mini",
+      "name": "jamba-mini",
+      "disposition": "existing",
+      "reason": "Official catalog table entry; per-model enrichment follows; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-mini",
+        "displayName": "jamba-mini",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-object",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-mini-1.5-2024-08",
+      "name": "jamba-mini-1.5-2024-08",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-mini-1.5-2024-08",
+        "displayName": "jamba-mini-1.5-2024-08",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-mini-1.6-2025-03",
+      "name": "jamba-mini-1.6-2025-03",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-mini-1.6-2025-03",
+        "displayName": "jamba-mini-1.6-2025-03",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "jamba-mini-1.7-2025-08",
+      "name": "jamba-mini-1.7-2025-08",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.ai21.com/docs/jamba-foundation-models.md"
+      ],
+      "definition": {
+        "provider": "ai21",
+        "id": "jamba-mini-1.7-2025-08",
+        "displayName": "jamba-mini-1.7-2025-08",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.ai21.com/docs/jamba-foundation-models.md"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    }
+  ]
+}

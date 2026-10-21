@@ -2,8 +2,8 @@ import { getPrismaClient } from "../../config/database/prisma-client.js";
 import type { Prisma, PrismaClient } from "../../generated/prisma/client.js";
 import {
   validateAndNormalizeTaskSettings,
-  type TaskOutputMode,
   type TaskSettings,
+  type TaskWebSearchMode,
 } from "../../config/tasks/task-contract.js";
 
 const TASK_KEY_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9:-]*[A-Za-z0-9])?$/;
@@ -21,9 +21,10 @@ export interface TaskDefinitionRecord {
   description: string | null;
   enabled: boolean;
   sortOrder: number;
-  outputMode: TaskOutputMode;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
+  reasoningEnabled: boolean;
+  webSearchMode: TaskWebSearchMode;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,9 +62,10 @@ function toTaskDefinitionRecord(task: {
   description: string | null;
   enabled: boolean;
   sortOrder: number;
-  outputMode: string;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
+  reasoningEnabled: boolean;
+  webSearchMode: string;
   createdAt: Date;
   updatedAt: Date;
 }): TaskDefinitionRecord {
@@ -74,9 +76,10 @@ function toTaskDefinitionRecord(task: {
     description: task.description,
     enabled: task.enabled,
     sortOrder: task.sortOrder,
-    outputMode: task.outputMode as TaskOutputMode,
     targetAudienceEnabled: task.targetAudienceEnabled,
     rewritePlanEnabled: task.rewritePlanEnabled,
+    reasoningEnabled: task.reasoningEnabled,
+    webSearchMode: task.webSearchMode as TaskWebSearchMode,
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
   };
@@ -322,9 +325,10 @@ export async function createTaskDefinition(
       description: normalizeDescription(input.description),
       enabled: input.enabled ?? true,
       sortOrder,
-      outputMode: settingsValidation.settings.outputMode,
       targetAudienceEnabled: settingsValidation.settings.targetAudienceEnabled,
       rewritePlanEnabled: settingsValidation.settings.rewritePlanEnabled,
+      reasoningEnabled: settingsValidation.settings.reasoningEnabled,
+      webSearchMode: settingsValidation.settings.webSearchMode,
     },
   });
 
@@ -349,9 +353,10 @@ export async function updateTaskDefinition(
   }
 
   const currentSettings: TaskSettings = {
-    outputMode: existing.outputMode as TaskOutputMode,
     targetAudienceEnabled: existing.targetAudienceEnabled,
     rewritePlanEnabled: existing.rewritePlanEnabled,
+    reasoningEnabled: existing.reasoningEnabled,
+    webSearchMode: existing.webSearchMode as TaskWebSearchMode,
   };
 
   const mergedSettings = {
@@ -368,13 +373,15 @@ export async function updateTaskDefinition(
     description?: string | null;
     enabled?: boolean;
     sortOrder?: number;
-    outputMode: TaskOutputMode;
     targetAudienceEnabled: boolean;
     rewritePlanEnabled: boolean;
+    reasoningEnabled: boolean;
+    webSearchMode: TaskWebSearchMode;
   } = {
-    outputMode: settingsValidation.settings.outputMode,
     targetAudienceEnabled: settingsValidation.settings.targetAudienceEnabled,
     rewritePlanEnabled: settingsValidation.settings.rewritePlanEnabled,
+    reasoningEnabled: settingsValidation.settings.reasoningEnabled,
+    webSearchMode: settingsValidation.settings.webSearchMode,
   };
 
   if (input.label !== undefined) {

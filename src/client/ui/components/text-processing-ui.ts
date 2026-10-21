@@ -4,6 +4,7 @@ import {
 } from "../../core/events/text-processing-events.js";
 import type {
   ProcessingErrorEventData,
+  ProcessingCompletedEventData,
   TextReceivedEventData,
 } from "../../core/events/text-processing-events.js";
 import {
@@ -14,6 +15,7 @@ import {
 } from "./output-status.js";
 import { updateButtonState } from "./button-state.js";
 import { getById } from "../utils/dom.js";
+import { qualityStatusMessage } from "../../../types/quality-status.js";
 
 const COOLDOWN_DURATION_MS = 1000;
 
@@ -96,14 +98,12 @@ export function initializeTextProcessingUi(): void {
         setTextAreaValue("prompt-output", data.systemMessage.trim());
       }
 
-      if (!data.hasQualityProcess) {
-        showOutputSuccessIndicator(2000);
-      }
     },
   );
 
-  textProcessingEvents.on(TextProcessingEventType.PROCESSING_COMPLETED, () => {
-    showOutputSuccessIndicator(2000);
+  textProcessingEvents.on<ProcessingCompletedEventData>(TextProcessingEventType.PROCESSING_COMPLETED, (data) => {
+    if (data.qualityStatus === "passed") showOutputSuccessIndicator(2000);
+    else showOutputErrorIndicator(qualityStatusMessage(data.qualityStatus ?? "failed"), 0);
     startCooldown();
   });
 

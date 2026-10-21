@@ -162,7 +162,7 @@ export async function processSummarizationResponse(
       );
       // Set default values for incomplete quality evaluation
       data.qualityScore = undefined;
-      data.needsResubmission = false;
+      data.qualityStatus = "failed";
     }
   }
 

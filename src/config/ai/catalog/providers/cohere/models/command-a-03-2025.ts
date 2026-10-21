@@ -1,0 +1,3 @@
+import { defineModel } from "../../../validation.js";
+import type { CohereModelInput } from "../types.js";
+export default defineModel({ provider: "cohere", id: "command-a-03-2025", displayName: "Command A", limits: { contextWindow: 256000, maxOutputTokens: 8000, verification: "verified" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "json-schema", status: "active", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.cohere.com/docs/models"], notes: "Do not confuse Command A with the separate Command A Reasoning model. Published limits 256k/8k." } } satisfies CohereModelInput);

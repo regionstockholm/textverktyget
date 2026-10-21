@@ -10,7 +10,6 @@ import { getDatabase } from "../config/database/db-connection.js";
 import {
   executeInsert,
   executeUpdate,
-  executeQuerySingle,
   executeDelete,
 } from "../config/database/db-queries.js";
 import { getQualityScore } from "./quality-evaluation-service-module.js";
@@ -25,24 +24,6 @@ import {
   type QualityReportArtifact,
   validateQualityReportArtifact,
 } from "./summarize/pipeline-artifacts.js";
-
-/**
- * Interface for text quality control records
- */
-export interface TextQualityRecord {
-  id: number;
-  session_id: string;
-  original_text: string;
-  processed_text: string;
-  prompt_used: string | null;
-  processing_options: string | null;
-  rewrite_plan_draft: string | null;
-  score: number | null;
-  iteration: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
 
 /**
  * Gets quality control configuration from environment variables
@@ -483,6 +464,7 @@ export async function evaluateTextQualityDetailed(
         processStatus: "running",
         meta: { recordId },
       });
+      throw new Error("Kvalitetsgranskningens resultat kunde inte sparas.");
     }
 
     const totalProcessingTime = Date.now() - startTime;
@@ -512,30 +494,6 @@ export async function evaluateTextQualityDetailed(
     });
     throw error;
   }
-}
-
-export async function evaluateTextQuality(
-  recordId: number,
-  originalText: string,
-  processedText: string,
-  promptUsed: string,
-  rewritePlanDraft?: string,
-  trace?: ProcessTrace,
-  senderIntent?: string,
-  context?: QualityEvaluationContext,
-): Promise<number> {
-  const outcome = await evaluateTextQualityDetailed(
-    recordId,
-    originalText,
-    processedText,
-    promptUsed,
-    rewritePlanDraft,
-    trace,
-    senderIntent,
-    context,
-  );
-
-  return outcome.score;
 }
 
 /**
@@ -695,7 +653,7 @@ function schedulePeriodicPurge(): void {
     purgeOldRecords().catch((error) => {
       console.error("[TextQuality] Error running scheduled purge:", error);
     });
-  }, purgeIntervalMs);
+  }, purgeIntervalMs).unref();
 }
 
 /**
@@ -744,7 +702,12 @@ export async function deleteRecord(recordId: number): Promise<boolean> {
 /**
  * Initializes the concurrent-safe text quality control service
  */
-export function initializeTextQualityControl(): void {
+export async function initializeTextQualityControl(): Promise<void> {
+  // shortcut: one app process owns quality jobs; use job leases before running multiple instances.
+  const db = await getDatabase();
+  await executeUpdate(db, `UPDATE text_quality_control SET status = $1, updated_at = NOW() WHERE status IN ($2, $3)`, [
+    QUALITY_CONSTANTS.STATUS_FAILED, QUALITY_CONSTANTS.DEFAULT_STATUS, QUALITY_CONSTANTS.STATUS_PROCESSING,
+  ]);
   console.log(
     "[TextQuality] Initializing concurrent-safe text quality control service",
   );
@@ -756,9 +719,7 @@ export function initializeTextQualityControl(): void {
   );
 
   // Run initial safe purge (only completed/failed records)
-  purgeOldRecords().catch((error) => {
-    console.error("[TextQuality] Error running initial safe purge:", error);
-  });
+  await purgeOldRecords();
 
   // Schedule periodic concurrent-safe purge
   schedulePeriodicPurge();
@@ -766,38 +727,4 @@ export function initializeTextQualityControl(): void {
   console.log(
     "[TextQuality] Concurrent-safe text quality control service initialized - multiple users supported",
   );
-}
-
-/**
- * Gets a text quality record by ID
- * @param recordId The ID of the record to retrieve
- * @returns Promise resolving to the record if found, null otherwise
- */
-export async function getTextQualityRecord(
-  recordId: number,
-): Promise<TextQualityRecord | null> {
-  try {
-    validateRecordId(recordId);
-
-    console.log(`[TextQuality] Getting record with ID: ${recordId}`);
-
-    const db = await getDatabase();
-    const selectQuery = `
-      SELECT * FROM text_quality_control
-      WHERE id = $1
-    `;
-
-    const result = await executeQuerySingle(db, selectQuery, [recordId]);
-
-    if (result) {
-      console.log(`[TextQuality] Record found with ID: ${recordId}`);
-      return result as TextQualityRecord;
-    } else {
-      console.error(`[TextQuality] Record not found with ID: ${recordId}`);
-      return null;
-    }
-  } catch (error) {
-    console.error("[TextQuality] Error getting text quality record:", error);
-    return null;
-  }
 }

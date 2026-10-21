@@ -4,6 +4,7 @@
  */
 
 import { apiKeys, type ApiKeysConfig } from "./runtime/api-keys-config.js";
+import { PROVIDERS, providerAvailability, type ProviderId } from "./ai/provider-registry.js";
 import {
   databaseConfig,
   type DatabaseConfig,
@@ -61,11 +62,11 @@ export const config: AppConfig = {
 };
 
 export function validateConfig(): boolean {
-  const hasAiService = !!(config.apiKeys.gemini || config.apiKeys.openai);
+  const hasAiService = (Object.keys(PROVIDERS) as ProviderId[]).some(provider => providerAvailability(provider).configured);
 
   if (!hasAiService) {
     console.warn(
-      "No AI service configured. Add GEMINI_API_KEY or OPENAI_API_KEY to .env",
+      "No AI service configured. Configure a provider in .env using the dotenv template, or set LOCAL_LLM_BASE_URL.",
     );
   }
 

@@ -1,0 +1,2 @@
+import type { FireworksModelInput } from "./types.js";
+export const template: FireworksModelInput = { provider: "fireworks", id: "replace-model-id", displayName: "New Fireworks model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "deployment-dependent" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.fireworks.ai/getting-started/models"], notes: "Specify the actual deployed model ID and hosting limits." } };

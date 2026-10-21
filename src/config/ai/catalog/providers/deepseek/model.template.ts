@@ -1,0 +1,2 @@
+import type { DeepseekModelInput } from "./types.js";
+export const template: DeepseekModelInput = { provider: "deepseek", id: "replace-model-id", displayName: "New DeepSeek model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "unsupported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://api-docs.deepseek.com/quick_start/pricing"], notes: "Confirm current API ID and thinking toggle." } };

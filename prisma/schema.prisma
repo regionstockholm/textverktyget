@@ -28,10 +28,14 @@ model PromptTemplate {
 model ProviderConfig {
   provider        String   @id
   model           String
+  modelProfile    String?  @map("model_profile")
   temperature     Float
   maxOutputTokens Int      @map("max_output_tokens")
   useWebSearch    Boolean  @default(false) @map("use_web_search")
   useThinking     Boolean  @default(true) @map("use_thinking")
+  contextWindow   Int?     @map("context_window")
+  taskModel       String?  @map("task_model")
+  backgroundModel String?  @map("background_model")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("provider_configs")
@@ -57,11 +61,12 @@ model TaskDefinition {
   description           String?
   enabled               Boolean  @default(true)
   sortOrder             Int      @map("sort_order")
-  outputMode            String   @default("rewrite") @map("output_mode")
   bulletCount           Int?     @map("bullet_count")
   maxChars              Int?     @map("max_chars")
   targetAudienceEnabled Boolean  @default(true) @map("target_audience_enabled")
   rewritePlanEnabled    Boolean  @default(true) @map("rewrite_plan_enabled")
+  reasoningEnabled      Boolean  @default(true) @map("reasoning_enabled")
+  webSearchMode         String   @default("inherit") @map("web_search_mode")
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @updatedAt @map("updated_at")
 
@@ -102,6 +107,45 @@ model AuditLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("audit_log")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+// Owned by connect-pg-simple; modeled here so subsequent migrations preserve it.
+model UserSession {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "idx_user_sessions_expire")
+  @@map("user_sessions")
+}
+
+// Immutable username snapshot, deliberately not a foreign key to an account.
+model SubmissionLog {
+  id         Int      @id @default(autoincrement())
+  username   String
+  text       String
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([createdAt, id])
+  @@map("submission_logs")
+}
+
+model SubmissionLogSettings {
+  key           String   @id
+  retentionDays Int?     @map("retention_days")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("submission_log_settings")
 }
 
 model TextQualityControl {

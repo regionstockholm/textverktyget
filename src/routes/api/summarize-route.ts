@@ -15,6 +15,10 @@ import { getTaskDefinitionByKey } from "../../services/tasks/task-catalog-servic
 import { sendError, sendSuccess } from "../../utils/api/api-responses.js";
 import { logger } from "../../utils/logger.js";
 import { normalizeClientProcessId } from "./process-id.js";
+import { withAiJob } from "../../config/ai/resolved-ai-config.js";
+import { recordSubmission } from "../../services/submission-log-service.js";
+import { isUserLoginEnabled } from "../../config/security/access-config.js";
+import { qualityStatusMessage, type QualityStatus } from "../../types/quality-status.js";
 
 const prisma = getPrismaClient();
 
@@ -31,6 +35,7 @@ interface SummarizationResponse {
   qualityScore?: number;
   needsResubmission?: boolean;
   maxQualityAttempts?: number;
+  qualityStatus: QualityStatus;
 }
 
 export function isTransientSummarizeError(error: unknown): boolean {
@@ -100,6 +105,7 @@ function buildSummarizationResponse(
     compressionRatio: Math.round(text.length / summaryText.length),
     processId,
     systemMessage: result.systemMessage || undefined,
+    qualityStatus: result.qualityStatus ?? "failed",
   };
 
   const resultMaxAttempts = (result as { maxQualityAttempts?: number })
@@ -193,6 +199,20 @@ export async function handleSummarizeRequest(
         return;
       }
 
+      // One record per validated incoming submission, not per AI retry.
+      // Do not accept identity from request body/headers supplied by the client.
+      const username = isUserLoginEnabled() ? res.locals.submissionUsername : "default_user";
+      if (typeof username !== "string") {
+        sendError(res, 503, "Submission identity unavailable");
+        return;
+      }
+      try { await recordSubmission(username, text); }
+      catch {
+        setSummarizeProgress(processId, "failed");
+        sendError(res, 503, "Unable to record submission; please try again later");
+        return;
+      }
+
       const activeTaskPrompt = await prisma.promptTemplate.findFirst({
         where: {
           name: `task:${taskDefinition.key}`,
@@ -270,7 +290,7 @@ export async function handleSummarizeRequest(
       });
 
       const result = await enqueueSummarize(() =>
-        handleSummarization(
+        withAiJob(() => handleSummarization(
           text,
           {
             taskKey: taskDefinition.key,
@@ -281,10 +301,14 @@ export async function handleSummarizeRequest(
             requestId,
             processId,
             rewritePlanEnabled: taskDefinition.rewritePlanEnabled,
-            taskOutputMode: taskDefinition.outputMode,
+            reasoningEnabled: taskDefinition.reasoningEnabled,
+            webSearchMode: taskDefinition.webSearchMode,
+            qualityProcess: req.body.qualityProcess !== false,
+            attemptNumber: Number.isInteger(req.body.attemptNumber) && req.body.attemptNumber >= 1 && req.body.attemptNumber <= 20
+              ? req.body.attemptNumber : 1,
           },
           isClientConnected,
-        ),
+        ), isClientConnected),
       );
 
       const processingTime = Date.now() - startTime;
@@ -343,17 +367,18 @@ export async function handleSummarizeRequest(
       );
 
       console.log(`[API] Sending response to client (${requestId})`);
-      logger.info("process.completed", {
+      logger.info(responseData.qualityStatus === "failed" ? "process.failed" : "process.completed", {
         requestId,
         processId,
-        processStatus: "completed",
+        processStatus: responseData.qualityStatus === "failed" ? "failed" : "completed",
         meta: {
           processingTime,
           qualityScore: responseData.qualityScore,
           qualityEvaluationId: responseData.qualityEvaluationId,
+          qualityStatus: responseData.qualityStatus,
         },
       });
-      setSummarizeProgress(processId, "completed");
+      setSummarizeProgress(processId, responseData.qualityStatus === "failed" ? "failed" : "completed", qualityStatusMessage(responseData.qualityStatus));
       sendSuccess(res, responseData);
       return;
     } catch (error) {

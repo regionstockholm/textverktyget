@@ -1,0 +1,27 @@
+{
+  "provider": "local",
+  "id": "my-ollama-qwen",
+  "apiModelId": "qwen3:32b",
+  "displayName": "My Qwen3 32B server",
+  "limits": {
+    "contextWindow": 32768,
+    "maxOutputTokens": 16384,
+    "verification": "deployment-dependent"
+  },
+  "reasoning": {
+    "mode": "effort",
+    "enabledEffort": "low",
+    "disabledEffort": "none",
+    "canDisable": true
+  },
+  "temperature": "supported",
+  "structuredOutput": "json-object",
+  "status": "active",
+  "defaults": { "temperature": 0.6, "outputFraction": 0.95 },
+  "metadata": {
+    "reviewedAt": "2026-10-02",
+    "revision": 1,
+    "sources": ["https://docs.ollama.com/openai", "https://huggingface.co/Qwen/Qwen3-32B"],
+    "notes": "Example only: set these limits to match your own server's num_ctx and installed model. API credentials belong in .env, never here."
+  }
+}

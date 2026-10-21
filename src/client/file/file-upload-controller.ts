@@ -8,8 +8,8 @@ import type { FileInfo } from "./models/file-info.js";
 import { FileUploadUI } from "./ui/upload-ui.js";
 import type { FileUploadEvents } from "./ui/upload-ui.js";
 import { FileManager } from "./core/file-manager.js";
-import { FileStorage } from "./core/file-storage.js";
 import { ElementManager } from "./ui/element-manager.js";
+import { fileLimits } from "../../config/shared-config.js";
 
 /**
  * Collection of attached files
@@ -119,9 +119,6 @@ class FileUploadController {
     if (customEvent.detail) {
       const { filesAdded, totalFiles } = customEvent.detail;
       this.handleUploadComplete(filesAdded, totalFiles);
-
-      // Save file references to local storage
-      FileStorage.saveFileReferences(attachedFiles);
     }
   }
 
@@ -141,7 +138,13 @@ class FileUploadController {
  * Initialize the file upload functionality
  * Creates a new FileUploadController instance
  */
-export function initializeFileUpload(): void {
+export async function initializeFileUpload(): Promise<void> {
+  try { localStorage.removeItem("textverktyg_recent_files"); } catch { /* Storage may be disabled. */ }
+  const response = await fetch("/upload/config");
+  if (!response.ok) throw new Error("Dokumentuppladdning kunde inte startas. Ladda om sidan och försök igen.");
+  const { data } = await response.json();
+  if (!Number.isInteger(data?.maxFileSizeMB) || data.maxFileSizeMB < 1 || data.maxFileSizeMB > 100) throw new Error("Ogiltig filstorleksgräns från servern.");
+  fileLimits.maxFileSize = data.maxFileSizeMB * 1024 * 1024;
   console.log("Initializing file upload functionality");
   new FileUploadController();
   console.log("File upload functionality initialized");

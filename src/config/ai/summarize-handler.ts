@@ -7,22 +7,12 @@
 import { assert } from "../../utils/safety-utils.js";
 import { logger } from "../../utils/logger.js";
 import type { ProcessingOptions } from "./ai-service-types.js";
-import { chunkText } from "./text-chunking.js";
-import {
-  processChunksSequentially,
-  combineResults,
-  type SummarizationResult,
-} from "./text-processor.js";
+import { resolveAiConfig, availableInputCharacters, modelForCall } from "./resolved-ai-config.js";
+import { buildSystemMessage } from "./prompt-assembly.js";
+import type { SummarizationResult } from "./text-processor.js";
 import configService from "../../services/config/config-service.js";
 import { listOrdlistaEntries } from "../../services/ordlista/ordlista-service.js";
 import { applyWordListReplacements } from "../../utils/text/word-list-replacer.js";
-import {
-  buildAudienceProfile,
-  buildSenderIntentProfile,
-  buildSalienceMap,
-  buildRewriteBlueprint,
-  renderRewriteBlueprint,
-} from "../../services/summarize/pipeline-analysis.js";
 import { runWithStageConcurrency } from "../../services/summarize/stage-concurrency.js";
 import { getSummary as getProviderSummary } from "./ai-service-factory.js";
 import {
@@ -42,10 +32,6 @@ import {
   type QualityDimension,
   type QualityDimensionThresholds,
 } from "../../services/summarize/quality-gate.js";
-import {
-  formatEasyToReadLayout,
-  type EasyToReadLayoutOptions,
-} from "../../services/summarize/easy-to-read-layout.js";
 
 export function getRewritePlanTaskKey(
   options: ProcessingOptions,
@@ -90,162 +76,6 @@ function readRuntimeBoolean(value: unknown, fallback: boolean): boolean {
   }
 
   return value;
-}
-
-function resolveTaskOutputMode(
-  options: ProcessingOptions,
-): "rewrite" | "summary" | "bullets" {
-  const candidate = options.taskOutputMode;
-  if (candidate === "summary" || candidate === "bullets") {
-    return candidate;
-  }
-
-  return "rewrite";
-}
-
-const EASY_TO_READ_TASK_KEY = "easyToRead";
-
-export interface EasyToReadWorkflowConfig {
-  enabled: boolean;
-  useRewriteDraft: boolean;
-}
-
-export interface EasyToReadLayoutConfig {
-  enabled: boolean;
-  maxLineChars: number;
-  maxLinesPerParagraph: number;
-}
-
-function readRuntimeSubscoreOverride(value: unknown): number | undefined {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return undefined;
-  }
-
-  const rounded = Math.round(value);
-  if (rounded < 1 || rounded > 10) {
-    return undefined;
-  }
-
-  return rounded;
-}
-
-export function isEasyToReadTask(options: ProcessingOptions): boolean {
-  if (typeof options.taskKey === "string") {
-    return options.taskKey.trim() === EASY_TO_READ_TASK_KEY;
-  }
-
-  return false;
-}
-
-export function resolveEasyToReadWorkflowConfig(
-  runtimeSettings: Record<string, unknown>,
-): EasyToReadWorkflowConfig {
-  const candidate = runtimeSettings.easyToReadWorkflow;
-  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
-    return {
-      enabled: false,
-      useRewriteDraft: false,
-    };
-  }
-
-  const config = candidate as Record<string, unknown>;
-  return {
-    enabled: readRuntimeBoolean(config.enabled, false),
-    useRewriteDraft: readRuntimeBoolean(config.useRewriteDraft, false),
-  };
-}
-
-export function resolveEasyToReadQualityDimensionThresholds(
-  runtimeSettings: Record<string, unknown>,
-  options: ProcessingOptions,
-): QualityDimensionThresholds | undefined {
-  if (!isEasyToReadTask(options)) {
-    return undefined;
-  }
-
-  const repairSettings = runtimeSettings.repair;
-  if (
-    !repairSettings ||
-    typeof repairSettings !== "object" ||
-    Array.isArray(repairSettings)
-  ) {
-    return undefined;
-  }
-
-  const easyToReadSettings = (repairSettings as Record<string, unknown>)
-    .easyToRead;
-  if (
-    !easyToReadSettings ||
-    typeof easyToReadSettings !== "object" ||
-    Array.isArray(easyToReadSettings)
-  ) {
-    return undefined;
-  }
-
-  const config = easyToReadSettings as Record<string, unknown>;
-  const plainLanguageThreshold =
-    readRuntimeSubscoreOverride(config.plainLanguageMinSubscore) ??
-    readRuntimeSubscoreOverride(config.plainLanguage);
-  const taskFitThreshold =
-    readRuntimeSubscoreOverride(config.taskFitMinSubscore) ??
-    readRuntimeSubscoreOverride(config.taskFit);
-
-  const thresholds: QualityDimensionThresholds = {};
-  if (plainLanguageThreshold !== undefined) {
-    thresholds.plainLanguage = plainLanguageThreshold;
-  }
-  if (taskFitThreshold !== undefined) {
-    thresholds.taskFit = taskFitThreshold;
-  }
-
-  return Object.keys(thresholds).length > 0 ? thresholds : undefined;
-}
-
-export function resolveEasyToReadLayoutConfig(
-  runtimeSettings: Record<string, unknown>,
-  options: ProcessingOptions,
-): EasyToReadLayoutConfig {
-  if (!isEasyToReadTask(options)) {
-    return {
-      enabled: false,
-      maxLineChars: 48,
-      maxLinesPerParagraph: 4,
-    };
-  }
-
-  const candidate = runtimeSettings.easyToReadLayout;
-  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
-    return {
-      enabled: true,
-      maxLineChars: 48,
-      maxLinesPerParagraph: 4,
-    };
-  }
-
-  const config = candidate as Record<string, unknown>;
-  return {
-    enabled: readRuntimeBoolean(config.enabled, true),
-    maxLineChars: readRuntimeNumber(config.maxLineChars, 48, 20, 80),
-    maxLinesPerParagraph: readRuntimeNumber(config.maxLinesPerParagraph, 4, 2, 8),
-  };
-}
-
-function applyEasyToReadLayoutIfNeeded(
-  summary: string,
-  easyToReadLayout: EasyToReadLayoutConfig,
-): string {
-  if (!easyToReadLayout.enabled) {
-    return summary;
-  }
-
-  const layoutOptions: EasyToReadLayoutOptions = {
-    enabled: easyToReadLayout.enabled,
-    maxLineChars: easyToReadLayout.maxLineChars,
-    maxLinesPerParagraph: easyToReadLayout.maxLinesPerParagraph,
-  };
-
-  const formatted = formatEasyToReadLayout(summary, layoutOptions);
-  return formatted || summary;
 }
 
 function logRewritePlanDraftPreview(draft: string): void {
@@ -365,7 +195,7 @@ export async function executeQualityRepairFlow(
       applyRepair: async (repairBlueprint, attempt) => {
         const repairOptions: ProcessingOptions = {
           ...input.processingOptions,
-          rewriteBlueprint: `${input.processingOptions.rewriteBlueprint || ""}\n\n${repairBlueprint}`,
+          repairInstructions: repairBlueprint,
         };
         const repaired = await input.applyRepair(
           input.combinedResult.summary,
@@ -466,72 +296,16 @@ function updateResultSummary(
   }
 }
 
-async function runPipelineAnalysisStage(
-  text: string,
-  processingOptions: ProcessingOptions,
-  senderIntentPrompt: string,
-  runtimeSettings: Record<string, unknown>,
-) {
-  return runWithStageConcurrency("analysis", runtimeSettings, async () => {
-    const audienceProfile = buildAudienceProfile(
-      text,
-      processingOptions.targetAudience,
-    );
-    const senderIntentProfile = buildSenderIntentProfile(senderIntentPrompt);
-    const importanceMap = buildSalienceMap(
-      text,
-      audienceProfile,
-      senderIntentProfile,
-    );
-    const rewriteBlueprint = buildRewriteBlueprint(importanceMap);
-    const rewriteBlueprintPrompt = renderRewriteBlueprint(
-      rewriteBlueprint,
-      importanceMap,
-    );
-
-    return {
-      audienceProfile,
-      senderIntentProfile,
-      importanceMap,
-      rewriteBlueprint,
-      rewriteBlueprintPrompt,
-    };
-  });
-}
-
-function storePipelineAnalysisArtifacts(
-  processingOptions: ProcessingOptions,
-  analysisResult: Awaited<ReturnType<typeof runPipelineAnalysisStage>>,
-): void {
-  const {
-    audienceProfile,
-    senderIntentProfile,
-    importanceMap,
-    rewriteBlueprint,
-    rewriteBlueprintPrompt,
-  } = analysisResult;
-
-  processingOptions.audiencePriorityMode = audienceProfile.priorityMode;
-  processingOptions.textType = audienceProfile.textType;
-  processingOptions.senderIntentSummary = senderIntentProfile.summary;
-  processingOptions.rewriteBlueprint = rewriteBlueprintPrompt;
-  processingOptions.audienceProfileArtifact = JSON.stringify(audienceProfile);
-  processingOptions.senderIntentProfileArtifact = JSON.stringify(senderIntentProfile);
-  processingOptions.importanceMapArtifact = JSON.stringify(importanceMap);
-  processingOptions.rewriteBlueprintArtifact = JSON.stringify(rewriteBlueprint);
-}
-
 async function maybeGenerateRewritePlanDraft(
   text: string,
   processingOptions: ProcessingOptions,
-  easyToReadWorkflow: EasyToReadWorkflowConfig,
-  useEasyToReadTwoPassWorkflow: boolean,
+  runtimeSettings: Record<string, unknown>,
   updateProgress: SummarizeProgressUpdater,
   logContext: SummarizeLogContext,
 ): Promise<string> {
   const rewritePlanTaskKey = getRewritePlanTaskKey(processingOptions);
   if (rewritePlanTaskKey) {
-    processingOptions.rewritePlanEnabled =
+    processingOptions.rewritePlanEnabled ??=
       await configService.getRewritePlanTaskSetting(rewritePlanTaskKey);
 
     logger.debug("process.rewrite.draft.setting", {
@@ -546,23 +320,13 @@ async function maybeGenerateRewritePlanDraft(
     processingOptions.rewritePlanEnabled = false;
   }
 
-  if (useEasyToReadTwoPassWorkflow && !easyToReadWorkflow.useRewriteDraft) {
-    processingOptions.rewritePlanEnabled = false;
-    logger.info("process.rewrite.draft.skipped", {
-      ...logContext,
-      processStatus: "running",
-      meta: {
-        reason: "easy_to_read_workflow_rewrite_draft_disabled",
-      },
-    });
-  }
-
   if (!shouldRunRewriteDraft(processingOptions)) {
+    processingOptions.rewritePlanDraft = undefined;
     return "";
   }
 
   updateProgress("rewrite_draft");
-  logger.info("process.rewrite.draft.used", {
+  logger.info("process.rewrite.draft.started", {
     ...logContext,
     processStatus: "running",
     meta: {
@@ -575,21 +339,20 @@ async function maybeGenerateRewritePlanDraft(
   });
 
   const { generateRewritePlanDraft } = await import("./rewrite-plan-handler.js");
-  const rewritePlanDraft = await generateRewritePlanDraft(text, processingOptions);
-  if (rewritePlanDraft) {
-    processingOptions.rewritePlanDraft = rewritePlanDraft;
-    logRewritePlanDraftPreview(rewritePlanDraft);
-    logger.debug("process.rewrite.draft.generated", {
-      ...logContext,
-      processStatus: "running",
-      meta: { draftLength: rewritePlanDraft.length },
-    });
-  } else {
-    logger.warn("process.rewrite.draft.empty", {
-      ...logContext,
-      processStatus: "running",
-    });
-  }
+  const maxParts = readRuntimeNumber(
+    (runtimeSettings.textProcessing as Record<string, unknown> | undefined)?.maxChunks,
+    100, 1, 100,
+  );
+  const rewritePlanDraft = await runWithStageConcurrency("analysis", runtimeSettings, () =>
+    generateRewritePlanDraft(text, processingOptions, maxParts),
+  );
+  processingOptions.rewritePlanDraft = rewritePlanDraft;
+  logRewritePlanDraftPreview(rewritePlanDraft);
+  logger.debug("process.rewrite.draft.generated", {
+    ...logContext,
+    processStatus: "running",
+    meta: { draftLength: rewritePlanDraft.length },
+  });
 
   return rewritePlanDraft;
 }
@@ -598,33 +361,35 @@ async function runPrimaryRewriteStage(
   text: string,
   processingOptions: ProcessingOptions,
   runtimeSettings: Record<string, unknown>,
-  isRewriteTask: boolean,
-  useEasyToReadTwoPassWorkflow: boolean,
   updateProgress: SummarizeProgressUpdater,
   logContext: SummarizeLogContext,
-): Promise<SummarizationResult[]> {
-  processingOptions.taskShapingMode = "rewrite";
-  processingOptions.applyTaskPromptInRewriteStage =
-    isRewriteTask && !useEasyToReadTwoPassWorkflow;
+): Promise<MutableSummarizationResult> {
   updateProgress("task_execution");
 
-  const chunks = chunkText(text);
-  logger.debug("process.chunks.prepared", {
-    ...logContext,
-    processStatus: "running",
-    meta: { chunkCount: chunks.length },
-  });
-
-  const results = await runWithStageConcurrency("rewrite", runtimeSettings, async () =>
-    processChunksSequentially(chunks, processingOptions),
+  const ai = await resolveAiConfig();
+  const model = modelForCall(ai.settings, true);
+  if (model.model !== ai.settings.model) model.contextWindow = undefined;
+  const systemMessage = await buildSystemMessage(processingOptions);
+  if (systemMessage.length + 2 + text.length > availableInputCharacters(ai.provider, model)) {
+    throw new Error("Hela originaltexten och omskrivningsutkastet ryms inte i uppgiftsmodellens kontext. Välj en modell med större kontext. Texten har inte kapats eller skrivits om delvis.");
+  }
+  const start = Date.now();
+  const result = await runWithStageConcurrency("rewrite", runtimeSettings, () =>
+    getProviderSummary(text, { ...processingOptions, aiCallPurpose: "task" }),
   );
-  logger.debug("process.chunks.processed", {
+  logger.info("process.rewrite.completed", {
     ...logContext,
     processStatus: "running",
-    meta: { processedChunks: results.length },
+    meta: { originalLength: text.length, rewritePlanDraftUsed: Boolean(processingOptions.rewritePlanDraft) },
   });
 
-  return results;
+  return {
+    ...result,
+    originalLength: text.length,
+    summaryLength: result.summary.length,
+    processingTime: Date.now() - start,
+    compressionRatio: Math.round(result.summary.length / text.length * 100),
+  };
 }
 
 async function applyOrdlistaReplacementsToResult(
@@ -647,89 +412,6 @@ async function applyOrdlistaReplacementsToResult(
   if (replacedSummary !== combinedResult.summary) {
     updateResultSummary(combinedResult, replacedSummary);
   }
-}
-
-async function applyTaskShapingIfNeeded(
-  combinedResult: MutableSummarizationResult,
-  processingOptions: ProcessingOptions,
-  runtimeSettings: Record<string, unknown>,
-  isRewriteTask: boolean,
-  useEasyToReadTwoPassWorkflow: boolean,
-  updateProgress: SummarizeProgressUpdater,
-  logContext: SummarizeLogContext,
-): Promise<void> {
-  if (isRewriteTask && !useEasyToReadTwoPassWorkflow) {
-    logger.info("process.task_shaping.skipped", {
-      ...logContext,
-      processStatus: "running",
-      meta: {
-        reason: "rewrite_task_uses_main_prompt_in_primary_pass",
-        easyToReadTwoPassWorkflow: false,
-      },
-    });
-    return;
-  }
-
-  updateProgress("task_shaping");
-  const shapingOptions: ProcessingOptions = {
-    ...processingOptions,
-    taskShapingMode: "task-shaping",
-    rewriteBlueprint: undefined,
-  };
-
-  logger.info("process.task_shaping.started", {
-    ...logContext,
-    processStatus: "running",
-  });
-
-  const shapedResult = await runWithStageConcurrency(
-    "rewrite",
-    runtimeSettings,
-    async () => getProviderSummary(combinedResult.summary, shapingOptions),
-  );
-
-  if (shapedResult.summary && shapedResult.summary.trim().length > 0) {
-    updateResultSummary(
-      combinedResult,
-      shapedResult.summary,
-      shapedResult.systemMessage,
-    );
-  }
-
-  logger.info("process.task_shaping.completed", {
-    ...logContext,
-    processStatus: "running",
-    meta: {
-      summaryLength: combinedResult.summary.length,
-      rewritePlanDraftUsed:
-        typeof shapingOptions.rewritePlanDraft === "string" &&
-        shapingOptions.rewritePlanDraft.trim().length > 0,
-      easyToReadTwoPassWorkflow: useEasyToReadTwoPassWorkflow,
-    },
-  });
-}
-
-function applyEasyToReadLayoutToResult(
-  combinedResult: MutableSummarizationResult,
-  easyToReadLayout: EasyToReadLayoutConfig,
-  logContext: SummarizeLogContext,
-): void {
-  const formattedEasyToReadSummary = applyEasyToReadLayoutIfNeeded(
-    combinedResult.summary,
-    easyToReadLayout,
-  );
-  if (formattedEasyToReadSummary === combinedResult.summary) {
-    return;
-  }
-
-  updateResultSummary(combinedResult, formattedEasyToReadSummary);
-  logger.info("process.easy_to_read.layout.applied", {
-    ...logContext,
-    processStatus: "running",
-    meta: {
-      summaryLength: combinedResult.summaryLength,
-    },
-  });
 }
 
 function resolveMaxQualityAttempts(
@@ -827,103 +509,38 @@ export async function handleSummarization(
   });
 
   try {
+    const checkConnection = (): void => {
+      if (isClientConnected && !isClientConnected()) throw new Error("Request cancelled by user");
+    };
+    checkConnection();
     const processingOptions: ProcessingOptions = { ...options };
+    processingOptions.aiCallPurpose = "background";
     const runtimeSettings = await configService.getRuntimeSettings();
     const senderIntentPrompt = await configService.getPrompt("senderIntent");
-    const taskOutputMode = resolveTaskOutputMode(processingOptions);
-    const isRewriteTask = taskOutputMode === "rewrite";
-    const easyToReadWorkflow = resolveEasyToReadWorkflowConfig(runtimeSettings);
-    const easyToReadLayout = resolveEasyToReadLayoutConfig(
-      runtimeSettings,
-      processingOptions,
-    );
-    const isEasyToReadRewriteTask =
-      isRewriteTask && isEasyToReadTask(processingOptions);
-    const useEasyToReadTwoPassWorkflow =
-      isEasyToReadRewriteTask && easyToReadWorkflow.enabled;
-    processingOptions.easyToReadWorkflowEnabled = useEasyToReadTwoPassWorkflow;
-    processingOptions.easyToReadWorkflowUseRewriteDraft =
-      easyToReadWorkflow.useRewriteDraft;
     processingOptions.senderIntent = senderIntentPrompt;
-
-    if (useEasyToReadTwoPassWorkflow) {
-      logger.info("process.easy_to_read.workflow.enabled", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          useRewriteDraft: easyToReadWorkflow.useRewriteDraft,
-        },
-      });
-    }
-
-    if (easyToReadLayout.enabled) {
-      logger.info("process.easy_to_read.layout.enabled", {
-        ...logContext,
-        processStatus: "running",
-        meta: {
-          maxLineChars: easyToReadLayout.maxLineChars,
-          maxLinesPerParagraph: easyToReadLayout.maxLinesPerParagraph,
-        },
-      });
-    }
-
-    const runtimeMaxChunks = readRuntimeNumber(
-      (runtimeSettings.textProcessing as Record<string, unknown> | undefined)
-        ?.maxChunks,
-      10,
-      1,
-      100,
-    );
-    processingOptions.maxChunks = runtimeMaxChunks;
     updateProgress("analysis");
 
-    const analysisResult = await runPipelineAnalysisStage(
-      text,
-      processingOptions,
-      senderIntentPrompt,
-      runtimeSettings,
-    );
-
-    const {
-      audienceProfile,
-      importanceMap,
-    } = analysisResult;
-
-    storePipelineAnalysisArtifacts(processingOptions, analysisResult);
-
     let rewritePlanDraft = "";
-
-    logger.debug("process.sender_intent.loaded", {
-      ...logContext,
-      processStatus: "running",
-      meta: {
-        length: senderIntentPrompt.length,
-        audiencePriorityMode: audienceProfile.priorityMode,
-        textType: audienceProfile.textType,
-        rankingPolicy: importanceMap.rankingPolicy,
-        salienceItems: importanceMap.items.length,
-        maxChunks: runtimeMaxChunks,
-      },
-    });
 
     rewritePlanDraft = await maybeGenerateRewritePlanDraft(
       text,
       processingOptions,
-      easyToReadWorkflow,
-      useEasyToReadTwoPassWorkflow,
+      runtimeSettings,
       updateProgress,
       logContext,
     );
 
-    const results = await runPrimaryRewriteStage(
+    checkConnection();
+    const combinedResult = await runPrimaryRewriteStage(
       text,
       processingOptions,
       runtimeSettings,
-      isRewriteTask,
-      useEasyToReadTwoPassWorkflow,
       updateProgress,
       logContext,
     );
+    // Fail closed until the current text has actually passed a complete review.
+    combinedResult.qualityStatus = shouldRunQualityEvaluation(options.qualityProcess, runtimeSettings)
+      ? "failed" : "disabled";
 
     // CHECK: Is client still connected after AI processing completes?
     if (isClientConnected && !isClientConnected()) {
@@ -936,11 +553,9 @@ export async function handleSummarization(
       });
       updateProgress("cancelled");
       // Return early with just the summary - no database operations, no quality checks
-      return combineResults(results);
+      return combinedResult;
     }
 
-    // Combine results
-    let combinedResult = combineResults(results);
     logger.info("process.ai.responded", {
       ...logContext,
       processStatus: "running",
@@ -948,20 +563,9 @@ export async function handleSummarization(
     });
 
     await applyOrdlistaReplacementsToResult(combinedResult);
-    await applyTaskShapingIfNeeded(
-      combinedResult,
-      processingOptions,
-      runtimeSettings,
-      isRewriteTask,
-      useEasyToReadTwoPassWorkflow,
-      updateProgress,
-      logContext,
-    );
-    applyEasyToReadLayoutToResult(combinedResult, easyToReadLayout, logContext);
 
     // Check if this is a resubmission attempt
     const attemptNumber = options.attemptNumber || 1;
-    const previousQualityId = options.previousQualityId || 0;
     const configuredMaxAttempts = await configService.getRetryCount();
     const maxQualityAttempts = resolveMaxQualityAttempts(
       runtimeSettings,
@@ -982,14 +586,9 @@ export async function handleSummarization(
 
       // Store the data
       try {
-        // If this is a resubmission, use the previous quality ID
-        if (previousQualityId > 0 && attemptNumber > 1) {
-          recordId = previousQualityId;
-          console.log(
-            `[Summarize] Using previous quality ID: ${recordId} for attempt #${attemptNumber}`,
-          );
-        } else {
-          // Store new quality data
+        // Every attempt stores its own complete source/result pair. Never reuse
+        // a previous record whose original text or processing status may differ.
+        {
           const { storeTextQualityData } = await import(
             "../../services/quality-evaluation-controls.js"
           );
@@ -1034,11 +633,11 @@ export async function handleSummarization(
             updateProgress("cancelled");
             // Clean up the record since we won't be using it
             try {
-              const { deleteRecord } = await import(
+              const { markRecordAsFailed } = await import(
                 "../../services/quality-evaluation-controls.js"
               );
-              await deleteRecord(recordId);
-              logger.debug("process.quality.record.cleaned", {
+              if (!await markRecordAsFailed(recordId)) throw new Error("Cancelled quality record could not be marked for cleanup");
+              logger.debug("process.quality.record.cleanup_deferred", {
                 ...logContext,
                 processStatus: "cancelled",
                 meta: { recordId },
@@ -1070,6 +669,7 @@ export async function handleSummarization(
             const {
               markRecordAsProcessing,
               markRecordAsCompleted,
+              markRecordAsFailed,
               deleteRecord,
               evaluateTextQualityDetailed,
               updateProcessedText,
@@ -1079,11 +679,7 @@ export async function handleSummarization(
             // Mark record as currently being processed (prevents concurrent deletion)
             const marked = await markRecordAsProcessing(recordId);
             if (!marked) {
-              logger.warn("process.quality.mark_processing_failed", {
-                ...logContext,
-                processStatus: "running",
-                meta: { recordId },
-              });
+              throw new Error("Kvalitetsgranskningen kunde inte startas: lagringsfel.");
             }
 
             // CHECK: Is client still connected before making expensive AI call?
@@ -1097,8 +693,8 @@ export async function handleSummarization(
                 meta: { recordId },
               });
               updateProgress("cancelled");
-              await deleteRecord(recordId);
-              logger.debug("process.quality.record.cleaned", {
+              if (!await markRecordAsFailed(recordId)) throw new Error("Cancelled quality record could not be marked for cleanup");
+              logger.debug("process.quality.record.cleanup_deferred", {
                 ...logContext,
                 processStatus: "cancelled",
                 meta: { recordId },
@@ -1112,21 +708,6 @@ export async function handleSummarization(
               repairMinScore,
               repairMinSubscore,
             } = resolveRepairRuntimeSettings(runtimeSettings);
-            const qualityDimensionThresholds =
-              resolveEasyToReadQualityDimensionThresholds(
-                runtimeSettings,
-                processingOptions,
-              );
-
-            if (qualityDimensionThresholds) {
-              logger.info("process.easy_to_read.quality_thresholds.active", {
-                ...logContext,
-                processStatus: "running",
-                meta: {
-                  thresholds: qualityDimensionThresholds,
-                },
-              });
-            }
 
             const {
               qualityScore,
@@ -1143,7 +724,6 @@ export async function handleSummarization(
                 repairBudget,
                 repairMinScore,
                 repairMinSubscore,
-                qualityDimensionThresholds,
                 repairMaxActions,
                 evaluateQuality: async () =>
                   await runWithStageConcurrency(
@@ -1167,45 +747,40 @@ export async function handleSummarization(
                             typeof processingOptions.targetAudience === "string"
                               ? processingOptions.targetAudience
                               : "",
-                          taskOutputMode,
                         },
                       ),
                   ),
                 applyRepair: async (currentSummary, repairOptions) => {
                   const normalizedRepairOptions: ProcessingOptions = {
                     ...repairOptions,
+                    aiCallPurpose: "background",
                   };
-
-                  if (easyToReadLayout.enabled) {
-                    normalizedRepairOptions.applyTaskPromptInRewriteStage = true;
-                  }
 
                   const repaired = await runWithStageConcurrency(
                     "rewrite",
                     runtimeSettings,
                     async () =>
-                      getProviderSummary(currentSummary, normalizedRepairOptions),
+                      getProviderSummary(
+                        `ORIGINALTEXT (faktakälla):\n${text}\n\nBEARBETAD TEXT ATT REPARERA:\n${currentSummary}`,
+                        normalizedRepairOptions,
+                      ),
                   );
 
                   if (!repaired || typeof repaired.summary !== "string") {
                     return repaired;
                   }
 
-                  const formattedSummary = applyEasyToReadLayoutIfNeeded(
-                    repaired.summary,
-                    easyToReadLayout,
-                  );
-
-                  return {
-                    ...repaired,
-                    summary: formattedSummary,
-                  };
+                  return repaired;
                 },
                 updateProcessedText: async (summary) => {
-                  await updateProcessedText(recordId, summary);
+                  if (!await updateProcessedText(recordId, summary)) {
+                    throw new Error("Den reparerade texten kunde inte sparas för granskning.");
+                  }
                 },
                 updateProcessingOptions: async (optionsToPersist) => {
-                  await updateProcessingOptions(recordId, optionsToPersist);
+                  if (!await updateProcessingOptions(recordId, optionsToPersist)) {
+                    throw new Error("Granskningsunderlaget kunde inte sparas.");
+                  }
                 },
                 canContinue: isClientConnected,
                 onDisconnected: () => {
@@ -1273,7 +848,10 @@ export async function handleSummarization(
             combinedResult.needsResubmission = !qualityPassed;
 
             // Mark record as completed (allows safe deletion)
-            await markRecordAsCompleted(recordId, qualityScore);
+            if (!await markRecordAsCompleted(recordId, qualityScore)) {
+              throw new Error("Granskningens slutstatus kunde inte sparas.");
+            }
+            combinedResult.qualityStatus = qualityPassed ? "passed" : "rejected";
 
             // If quality evaluation is complete and acceptable (or max attempts reached), delete immediately
             if (
@@ -1351,6 +929,7 @@ export async function handleSummarization(
             combinedResult.qualityEvaluationId = recordId;
             combinedResult.qualityAttempts = attemptNumber;
             combinedResult.qualityScore = undefined;
+            combinedResult.qualityStatus = "failed";
             combinedResult.needsResubmission = false;
             combinedResult.maxQualityAttempts = maxQualityAttempts;
           }
@@ -1371,6 +950,9 @@ export async function handleSummarization(
           },
         });
         // Continue with the current result even if quality data storage fails
+        combinedResult.qualityStatus = "failed";
+        combinedResult.qualityScore = undefined;
+        combinedResult.needsResubmission = false;
       }
     } else {
       logger.info("process.quality.skipped", {
@@ -1389,12 +971,13 @@ export async function handleSummarization(
 
     updateProgress("finalizing");
 
-    logger.info("process.completed", {
+    logger.info(combinedResult.qualityStatus === "failed" ? "process.failed" : "process.completed", {
       ...logContext,
-      processStatus: "completed",
+      processStatus: combinedResult.qualityStatus === "failed" ? "failed" : "completed",
       meta: {
         summaryLength: combinedResult.summary.length,
         qualityScore: combinedResult.qualityScore,
+        qualityStatus: combinedResult.qualityStatus,
       },
     });
     return combinedResult;

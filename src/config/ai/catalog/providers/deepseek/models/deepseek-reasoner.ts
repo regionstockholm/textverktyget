@@ -1,0 +1,3 @@
+import { defineModel } from "../../../validation.js";
+import type { DeepseekModelInput } from "../types.js";
+export default defineModel({ provider: "deepseek", id: "deepseek-reasoner", displayName: "DeepSeek Reasoner (discontinued ID)", limits: { contextWindow: 65536, maxOutputTokens: 8192, verification: "conservative" }, reasoning: { mode: "always-on" }, temperature: "unsupported", structuredOutput: "json-object", status: "retired", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://api-docs.deepseek.com/updates"], retirementDate: "2026-07-24", notes: "Historical reasoning-only ID; a current model profile must be selected for new processing." } } satisfies DeepseekModelInput);

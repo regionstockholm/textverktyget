@@ -77,6 +77,26 @@ export type Secret = Prisma.SecretModel
  */
 export type AuditLog = Prisma.AuditLogModel
 /**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model UserSession
+ * 
+ */
+export type UserSession = Prisma.UserSessionModel
+/**
+ * Model SubmissionLog
+ * 
+ */
+export type SubmissionLog = Prisma.SubmissionLogModel
+/**
+ * Model SubmissionLogSettings
+ * 
+ */
+export type SubmissionLogSettings = Prisma.SubmissionLogSettingsModel
+/**
  * Model TextQualityControl
  * 
  */

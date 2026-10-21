@@ -1,0 +1,2 @@
+import type { Ai21ModelInput } from "./types.js";
+export const template: Ai21ModelInput = { provider: "ai21", id: "replace-model-id", displayName: "New Jamba model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.ai21.com/docs/jamba-foundation-models.md"], notes: "Record the dated snapshot separately from moving aliases." } };

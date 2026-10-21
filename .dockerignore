@@ -10,6 +10,7 @@ yarn-error.log*
 .env.test
 .env.production
 .env
+.env*
 
 # Build outputs
 dist/
@@ -19,6 +20,7 @@ out/
 
 # Testing
 coverage/
+config/catalog-research/
 .nyc_output
 .jest/
 test-results/
@@ -44,6 +46,7 @@ Thumbs.db
 
 # Logs
 logs/
+logs-export/
 *.log
 
 # Runtime data

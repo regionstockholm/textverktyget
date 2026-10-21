@@ -3,7 +3,6 @@ export type SummarizeStage =
   | "analysis"
   | "rewrite_draft"
   | "task_execution"
-  | "task_shaping"
   | "quality_evaluation"
   | "quality_repair"
   | "finalizing"
@@ -35,7 +34,6 @@ const STAGE_MESSAGES: Record<SummarizeStage, string> = {
   analysis: "Sammanfattar det viktigaste...",
   rewrite_draft: "Tar fram omskrivningsutkast...",
   task_execution: "Genomför uppgiften...",
-  task_shaping: "Förfinar struktur och ordning...",
   quality_evaluation: "Granskar resultatet...",
   quality_repair: "Gör justeringar...",
   finalizing: "Slutför bearbetningen...",

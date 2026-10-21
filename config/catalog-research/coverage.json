@@ -1,0 +1,203 @@
+[
+  {
+    "provider": "gemini",
+    "capturedAt": "2026-10-04T08:22:39.052Z",
+    "sourceStatus": "complete",
+    "discovered": 61,
+    "included": 12,
+    "existing": 3,
+    "excluded": 33,
+    "needsReview": 13,
+    "errors": []
+  },
+  {
+    "provider": "openai",
+    "capturedAt": "2026-10-04T08:35:38.004Z",
+    "sourceStatus": "complete",
+    "discovered": 99,
+    "included": 54,
+    "existing": 4,
+    "excluded": 41,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "anthropic",
+    "capturedAt": "2026-10-04T08:35:38.020Z",
+    "sourceStatus": "complete",
+    "discovered": 12,
+    "included": 10,
+    "existing": 2,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "mistral",
+    "capturedAt": "2026-10-04T08:44:00.523Z",
+    "sourceStatus": "complete",
+    "discovered": 12,
+    "included": 12,
+    "existing": 0,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "xai",
+    "capturedAt": "2026-10-04T08:35:39.433Z",
+    "sourceStatus": "complete",
+    "discovered": 14,
+    "included": 7,
+    "existing": 1,
+    "excluded": 6,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "deepseek",
+    "capturedAt": "2026-10-04T08:22:40.617Z",
+    "sourceStatus": "complete",
+    "discovered": 2,
+    "included": 0,
+    "existing": 2,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "cohere",
+    "capturedAt": "2026-10-04T08:44:00.539Z",
+    "sourceStatus": "complete",
+    "discovered": 47,
+    "included": 28,
+    "existing": 2,
+    "excluded": 17,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "ai21",
+    "capturedAt": "2026-10-04T08:35:41.439Z",
+    "sourceStatus": "complete",
+    "discovered": 7,
+    "included": 5,
+    "existing": 2,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "groq",
+    "capturedAt": "2026-10-04T08:28:41.260Z",
+    "sourceStatus": "partial",
+    "discovered": 3,
+    "included": 1,
+    "existing": 1,
+    "excluded": 1,
+    "needsReview": 0,
+    "errors": [
+      "Public catalog: Source returned HTTP 403",
+      "Lifecycle source unavailable; retain previous lifecycle definitions"
+    ]
+  },
+  {
+    "provider": "together",
+    "capturedAt": "2026-10-04T08:44:00.539Z",
+    "sourceStatus": "complete",
+    "discovered": 80,
+    "included": 55,
+    "existing": 1,
+    "excluded": 24,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "fireworks",
+    "capturedAt": "2026-10-04T08:35:41.804Z",
+    "sourceStatus": "complete",
+    "discovered": 318,
+    "included": 300,
+    "existing": 1,
+    "excluded": 17,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "cerebras",
+    "capturedAt": "2026-10-04T08:35:42.215Z",
+    "sourceStatus": "complete",
+    "discovered": 2,
+    "included": 1,
+    "existing": 1,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "huggingface",
+    "capturedAt": "2026-10-04T08:28:41.261Z",
+    "sourceStatus": "complete",
+    "discovered": 452,
+    "included": 449,
+    "existing": 1,
+    "excluded": 2,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "openrouter",
+    "capturedAt": "2026-10-04T08:22:42.276Z",
+    "sourceStatus": "complete",
+    "discovered": 466,
+    "included": 446,
+    "existing": 3,
+    "excluded": 17,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "azure",
+    "capturedAt": "2026-10-04T08:44:00.804Z",
+    "sourceStatus": "complete",
+    "discovered": 97,
+    "included": 45,
+    "existing": 3,
+    "excluded": 30,
+    "needsReview": 19,
+    "errors": []
+  },
+  {
+    "provider": "bedrock",
+    "capturedAt": "2026-10-05T07:25:56.695Z",
+    "sourceStatus": "complete",
+    "discovered": 116,
+    "included": 98,
+    "existing": 2,
+    "excluded": 16,
+    "needsReview": 0,
+    "errors": []
+  },
+  {
+    "provider": "vertex",
+    "capturedAt": "2026-10-04T08:44:01.625Z",
+    "sourceStatus": "complete",
+    "discovered": 44,
+    "included": 18,
+    "existing": 1,
+    "excluded": 7,
+    "needsReview": 18,
+    "errors": []
+  },
+  {
+    "provider": "local",
+    "capturedAt": "2026-10-04T07:43:26.812Z",
+    "sourceStatus": "complete",
+    "discovered": 2,
+    "included": 0,
+    "existing": 2,
+    "excluded": 0,
+    "needsReview": 0,
+    "errors": []
+  }
+]

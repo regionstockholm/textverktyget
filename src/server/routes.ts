@@ -10,12 +10,28 @@ import adminRoutes from "../routes/admin.js";
 import mainRoutes from "../routes/main.js";
 import staticRoutes from "../routes/static/static-assets.js";
 import uploadRoutes from "../routes/uploads.js";
+import authRoutes from "../auth/routes.js";
+import adminAuthRoutes from "../auth/admin-routes.js";
+import { requireSameOrigin, requireUserSession } from "../auth/auth-middleware.js";
+import { isUserLoginEnabled } from "../config/security/access-config.js";
 
 function setupBaseRoutes(app: Application): void {
+  // Static HTML must not bypass the main page's session guard.
+  app.get(["/", "/index.html"], requireUserSession);
+  app.use("/api", requireUserSession, (req, res, next) => {
+    if (isUserLoginEnabled() && !["GET", "HEAD", "OPTIONS"].includes(req.method)) requireSameOrigin(req, res, next);
+    else next();
+  });
+  app.use("/upload", requireUserSession, (req, res, next) => {
+    if (isUserLoginEnabled()) requireSameOrigin(req, res, next);
+    else next();
+  });
+  if (isUserLoginEnabled()) app.use("/auth", authRoutes);
   logger.info("routes.static.setup", { processStatus: "running" });
   app.use(staticRoutes);
 
   logger.info("routes.admin.setup", { processStatus: "running" });
+  app.use("/admin", adminAuthRoutes);
   app.use("/admin", adminRoutes);
 
   logger.info("routes.main.setup", { processStatus: "running" });

@@ -8,7 +8,6 @@ export type TaskCatalogItem = {
   description: string | null;
   sortOrder: number;
   settings: {
-    outputMode: "rewrite" | "summary" | "bullets";
     targetAudienceEnabled: boolean;
     rewritePlanEnabled: boolean;
   };

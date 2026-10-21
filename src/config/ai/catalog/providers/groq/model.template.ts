@@ -1,0 +1,2 @@
+import type { GroqModelInput } from "./types.js";
+export const template: GroqModelInput = { provider: "groq", id: "replace-model-id", displayName: "New Groq model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://console.groq.com/docs/models"], notes: "Use Groq-specific completion ceiling and effort values." } };

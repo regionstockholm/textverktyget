@@ -6,18 +6,17 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: textverktyg
     ports:
-      - "3000:3000"
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
     env_file:
       - .env
     environment:
       # NODE_ENV for Node.js runtime optimizations only (application doesn't depend on it)
       - NODE_ENV=production
-      - LOCAL_DEV=${LOCAL_DEV:-true}
+      - LOCAL_DEV=${LOCAL_DEV:-false}
       - HOST=0.0.0.0
       - PORT=3000
-      - DATABASE_URL=postgresql://textverktyg:textverktyg@postgres:5432/textverktyg
+      - DATABASE_URL=postgresql://textverktyg:${POSTGRES_PASSWORD:?}@postgres:5432/textverktyg
     depends_on:
       postgres:
         condition: service_healthy
@@ -25,17 +24,16 @@ services:
       # Create named volumes to avoid local directory creation
       - textverktyg_data:/app/data
       - textverktyg_uploads:/app/uploads
+      # Docker creates this writable directory; no host mkdir/chown needed.
+      - textverktyg_logs:/app/logs
     restart: unless-stopped
 
   postgres:
     image: postgres:16
-    container_name: textverktyg-postgres
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_DB=textverktyg
       - POSTGRES_USER=textverktyg
-      - POSTGRES_PASSWORD=textverktyg
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?}
     volumes:
       - textverktyg_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -49,6 +47,8 @@ volumes:
   textverktyg_data:
     driver: local
   textverktyg_uploads:
+    driver: local
+  textverktyg_logs:
     driver: local
   textverktyg_postgres_data:
     driver: local

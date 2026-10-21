@@ -103,9 +103,9 @@ export class FileManager {
       return;
     }
 
-    setTimeout(() => {
-      this.processFiles(fileArray);
-    }, fileLimits.fileProcessingDelay);
+    // Register the entire selection before the user can start a submission.
+    // Actual document extraction still happens asynchronously during processing.
+    this.processFiles(fileArray);
   }
 
   private processFiles(fileArray: File[]): void {
@@ -159,32 +159,14 @@ export class FileManager {
     totalFiles: number,
     remainingSlots: number,
   ): void {
-    let currentIndex = 0;
     let filesAdded = 0;
-
-    const processBatch = () => {
-      if (currentIndex >= filesToAdd.length) {
-        this.finalizeUploadProcess(filesAdded, totalFiles, remainingSlots);
-        return;
-      }
-
-      const batch = filesToAdd.slice(
-        currentIndex,
-        currentIndex + fileLimits.batchProcessingSize,
-      );
-
-      for (const file of batch) {
-        if (this.storeFile(file)) {
-          filesAdded += 1;
-        }
-        this.uploadStatus.processedFiles += 1;
-      }
-
-      currentIndex += batch.length;
-      setTimeout(processBatch, fileLimits.batchProcessingSize);
-    };
-
-    processBatch();
+    // At most maxFiles metadata entries: no delayed batches that can leave a
+    // submission with only the first part of a selected group of files.
+    for (const file of filesToAdd) {
+      if (this.storeFile(file)) filesAdded += 1;
+      this.uploadStatus.processedFiles += 1;
+    }
+    this.finalizeUploadProcess(filesAdded, totalFiles, remainingSlots);
   }
 
   private finalizeUploadProcess(

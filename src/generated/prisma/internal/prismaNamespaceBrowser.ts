@@ -58,6 +58,10 @@ export const ModelName = {
   OrdlistaEntry: 'OrdlistaEntry',
   Secret: 'Secret',
   AuditLog: 'AuditLog',
+  User: 'User',
+  UserSession: 'UserSession',
+  SubmissionLog: 'SubmissionLog',
+  SubmissionLogSettings: 'SubmissionLogSettings',
   TextQualityControl: 'TextQualityControl'
 } as const
 
@@ -93,10 +97,14 @@ export type PromptTemplateScalarFieldEnum = (typeof PromptTemplateScalarFieldEnu
 export const ProviderConfigScalarFieldEnum = {
   provider: 'provider',
   model: 'model',
+  modelProfile: 'modelProfile',
   temperature: 'temperature',
   maxOutputTokens: 'maxOutputTokens',
   useWebSearch: 'useWebSearch',
   useThinking: 'useThinking',
+  contextWindow: 'contextWindow',
+  taskModel: 'taskModel',
+  backgroundModel: 'backgroundModel',
   updatedAt: 'updatedAt'
 } as const
 
@@ -124,11 +132,12 @@ export const TaskDefinitionScalarFieldEnum = {
   description: 'description',
   enabled: 'enabled',
   sortOrder: 'sortOrder',
-  outputMode: 'outputMode',
   bulletCount: 'bulletCount',
   maxChars: 'maxChars',
   targetAudienceEnabled: 'targetAudienceEnabled',
   rewritePlanEnabled: 'rewritePlanEnabled',
+  reasoningEnabled: 'reasoningEnabled',
+  webSearchMode: 'webSearchMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -172,6 +181,45 @@ export const AuditLogScalarFieldEnum = {
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+export const UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  passwordHash: 'passwordHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserSessionScalarFieldEnum = {
+  sid: 'sid',
+  sess: 'sess',
+  expire: 'expire'
+} as const
+
+export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
+
+
+export const SubmissionLogScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type SubmissionLogScalarFieldEnum = (typeof SubmissionLogScalarFieldEnum)[keyof typeof SubmissionLogScalarFieldEnum]
+
+
+export const SubmissionLogSettingsScalarFieldEnum = {
+  key: 'key',
+  retentionDays: 'retentionDays',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubmissionLogSettingsScalarFieldEnum = (typeof SubmissionLogSettingsScalarFieldEnum)[keyof typeof SubmissionLogSettingsScalarFieldEnum]
+
+
 export const TextQualityControlScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
@@ -204,6 +252,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

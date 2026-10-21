@@ -24,34 +24,22 @@ import configureHelmet from "../config/security/helmet-config.js";
 import { setSecurityHeaders } from "../routes/static/middleware/security-headers.js";
 import { developmentLogger } from "../middleware/logger.js";
 import { config } from "../config/app-config.js";
-
-/**
- * Simple payload size verification
- * @param req - Request object
- * @param res - Response object
- * @param buf - Buffer to check
- */
-function verifyPayloadSize(_req: any, _res: any, buf: Buffer): void {
-  const maxBytes = config.security.maxFileSizeMB * 1024 * 1024;
-
-  if (buf.length > maxBytes) {
-    throw new Error(
-      `File size ${buf.length} bytes exceeds limit of ${maxBytes} bytes`,
-    );
-  }
-}
+import { isCloudflareEnabled } from "../config/security/access-config.js";
+import { configureSession } from "../config/security/session-config.js";
+import { userBackupImportParser } from "../routes/admin/user-backup-routes.js";
 
 /**
  * Configure request body parsing
  * @param app - Express application
  */
 function configureBodyParsing(app: Application): void {
-  app.use(
-    express.json({
-      limit: config.security.maxFileSize,
-      verify: verifyPayloadSize,
-    }),
-  );
+  app.post("/admin/user-backup/import", userBackupImportParser);
+  const parseJson = express.json({ limit: config.security.maxFileSize });
+  // Document JSON is parsed after authentication/rate limiting, with base64 overhead.
+  app.use((req, res, next) => {
+    if (req.method === "POST" && req.path.toLowerCase().replace(/\/+$/, "") === "/upload/process-document") next();
+    else parseJson(req, res, next);
+  });
 
   app.use(
     express.urlencoded({
@@ -68,8 +56,8 @@ function configureBodyParsing(app: Application): void {
  * @param {Application} app - Express application instance
  */
 function configureProxy(app: Application): void {
-  app.set("trust proxy", 1);
-  console.log("Trust proxy set to 1");
+  // The tunnel is the only supported forwarding hop; keep the origin private.
+  app.set("trust proxy", isCloudflareEnabled() ? 1 : false);
 }
 
 /**
@@ -87,6 +75,7 @@ export function createApp(): Application {
   console.log("Request logging enabled");
 
   configureBodyParsing(app);
+  configureSession(app);
   app.use(setSecurityHeaders);
 
   console.log("Express application configured successfully");

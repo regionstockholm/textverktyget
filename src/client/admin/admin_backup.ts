@@ -1,7 +1,8 @@
-import { requireAdminToken, type AdminTokenProvider } from "./admin_api.js";
+import { adminRequestHeaders, handleAdminSessionExpiry, type AdminTokenProvider } from "./admin_api.js";
 
 export type AdminBackupImportResult = {
   imported?: { prompts?: number; ordlista?: number };
+  upgradedFrom?: number;
 };
 
 export type AdminBackupClient = {
@@ -12,15 +13,13 @@ export type AdminBackupClient = {
 export async function requestAdminBackupPayload(
   token: string,
 ): Promise<unknown> {
-  const adminToken = requireAdminToken(token);
   const response = await fetch("/admin/backup", {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${adminToken}`,
-      "X-Admin-Actor": "admin-ui",
-    },
+    headers: adminRequestHeaders(token),
     cache: "no-store",
+    credentials: "same-origin",
   });
+  if (!token) handleAdminSessionExpiry(response);
 
   const payload = (await response.json().catch(() => null)) as
     | { error?: string; message?: string }
@@ -42,20 +41,20 @@ export async function postAdminBackupPayload(
   token: string,
   payload: unknown,
 ): Promise<AdminBackupImportResult> {
-  const adminToken = requireAdminToken(token);
   const response = await fetch("/admin/backup", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${adminToken}`,
+      ...adminRequestHeaders(token),
       "Content-Type": "application/json",
-      "X-Admin-Actor": "admin-ui",
     },
     body: JSON.stringify(payload),
     cache: "no-store",
+    credentials: "same-origin",
   });
+  if (!token) handleAdminSessionExpiry(response);
 
   const result = (await response.json().catch(() => null)) as
-    | { data?: { imported?: { prompts?: number; ordlista?: number } } }
+    | { data?: AdminBackupImportResult }
     | { error?: string; message?: string; validationErrors?: string[] }
     | null;
 
@@ -76,7 +75,7 @@ export async function postAdminBackupPayload(
   }
 
   const successPayload = result as {
-    data?: { imported?: { prompts?: number; ordlista?: number } };
+    data?: AdminBackupImportResult;
   } | null;
   return successPayload?.data ?? {};
 }

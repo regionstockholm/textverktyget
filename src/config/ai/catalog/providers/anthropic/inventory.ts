@@ -1,0 +1,11 @@
+import model0 from "./models/researched-claude-fable-5-1-f8064a23.js";
+import model1 from "./models/researched-claude-fable-5-2858afd7.js";
+import model2 from "./models/researched-claude-opus-4-6-0b03295f.js";
+import model3 from "./models/researched-claude-opus-4-7-b1171b42.js";
+import model4 from "./models/researched-claude-opus-4-8-47a46a22.js";
+import model5 from "./models/researched-claude-opus-5-5-005912be.js";
+import model6 from "./models/researched-claude-opus-5-f9ef6eed.js";
+import model7 from "./models/researched-claude-sonnet-4-6-7d811269.js";
+import model8 from "./models/researched-claude-sonnet-5-4b07d9a5.js";
+import model9 from "./models/researched-claude-sonnet-5-5-c13e6668.js";
+export default [model0, model1, model2, model3, model4, model5, model6, model7, model8, model9];

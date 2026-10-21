@@ -1,14 +1,82 @@
-# Required
-GEMINI_API_KEY=[gemini_api_key]
-DATABASE_URL=postgresql://textverktyg:textverktyg@postgres:5432/textverktyg
-
-# Local single-user installs may keep sample credentials.
+# Generate separate random secrets before first start; there is no default admin key.
 LOCAL_DEV=true
-ADMIN_API_KEY=admin
-CONFIG_MASTER_KEY=[replace_with_random_secret]
+COMPOSE_PROJECT_NAME=textverktyget
+APP_PORT=3000
+ADMIN_API_KEY=
+CONFIG_MASTER_KEY=
+POSTGRES_PASSWORD=
 
-# Optional local test DB
-TEST_DATABASE_URL=postgresql://textverktyg:textverktyg@localhost:5432/textverktyg
+# Optional Cloudflare Tunnel (remotely managed).
+# Set true for either a host-native or Docker Cloudflared connector.
+CLOUDFLARE_ENABLED=false
+# Default Compose services: app and postgres. No named profile is needed.
+# Host connector: leave profile blank and keep its token outside this .env.
+# Docker connector only: set COMPOSE_PROFILES=cloudflared and fill the token.
+# Origin URL: host http://127.0.0.1:3000; Docker http://app:3000.
+CLOUDFLARE_TUNNEL_TOKEN=
+
+# AI providers: fill only the ones you use. Blank providers cannot be selected.
+# Keys are never entered through the admin UI. Recreate the container after changes.
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+MISTRAL_API_KEY=
+XAI_API_KEY=
+DEEPSEEK_API_KEY=
+COHERE_API_KEY=
+AI21_API_KEY=
+GROQ_API_KEY=
+TOGETHER_API_KEY=
+FIREWORKS_API_KEY=
+CEREBRAS_API_KEY=
+HF_TOKEN=
+OPENROUTER_API_KEY=
+
+# Optional separate quality-evaluation keys (blank = primary provider key).
+# Other *_API_KEY providers also support the corresponding *_QE_API_KEY field.
+GEMINI_QE_API_KEY=
+OPENAI_QE_API_KEY=
+ANTHROPIC_QE_API_KEY=
+
+# Azure OpenAI: model ID in admin is the Azure deployment name.
+AZURE_OPENAI_API_KEY=
+AZURE_OPENAI_ENDPOINT=
+AZURE_OPENAI_DEPLOYMENT=
+AZURE_OPENAI_API_VERSION=2024-10-21
+
+# AWS Bedrock: use explicit credentials OR the official AWS credential chain.
+AWS_REGION=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_SESSION_TOKEN=
+# AWS_PROFILE=
+# AWS_USE_DEFAULT_CREDENTIAL_CHAIN=true
+
+# Google Vertex AI: mount the credentials file into Docker, or explicitly enable ADC.
+GOOGLE_CLOUD_PROJECT=
+GOOGLE_CLOUD_LOCATION=
+GOOGLE_APPLICATION_CREDENTIALS=
+# GOOGLE_CLOUD_USE_ADC=true
+
+# Local OpenAI-compatible server (Ollama / LM Studio / vLLM).
+# Docker Desktop host example: http://host.docker.internal:11434/v1
+LOCAL_LLM_BASE_URL=
+LOCAL_LLM_API_KEY=
+
+# Optional local JSON model profiles. Files are read on startup, never from the web.
+# Mount ./config/llm-profiles into /app/config/llm-profiles for updates without a rebuild.
+# LLM_CATALOG_DIR=/app/config/llm-profiles
+
+# Optional request timeout, milliseconds (local default 180000; cloud 90000).
+# LLM_TIMEOUT_MS=180000
 
 # Optional managed Postgres
 # DATABASE_SSL_MODE=require
+# Optional access gateway. Restart after changing these switches.
+USER_LOGIN_ENABLED=false
+# Required when login is enabled: generate a cryptographically random secret.
+SESSION_SECRET=
+# Blank: HTTP locally, secure cookies through Cloudflared. Set true for other HTTPS deployments.
+COOKIE_SECURE=
+# Minimum 30 days; admin Textlogg overrides this until reset to .env.
+SUBMISSION_LOG_RETENTION_DAYS=30

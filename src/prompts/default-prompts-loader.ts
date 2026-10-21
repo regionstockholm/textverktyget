@@ -17,7 +17,6 @@ export interface DefaultPrompts {
   rewritePlan: string;
   qualityEvaluation: string;
   wordListUsage: string;
-  rewriteFallback: string;
   targetAudience: TargetAudienceDefaults;
   task: TaskDefaults;
 }
@@ -80,7 +79,6 @@ function buildDefaultPrompts(): DefaultPrompts {
     rewritePlan: requiredPrompt("rewritePlan"),
     qualityEvaluation: requiredPrompt("qualityEvaluation"),
     wordListUsage: requiredPrompt("wordListUsage"),
-    rewriteFallback: requiredPrompt("rewriteFallback"),
     targetAudience: {
       known: targetAudienceKnown,
       fallbackTemplate: targetAudienceFallback,

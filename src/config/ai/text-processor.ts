@@ -8,28 +8,8 @@ import { assert } from "../../utils/safety-utils.js";
 import { logger } from "../../utils/logger.js";
 import { getSummary } from "./ai-service-factory.js";
 import type { ProcessingOptions } from "./ai-service-types.js";
-import { config } from "../app-config.js";
 import { preserveLineSeparatorTrim } from "./text-normalization.js";
-
-/**
- * Maximum number of chunks to process
- * @constant {number}
- */
-export const MAX_CHUNKS: number = config.performance.maxChunks;
-
-function resolveMaxChunks(options: ProcessingOptions): number {
-  const candidate = options.maxChunks;
-  if (typeof candidate !== "number" || !Number.isFinite(candidate)) {
-    return MAX_CHUNKS;
-  }
-
-  const parsed = Math.trunc(candidate);
-  if (parsed < 1 || parsed > 100) {
-    return MAX_CHUNKS;
-  }
-
-  return parsed;
-}
+import type { QualityStatus } from "../../types/quality-status.js";
 
 /**
  * Interface for summarization result
@@ -46,6 +26,7 @@ export interface SummarizationResult {
   qualityAttempts?: number;
   needsResubmission?: boolean;
   maxQualityAttempts?: number;
+  qualityStatus?: QualityStatus;
 }
 
 /**
@@ -68,8 +49,7 @@ export async function processChunksSequentially(
   const results: SummarizationResult[] = [];
 
   // Bounded loop
-  const effectiveMaxChunks = resolveMaxChunks(options);
-  const iterationLimit = Math.min(chunks.length, effectiveMaxChunks);
+  const iterationLimit = chunks.length;
   const requestId = options.requestId;
   const processId = options.processId || options.requestId;
 

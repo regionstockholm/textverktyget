@@ -391,6 +391,10 @@ export const ModelName = {
   OrdlistaEntry: 'OrdlistaEntry',
   Secret: 'Secret',
   AuditLog: 'AuditLog',
+  User: 'User',
+  UserSession: 'UserSession',
+  SubmissionLog: 'SubmissionLog',
+  SubmissionLogSettings: 'SubmissionLogSettings',
   TextQualityControl: 'TextQualityControl'
 } as const
 
@@ -407,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "promptTemplate" | "providerConfig" | "globalConfig" | "taskDefinition" | "ordlistaEntry" | "secret" | "auditLog" | "textQualityControl"
+    modelProps: "promptTemplate" | "providerConfig" | "globalConfig" | "taskDefinition" | "ordlistaEntry" | "secret" | "auditLog" | "user" | "userSession" | "submissionLog" | "submissionLogSettings" | "textQualityControl"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -929,6 +933,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    User: {
+      payload: Prisma.$UserPayload<ExtArgs>
+      fields: Prisma.UserFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        findFirst: {
+          args: Prisma.UserFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        findMany: {
+          args: Prisma.UserFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
+        }
+        create: {
+          args: Prisma.UserCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        createMany: {
+          args: Prisma.UserCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
+        }
+        delete: {
+          args: Prisma.UserDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        update: {
+          args: Prisma.UserUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserPayload>
+        }
+        aggregate: {
+          args: Prisma.UserAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUser>
+        }
+        groupBy: {
+          args: Prisma.UserGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserSession: {
+      payload: Prisma.$UserSessionPayload<ExtArgs>
+      fields: Prisma.UserSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.UserSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        findMany: {
+          args: Prisma.UserSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>[]
+        }
+        create: {
+          args: Prisma.UserSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        createMany: {
+          args: Prisma.UserSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.UserSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        update: {
+          args: Prisma.UserSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.UserSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserSession>
+        }
+        groupBy: {
+          args: Prisma.UserSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SubmissionLog: {
+      payload: Prisma.$SubmissionLogPayload<ExtArgs>
+      fields: Prisma.SubmissionLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubmissionLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubmissionLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        findFirst: {
+          args: Prisma.SubmissionLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubmissionLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        findMany: {
+          args: Prisma.SubmissionLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        create: {
+          args: Prisma.SubmissionLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        createMany: {
+          args: Prisma.SubmissionLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubmissionLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        delete: {
+          args: Prisma.SubmissionLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        update: {
+          args: Prisma.SubmissionLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubmissionLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubmissionLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubmissionLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubmissionLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogPayload>
+        }
+        aggregate: {
+          args: Prisma.SubmissionLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubmissionLog>
+        }
+        groupBy: {
+          args: Prisma.SubmissionLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubmissionLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogCountAggregateOutputType> | number
+        }
+      }
+    }
+    SubmissionLogSettings: {
+      payload: Prisma.$SubmissionLogSettingsPayload<ExtArgs>
+      fields: Prisma.SubmissionLogSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubmissionLogSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubmissionLogSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.SubmissionLogSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubmissionLogSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.SubmissionLogSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.SubmissionLogSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.SubmissionLogSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubmissionLogSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.SubmissionLogSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        update: {
+          args: Prisma.SubmissionLogSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubmissionLogSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubmissionLogSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubmissionLogSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubmissionLogSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubmissionLogSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.SubmissionLogSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubmissionLogSettings>
+        }
+        groupBy: {
+          args: Prisma.SubmissionLogSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubmissionLogSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubmissionLogSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
     TextQualityControl: {
       payload: Prisma.$TextQualityControlPayload<ExtArgs>
       fields: Prisma.TextQualityControlFieldRefs
@@ -1058,10 +1358,14 @@ export type PromptTemplateScalarFieldEnum = (typeof PromptTemplateScalarFieldEnu
 export const ProviderConfigScalarFieldEnum = {
   provider: 'provider',
   model: 'model',
+  modelProfile: 'modelProfile',
   temperature: 'temperature',
   maxOutputTokens: 'maxOutputTokens',
   useWebSearch: 'useWebSearch',
   useThinking: 'useThinking',
+  contextWindow: 'contextWindow',
+  taskModel: 'taskModel',
+  backgroundModel: 'backgroundModel',
   updatedAt: 'updatedAt'
 } as const
 
@@ -1089,11 +1393,12 @@ export const TaskDefinitionScalarFieldEnum = {
   description: 'description',
   enabled: 'enabled',
   sortOrder: 'sortOrder',
-  outputMode: 'outputMode',
   bulletCount: 'bulletCount',
   maxChars: 'maxChars',
   targetAudienceEnabled: 'targetAudienceEnabled',
   rewritePlanEnabled: 'rewritePlanEnabled',
+  reasoningEnabled: 'reasoningEnabled',
+  webSearchMode: 'webSearchMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1137,6 +1442,45 @@ export const AuditLogScalarFieldEnum = {
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+export const UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  passwordHash: 'passwordHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserSessionScalarFieldEnum = {
+  sid: 'sid',
+  sess: 'sess',
+  expire: 'expire'
+} as const
+
+export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
+
+
+export const SubmissionLogScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  text: 'text',
+  createdAt: 'createdAt'
+} as const
+
+export type SubmissionLogScalarFieldEnum = (typeof SubmissionLogScalarFieldEnum)[keyof typeof SubmissionLogScalarFieldEnum]
+
+
+export const SubmissionLogSettingsScalarFieldEnum = {
+  key: 'key',
+  retentionDays: 'retentionDays',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubmissionLogSettingsScalarFieldEnum = (typeof SubmissionLogSettingsScalarFieldEnum)[keyof typeof SubmissionLogSettingsScalarFieldEnum]
+
+
 export const TextQualityControlScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
@@ -1169,6 +1513,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1395,6 +1746,10 @@ export type GlobalOmitConfig = {
   ordlistaEntry?: Prisma.OrdlistaEntryOmit
   secret?: Prisma.SecretOmit
   auditLog?: Prisma.AuditLogOmit
+  user?: Prisma.UserOmit
+  userSession?: Prisma.UserSessionOmit
+  submissionLog?: Prisma.SubmissionLogOmit
+  submissionLogSettings?: Prisma.SubmissionLogSettingsOmit
   textQualityControl?: Prisma.TextQualityControlOmit
 }
 

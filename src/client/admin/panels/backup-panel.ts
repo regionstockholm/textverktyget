@@ -11,7 +11,7 @@ type BackupPanelOptions = {
   refs: BackupPanelRefs;
   backupClient: AdminBackupClient;
   feedback: AdminFeedback;
-  onImported(): void;
+  onImported(): void | Promise<void>;
 };
 
 function formatBackupFilename(): string {
@@ -93,12 +93,14 @@ export function initBackupPanel({
       const promptCount = result.imported?.prompts ?? 0;
       const ordlistaCount = result.imported?.ordlista ?? 0;
       refs.backupUploadInput.value = "";
-      setStatus("Backup importerad.");
+      if (promptCount > 0 || ordlistaCount > 0) {
+        await onImported();
+      }
+      setStatus(result.upgradedFrom === 4
+        ? "Äldre säkerhetskopia uppgraderad. Tänkande har aktiverats för importerade uppgifter och kan ändras under Uppgifter."
+        : "Backup importerad.");
       showHint("Import klar.", "success");
       showButtonHint(refs.backupImportButton, "Import klar.", "success");
-      if (promptCount > 0 || ordlistaCount > 0) {
-        onImported();
-      }
     } catch (error) {
       setStatus(
         error instanceof Error ? error.message : "Kunde inte importera backup.",

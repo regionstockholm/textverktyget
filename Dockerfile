@@ -66,9 +66,10 @@ COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Create directories with proper permissions
-RUN mkdir -p data uploads && \
-    chown -R textverktyg:nodejs data uploads && \
-    chmod -R 755 data uploads
+RUN mkdir -p data uploads logs && \
+    chown -R textverktyg:nodejs data uploads logs && \
+    chmod -R 755 data uploads && \
+    chmod 750 logs
 
 # Switch to non-root user
 USER textverktyg

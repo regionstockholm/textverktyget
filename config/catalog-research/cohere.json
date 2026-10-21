@@ -1,0 +1,1749 @@
+{
+  "provider": "cohere",
+  "capturedAt": "2026-10-04T08:44:00.539Z",
+  "sourceStatus": "complete",
+  "errors": [],
+  "evidence": [
+    {
+      "url": "https://docs.cohere.com/docs/models",
+      "capturedAt": "2026-10-04T08:44:00.779Z",
+      "sha256": "ada3af943113fdaaaada15b61d7b537f9ec2e340ca51adba6bfab852933dd8f1",
+      "text": "> For clean Markdown of any page, append .md to the page URL.\n> For a complete documentation index, see https://docs.cohere.com/llms.txt.\n> For AI client integration (Claude Code, Cursor, etc.), connect to the MCP server at https://docs.cohere.com/_mcp/server.\n\n# An Overview of Cohere's Models\n\n> Cohere has a variety of models that cover many different use cases. If you need more customization, you can train a model to tune it to your specific use case.\n\nCohere has a variety of models that cover many different use cases. If you need more customization, you\ncan [tune your prompts](crafting-effective-prompts) to adjust its behavior to your specific\nuse case.\n\nCohere models are currently available on the following platforms:\n\n* [Cohere’s proprietary platform](https://dashboard.cohere.com/playground/chat)\n* [Amazon SageMaker](https://aws.amazon.com/marketplace/seller-profile?id=87af0c85-6cf9-4ed8-bee0-b40ce65167e0)\n* [Amazon Bedrock](https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/providers?model=cohere.command-r-plus-v1:0)\n* [Microsoft Azure](https://ai.azure.com/explore/models/?tid=694fed05-7f6d-4ab2-8c38-9afb438eab6f\\&selectedCollection=cohere)\n* [Oracle GenAI Service](https://www.oracle.com/artificial-intelligence/generative-ai/generative-ai-service/)\n\nAt the end of each major section below, you'll find technical details about how to call a given model on a\nparticular platform.\n\n## What can These Models Be Used For?\n\nIn this section, we'll provide some high-level context on Cohere's offerings, and what the strengths of each\nare.\n\n* The Command family of models includes [Command A+](command-a-plus), [Command A](command-a),\n  [Command R7B](command-r7b), [Command A Translate](command-a-translate),\n  [Command A Reasoning](command-a-reasoning), [Command A Vision](command-a-vision),\n  [Command R+](command-r-plus), [Command R](command-r), and [Command](https://cohere.com/models/command?_gl=1*15hfaqm*_ga*MTAxNTg1NTM1MS4xNjk1MjMwODQw*_ga_CRGS116RZS*MTcxNzYwMzYxMy4zNTEuMS4xNzE3NjAzNjUxLjIyLjAuMA..).\n  Together, they are the text-generation LLMs powering tool-using agents,\n  [retrieval augmented generation](retrieval-augmented-generation-rag) (RAG), translation, copywriting, and\n  similar use cases. They work through the [Chat](../reference/chat) endpoint, which can be used with or without\n  RAG.\n* [Rerank](../../docs/rerank) is the fastest way to inject the intelligence of a language model into an existing search system. It can be accessed via the [Rerank](../reference/rerank-1) endpoint.\n* [Embed](../../docs/cohere-embed) improves the accuracy of search, classification, clustering, and RAG results. It powers the [Embed](../reference/embed) endpoint.\n* [Parse](../../docs/parse) extracts structured, machine-readable data from unstructured enterprise documents, like forms and PDFs. It powers the [Parse](../../v2/reference/parse) endpoint.\n* [Cohere Transcribe](../../v2/docs/transcribe) is Cohere's dedicated audio transcription model for automatic speech\n  recognition (ASR). It powers the [Audio Transcriptions](../../v2/reference/create-audio-transcription) endpoint.\n  [Cohere Transcribe Arabic](../../v2/docs/transcribe-arabic) is a version of the model optimized for Arabic-language\n  audio.\n* The [Aya](aya) family of models are aimed at expanding the number of languages covered by\n  generative AI. Aya Expanse covers 23 languages, and Aya Vision is fully multimodal, allowing you to pass\n  in images and text and get a single coherent response. Both are available on the [Chat](../reference/chat)\n  endpoint.\n* The North family includes purpose-built models such as\n  [North Small Translate](north-small-translate-1.0) for machine translation and\n  [North Mini Code](north-mini-code-1.0) for agentic coding. Both are available through the\n  [Chat](../reference/chat) endpoint. North Mini Code also supports production deployment through\n  [Model Vault](../../v2/docs/model-vault).\n\n## Command\n\nCommand is Cohere's default generation model that takes a user instruction (or command) and generates text\nfollowing the instruction. Our Command models also have conversational capabilities, meaning they are\nwell-suited for chat applications, and Command A Vision can interact with [image inputs](../../v2/docs/image-inputs).\n\n| Model Name                    | Status                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Modality     | Context Length | Maximum Output Tokens | Endpoints                 |\n| ----------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------- | --------------------- | ------------------------- |\n| `command-a-plus-05-2026`      | Live                     | Command A+ offers the last model in the Command A family, while being Cohere's first Mixture of Experts model,  simultaneously combining vision input support, agentic, reasoning, and world-class translation capabilities into single model weights. It also can fit on 1 x B200 or 2 x H100 GPUs, while providing significant latency and throughput improvements over Command A Reasoning, making it an ideal model for any enterprise to deploy at scale. | Text, Images | 128k           | 64k                   | [Chat](../reference/chat) |\n| `command-a-03-2025`           | Live                     | Command A is our most performant model to date, excelling at tool use, agents, retrieval augmented generation (RAG), and multilingual use cases. Command A has a context length of 256K, only requires two GPUs to run, and has 150% higher throughput compared to Command R+ 08-2024.                                                                                                                                                                         | Text         | 256k           | 8k                    | [Chat](../reference/chat) |\n| `command-r7b-12-2024`         | Live                     | `command-r7b-12-2024` is a small, fast update delivered in December 2024. It excels at RAG, tool use, agents, and similar tasks requiring complex reasoning and multiple steps.                                                                                                                                                                                                                                                                                | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-a-translate-08-2025` | Live                     | Command A Translate is Cohere’s state of the art machine translation model, excelling at a variety of translation tasks on 23 languages: English, French, Spanish, Italian, German, Portuguese, Japanese, Korean, Chinese, Arabic, Russian, Polish, Turkish, Vietnamese, Dutch, Czech, Indonesian, Ukrainian, Romanian, Greek, Hindi, Hebrew, Persian.                                                                                                         | Text         | 8K             | 8k                    | [Chat](../reference/chat) |\n| `command-a-reasoning-08-2025` | Live                     | Command A Reasoning is Cohere's first reasoning model, able to 'think' before generating an output in a way that allows it to perform well in certain kinds of nuanced problem-solving and agent-based tasks in 23 languages.                                                                                                                                                                                                                                  | Text         | 256k           | 32k                   | [Chat](../reference/chat) |\n| `command-a-vision-07-2025`    | Live                     | Command A Vision is our first model capable of processing images, excelling in enterprise use cases such as analyzing charts, graphs, and diagrams, table understanding, OCR, document Q\\&A, and object detection. It officially supports English, Portuguese, Italian, French, German, and Spanish.                                                                                                                                                           | Text, Images | 128K           | 8K                    | [Chat](../reference/chat) |\n| `command-r-08-2024`           | Live                     | `command-r-08-2024` is an update of the Command R model, delivered in August 2024. Find more information in the [changelog](https://docs.cohere.com/changelog/command-gets-refreshed)                                                                                                                                                                                                                                                                          | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-r-plus-08-2024`      | Live                     | `command-r-plus-08-2024` is an update of the Command R+ model, delivered in August 2024. Find more information in the [changelog](https://docs.cohere.com/changelog/command-gets-refreshed)                                                                                                                                                                                                                                                                    | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-r-03-2024`           | Deprecated Sept 15, 2025 | Command R is an instruction-following conversational model that performs language tasks at a higher quality, more reliably, and with a longer context than previous models. It can be used for complex workflows like code generation, retrieval augmented generation (RAG), tool use, and agents.                                                                                                                                                             | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-r-plus-04-2024`      | Deprecated Sept 15, 2025 | Command R+ is an instruction-following conversational model that performs language tasks at a higher quality, more reliably, and with a longer context than previous models. It is best suited for complex RAG workflows and multi-step tool use.                                                                                                                                                                                                              | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-r-plus`              | Deprecated Sept 15, 2025 | Alias for `command-r-plus-04-2024`                                                                                                                                                                                                                                                                                                                                                                                                                             | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-r`                   | Deprecated Sept 15, 2025 | Alias for `command-r-03-2024`                                                                                                                                                                                                                                                                                                                                                                                                                                  | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `command-light`               | Deprecated Sept 15, 2025 | A smaller, faster version of `command`. Almost as capable, but a lot faster.                                                                                                                                                                                                                                                                                                                                                                                   | Text         | 4k             | 4k                    | [Chat](../reference/chat) |\n| `command`                     | Deprecated Sept 15, 2025 | An instruction-following conversational model that performs language tasks with high quality, more reliably and with a longer context than our base generative models.                                                                                                                                                                                                                                                                                         | Text         | 4k             | 4k                    | [Chat](../reference/chat) |\n\n### Using Command Models on Different Platforms\n\nIn this table, we provide some important context for using Cohere Command models on Amazon Bedrock, Amazon SageMaker, and more.\n\n| Model Name               | Amazon Bedrock Model ID         | Amazon SageMaker      | Azure AI Foundry                         | Oracle OCI Generative AI Service |\n| :----------------------- | :------------------------------ | :-------------------- | :--------------------------------------- | :------------------------------- |\n| `command-a-plus-05-2026` | N/A                             | N/A                   | 'coherelabs-command-a-plus-05-2026-w4a4' | N/A                              |\n| `command-a-03-2025`      | (Coming Soon)                   | Unique per deployment | Unique per deployment                    | `cohere.command-a-03-2025`       |\n| `command-r7b-12-2024`    | N/A                             | N/A                   | N/A                                      | N/A                              |\n| `command-r-plus`         | `cohere.command-r-plus-v1:0`    | Unique per deployment | Unique per deployment                    | `cohere.command-r-plus v1.2`     |\n| `command-r`              | `cohere.command-r-v1:0`         | Unique per deployment | Unique per deployment                    | `cohere.command-r-16k v1.2`      |\n| `command`                | `cohere.command-text-v14`       | N/A                   | N/A                                      | `cohere.command v15.6`           |\n| `command-nightly`        | N/A                             | N/A                   | N/A                                      | N/A                              |\n| `command-light`          | `cohere.command-light-text-v14` | N/A                   | N/A                                      | `cohere.command-light v15.6`     |\n| `command-light-nightly`  | N/A                             | N/A                   | N/A                                      | N/A                              |\n\n## North\n\nNorth is Cohere's family of purpose-built generative models. North models are available on the Cohere API for\nevaluation. [North Mini Code](north-mini-code-1.0) also supports production deployment through\n[Model Vault](../../v2/docs/model-vault).\n\n| Model Name                  | Status | Description                                                                                                                                                              | Modality | Context Length | Maximum Output Tokens | Endpoints                 |\n| --------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -------------- | --------------------- | ------------------------- |\n| `north-small-translate-1-0` | Live   | [North Small Translate](north-small-translate-1.0) is a 218B total / 25B active parameter MoE model purpose-built for machine translation across more than 50 languages. | Text     | 16k            | 16k                   | [Chat](../reference/chat) |\n| `north-mini-code-1-0`       | Live   | [North Mini Code](north-mini-code-1.0) is a 30B total / 3B active parameter MoE model trained for agentic coding.                                                        | Text     | 256k           | 64k                   | [Chat](../reference/chat) |\n\n## Embed\n\nThese models can be used to generate embeddings from text or classify it based on various parameters. Embeddings can be used for estimating semantic similarity between two sentences, choosing a sentence which is most likely to follow another sentence, or categorizing user feedback. The Representation model comes with a variety of helper functions, such as for detecting the language of an input.\n\n| Model Name                      | Description                                                                                                               | Modalities                                   | Dimensions                                            | Context Length | Similarity Metric                                             | Endpoints                                                           |\n| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ----------------------------------------------------- | -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------- |\n| `embed-v5.0-pro`                | Our most capable embedding model, for text and images. Higher quality than `embed-v5.0-fast`, at higher latency.          | Text, Images, Mixed texts/images (i.e. PDFs) | One of '\\[256, 512, 768, 1024, 1536, 2048 (default)]' | 128k           | Cosine Similarity, Dot Product Similarity, Euclidean Distance | [Embed](../reference/embed)                                         |\n| `embed-v5.0-fast`               | A faster, lighter version of `embed-v5.0-pro`. Allows for text and images to be classified or turned into embeddings      | Text, Images, Mixed texts/images (i.e. PDFs) | One of '\\[256, 512, 768, 1024, 1536, 2048 (default)]' | 128k           | Cosine Similarity, Dot Product Similarity, Euclidean Distance | [Embed](../reference/embed)                                         |\n| `embed-v4.0`                    | A model that allows for text and images to be classified or turned into embeddings                                        | Text, Images, Mixed texts/images (i.e. PDFs) | One of '\\[256, 512, 1024, 1536 (default)]'            | 128k           | Cosine Similarity, Dot Product Similarity, Euclidean Distance | [Embed](../reference/embed),  [Embed Jobs](../reference/embed-jobs) |\n| `embed-english-v3.0`            | A model that allows for text to be classified or turned into embeddings. English only.                                    | Text, Images                                 | 1024                                                  | 512            | Cosine Similarity                                             | [Embed](../reference/embed),  [Embed Jobs](../reference/embed-jobs) |\n| `embed-english-light-v3.0`      | A smaller, faster version of `embed-english-v3.0`. Almost as capable, but a lot faster. English only.                     | Text, Images                                 | 384                                                   | 512            | Cosine Similarity                                             | [Embed](../reference/embed),  [Embed Jobs](../reference/embed-jobs) |\n| `embed-multilingual-v3.0`       | Provides multilingual classification and embedding support. [See supported languages here.](/docs/supported-languages)    | Text, Images                                 | 1024                                                  | 512            | Cosine Similarity                                             | [Embed](../reference/embed), [Embed Jobs](../reference/embed-jobs)  |\n| `embed-multilingual-light-v3.0` | A smaller, faster version of `embed-multilingual-v3.0`. Almost as capable, but a lot faster. Supports multiple languages. | Text, Images                                 | 384                                                   | 512            | Cosine Similarity                                             | [Embed](../reference/embed),  [Embed Jobs](../reference/embed-jobs) |\n\n### Using Embed Models on Different Platforms\n\nIn this table, we provide some important context for using Cohere Embed models on Amazon Bedrock, Amazon SageMaker, and more.\n\n| Model Name                      | Amazon Bedrock Model ID        | Amazon SageMaker      | Azure AI Foundry                                                                   | Oracle OCI Generative AI Service                                                                             |\n| :------------------------------ | :----------------------------- | :-------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |\n| `embed-v5.0-pro`                | N/A                            | Unique per deployment | [`Cohere-Embed-V5-Pro`](https://ai.azure.com/catalog/models/Cohere-Embed-V5-Pro)   | N/A                                                                                                          |\n| `embed-v5.0-fast`               | N/A                            | Unique per deployment | [`Cohere-Embed-V5-Fast`](https://ai.azure.com/catalog/models/Cohere-Embed-V5-Fast) | N/A                                                                                                          |\n| `embed-v4.0`                    | (Coming Soon)                  | Unique per deployment | `cohere-embed-v-4-plan`                                                            | (Coming Soon)                                                                                                |\n| `embed-english-v3.0`            | `cohere.embed-english-v3`      | Unique per deployment | Unique per deployment                                                              | `cohere.embed-english-image-v3.0` (for images), `cohere.embed-english-v3.0` (for text)                       |\n| `embed-english-light-v3.0`      | N/A                            | Unique per deployment | N/A                                                                                | `cohere.embed-english-light-image-v3.0` (for images), `cohere.embed-english-light-v3.0` (for text)           |\n| `embed-multilingual-v3.0`       | `cohere.embed-multilingual-v3` | Unique per deployment | Unique per deployment                                                              | `cohere.embed-multilingual-image-v3.0` (for images), `cohere.embed-multilingual-v3.0` (for text)             |\n| `embed-multilingual-light-v3.0` | N/A                            | Unique per deployment | N/A                                                                                | `cohere.embed-multilingual-light-image-v3.0` (for images), `cohere.embed-multilingual-light-v3.0` (for text) |\n| `embed-english-v2.0`            | N/A                            | Unique per deployment | N/A                                                                                | N/A                                                                                                          |\n| `embed-english-light-v2.0`      | N/A                            | Unique per deployment | N/A                                                                                | `cohere.embed-english-light-v2.0`                                                                            |\n| `embed-multilingual-v2.0`       | N/A                            | Unique per deployment | N/A                                                                                | N/A                                                                                                          |\n\n## Rerank\n\nThe Rerank model can improve created models by re-organizing their results based on certain parameters. This can be used to improve search algorithms.\n\n| Model Name                 | Description                                                                                                                                                                                                                                                        | Modalities | Context Length | Endpoints                     |\n| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------------- | ----------------------------- |\n| `rerank-v4.0-pro`          | A multilingual model that allows for re-ranking English and non-english documents and semi-structured data (JSON). This model is better suited for state-of-the-art quality and complex use-cases than its `fast` variant.                                         | Text       | 32k            | [Rerank](../reference/rerank) |\n| `rerank-v4.0-fast`         | A light version of `rerank-v4.0-pro`, this is a multilingual model that allows for re-ranking English and non-english documents and semi-structured data (JSON). This model is better suited for low latency and high throughput use-cases than its `pro` variant. | Text       | 32k            | [Rerank](../reference/rerank) |\n| `rerank-v3.5`              | A model that allows for re-ranking English Language documents and semi-structured data (JSON). This model has a context length of 4096 tokens.                                                                                                                     | Text       | 4k             | [Rerank](../reference/rerank) |\n| `rerank-english-v3.0`      | A model that allows for re-ranking English Language documents and semi-structured data (JSON). This model has a context length of 4096 tokens.                                                                                                                     | Text       | 4k             | [Rerank](../reference/rerank) |\n| `rerank-multilingual-v3.0` | A model for documents and semi-structure data (JSON) that are not in English. Supports the same languages as `embed-multilingual-v3.0`. This model has a context length of 4096 tokens.                                                                            | Text       | 4k             | [Rerank](../reference/rerank) |\n\n### Using Rerank Models on Different Platforms\n\nIn this table, we provide some important context for using Cohere Rerank models on Amazon Bedrock, SageMaker, and more.\n\n| Model Name                 | Amazon Bedrock Model ID | Amazon SageMaker      | Azure AI Foundry                | Oracle OCI Generative AI Service |\n| :------------------------- | :---------------------- | :-------------------- | :------------------------------ | :------------------------------- |\n| `rerank-v4.0-pro`          | N/A                     | Unique per deployment | `cohere-rerank-v4-pro`          | N/A                              |\n| `rerank-v4.0-fast`         | N/A                     | Unique per deployment | `cohere-rerank-v4-fast`         | N/A                              |\n| `rerank-v3.5`              | `cohere.rerank-v3-5:0`  | Unique per deployment | `Cohere-rerank-v3.5`            | `cohere.rerank.3-5`              |\n| `rerank-english-v3.0`      | N/A                     | Unique per deployment | `Cohere-rerank-v3-english`      | N/A                              |\n| `rerank-multilingual-v3.0` | N/A                     | Unique per deployment | `Cohere-rerank-v3-multilingual` | N/A                              |\n\n\\\n\n\n> **Note**\n>\n> Rerank accepts full strings rather than tokens, so the token limit works a little differently. Rerank will automatically chunk documents longer than 510 tokens, and there is therefore no explicit limit to how long a document can be when using rerank. See our [best practice guide](/docs/reranking-best-practices) for more info about formatting documents for the Rerank endpoint.\n\n## Parse\n\nParse is our vision parsing model for extracting structured data from enterprise documents that can be used in AI search and agentic applications.\n\n| Model Name   | Status | Description                                                                   | Endpoints                         |\n| ------------ | ------ | ----------------------------------------------------------------------------- | --------------------------------- |\n| `parse-v5.0` | Live   | For document intelligence workloads that demand accurate, high-volume parsing | [Parse](../../v2/reference/parse) |\n\n### Using Parse Models on Different Platforms\n\nIn this table, we provide some important context for using Cohere Parse on Amazon SageMaker and Azure Foundry.\n\n| Model Name   | Amazon SageMaker      | Azure AI Foundry    |\n| :----------- | :-------------------- | :------------------ |\n| `parse-v5.0` | Unique per deployment | `cohere-parse-v5.0` |\n\n## Audio\n\nCohere Transcribe is our dedicated model for audio-in, text-out automatic speech recognition (ASR) workloads. For Arabic-language transcription, use Cohere Transcribe Arabic for best-in-class performance.\n\n| Model Name                         | Status | Description                                                                    | Maximum file size | Endpoints                                                             |\n| ---------------------------------- | ------ | ------------------------------------------------------------------------------ | ----------------- | --------------------------------------------------------------------- |\n| `cohere-transcribe-03-2026`        | Live   | Open source model focused on high-accuracy, multilingual speech transcription. | 25MB              | [Audio Transcriptions](../../v2/reference/create-audio-transcription) |\n| `cohere-transcribe-arabic-07-2026` | Live   | Finetune optimized for Arabic audio inputs                                     | 25MB              | [Audio Transcriptions](../../v2/reference/create-audio-transcription) |\n\n### Using Audio Models on Different Platforms\n\nCohere Transcribe is available on Microsoft Foundry under 'coherelabs-cohere-transcribe-03-2026'. Cohere Transcribe Arabic is not yet available on other platforms.\n\n## Aya\n\n[Aya](https://cohere.com/research/aya) is a family of multilingual large language models designed to expand the number of languages covered by generative AI for purposes of research and to better-serve minority linguistic communities.\n\nThe 32-billion parameter Aya Expanse offering is optimized to perform well in these 23 languages: Arabic,\nChinese (simplified & traditional), Czech, Dutch, English, French, German, Greek, Hebrew, Hebrew, Hindi, Indonesian,\nItalian, Japanese, Korean, Persian, Polish, Portuguese, Romanian, Russian, Spanish, Turkish, Ukrainian, and\nVietnamese.\n\nThe 32-billion parameter Aya Vision model is a state-of-the-art multimodal model excelling at a variety of\ncritical benchmarks for language, text, and image capabilities.\n\nTiny Aya is a compact 3.35B-parameter multilingual model supporting 70 languages. Its instruction-tuned variants are available on the Cohere API via the [Chat](../reference/chat) endpoint and as open-weight models on [Hugging Face](https://huggingface.co/collections/CohereLabs/tiny-aya).\n\n| Model Name             | Status              | Description                                                                                                                                                                                                                                             | Modality     | Context Length | Maximum Output Tokens | Endpoints                 |\n| ---------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------- | --------------------- | ------------------------- |\n| `tiny-aya-global`      | Live                | Tiny Aya Global is a 3.35B instruction-tuned multilingual model with the best balance across languages and regions. Supports 70 languages.                                                                                                              | Text         | 8k             | 8k                    | [Chat](../reference/chat) |\n| `tiny-aya-earth`       | Live                | Tiny Aya Earth is a 3.35B region-specialized multilingual model, best for West Asian and African languages. Supports 70 languages.                                                                                                                      | Text         | 8k             | 8k                    | [Chat](../reference/chat) |\n| `tiny-aya-fire`        | Live                | Tiny Aya Fire is a 3.35B region-specialized multilingual model, best for South Asian languages. Supports 70 languages.                                                                                                                                  | Text         | 8k             | 8k                    | [Chat](../reference/chat) |\n| `tiny-aya-water`       | Live                | Tiny Aya Water is a 3.35B region-specialized multilingual model, best for European and Asia-Pacific languages. Supports 70 languages.                                                                                                                   | Text         | 8k             | 8k                    | [Chat](../reference/chat) |\n| `c4ai-aya-expanse-32b` | Live                | Aya Expanse is a highly performant 32B multilingual model, designed to rival monolingual performance through innovations in instruction tuning with data arbitrage, preference training, and model merging. Serves 23 languages.                        | Text         | 128k           | 4k                    | [Chat](../reference/chat) |\n| `c4ai-aya-vision-32b`  | Live                | Aya Vision is a state-of-the-art multimodal model excelling at a variety of critical benchmarks for language, text, and image capabilities. Serves 23 languages. This 32 billion parameter variant is focused on state-of-art multilingual performance. | Text, Images | 16k            | 4k                    | [Chat](../reference/chat) |\n| `c4ai-aya-expanse-8b`  | Retired Apr 4, 2026 | Aya Expanse is a highly performant 8B multilingual model, designed to rival monolingual performance through innovations in instruction tuning with data arbitrage, preference training, and model merging. Serves 23 languages.                         | Text         | 8k             | 4k                    | [Chat](../reference/chat) |\n| `c4ai-aya-vision-8b`   | Retired Apr 4, 2026 | Aya Vision is a state-of-the-art multimodal model excelling at a variety of critical benchmarks for language, text, and image capabilities. This 8 billion parameter variant is focused on low latency and best-in-class performance.                   | Text, Images | 16k            | 4k                    | [Chat](../reference/chat) |",
+      "links": [
+        {
+          "url": "https://docs.cohere.com/docs/crafting-effective-prompts",
+          "text": "[tune your prompts](crafting-effective-prompts)"
+        },
+        {
+          "url": "https://dashboard.cohere.com/playground/chat",
+          "text": "[Cohere’s proprietary platform](https://dashboard.cohere.com/playground/chat)"
+        },
+        {
+          "url": "https://aws.amazon.com/marketplace/seller-profile?id=87af0c85-6cf9-4ed8-bee0-b40ce65167e0",
+          "text": "[Amazon SageMaker](https://aws.amazon.com/marketplace/seller-profile?id=87af0c85-6cf9-4ed8-bee0-b40ce65167e0)"
+        },
+        {
+          "url": "https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/providers?model=cohere.command-r-plus-v1:0",
+          "text": "[Amazon Bedrock](https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/providers?model=cohere.command-r-plus-v1:0)"
+        },
+        {
+          "url": "https://ai.azure.com/explore/models/?tid=694fed05-7f6d-4ab2-8c38-9afb438eab6f\\&selectedCollection=cohere",
+          "text": "[Microsoft Azure](https://ai.azure.com/explore/models/?tid=694fed05-7f6d-4ab2-8c38-9afb438eab6f\\&selectedCollection=cohere)"
+        },
+        {
+          "url": "https://www.oracle.com/artificial-intelligence/generative-ai/generative-ai-service/",
+          "text": "[Oracle GenAI Service](https://www.oracle.com/artificial-intelligence/generative-ai/generative-ai-service/)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-a-plus",
+          "text": "[Command A+](command-a-plus)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-a",
+          "text": "[Command A](command-a)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-r7b",
+          "text": "[Command R7B](command-r7b)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-a-translate",
+          "text": "[Command A Translate](command-a-translate)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-a-reasoning",
+          "text": "[Command A Reasoning](command-a-reasoning)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-a-vision",
+          "text": "[Command A Vision](command-a-vision)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-r-plus",
+          "text": "[Command R+](command-r-plus)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/command-r",
+          "text": "[Command R](command-r)"
+        },
+        {
+          "url": "https://cohere.com/models/command?_gl=1*15hfaqm*_ga*MTAxNTg1NTM1MS4xNjk1MjMwODQw*_ga_CRGS116RZS*MTcxNzYwMzYxMy4zNTEuMS4xNzE3NjAzNjUxLjIyLjAuMA..",
+          "text": "[Command](https://cohere.com/models/command?_gl=1*15hfaqm*_ga*MTAxNTg1NTM1MS4xNjk1MjMwODQw*_ga_CRGS116RZS*MTcxNzYwMzYxMy4zNTEuMS4xNzE3NjAzNjUxLjIyLjAuMA..)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/retrieval-augmented-generation-rag",
+          "text": "[retrieval augmented generation](retrieval-augmented-generation-rag)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/rerank",
+          "text": "[Rerank](../../docs/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank-1",
+          "text": "[Rerank](../reference/rerank-1)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/cohere-embed",
+          "text": "[Embed](../../docs/cohere-embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/parse",
+          "text": "[Parse](../../docs/parse)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/reference/parse",
+          "text": "[Parse](../../v2/reference/parse)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/docs/transcribe",
+          "text": "[Cohere Transcribe](../../v2/docs/transcribe)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/reference/create-audio-transcription",
+          "text": "[Audio Transcriptions](../../v2/reference/create-audio-transcription)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/docs/transcribe-arabic",
+          "text": "[Cohere Transcribe Arabic](../../v2/docs/transcribe-arabic)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/aya",
+          "text": "[Aya](aya)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/north-small-translate-1.0",
+          "text": "[North Small Translate](north-small-translate-1.0)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/north-mini-code-1.0",
+          "text": "[North Mini Code](north-mini-code-1.0)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/docs/model-vault",
+          "text": "[Model Vault](../../v2/docs/model-vault)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/docs/image-inputs",
+          "text": "[image inputs](../../v2/docs/image-inputs)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/changelog/command-gets-refreshed",
+          "text": "[changelog](https://docs.cohere.com/changelog/command-gets-refreshed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/changelog/command-gets-refreshed",
+          "text": "[changelog](https://docs.cohere.com/changelog/command-gets-refreshed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/north-mini-code-1.0",
+          "text": "[North Mini Code](north-mini-code-1.0)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/docs/model-vault",
+          "text": "[Model Vault](../../v2/docs/model-vault)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/north-small-translate-1.0",
+          "text": "[North Small Translate](north-small-translate-1.0)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/north-mini-code-1.0",
+          "text": "[North Mini Code](north-mini-code-1.0)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed-jobs",
+          "text": "[Embed Jobs](../reference/embed-jobs)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed-jobs",
+          "text": "[Embed Jobs](../reference/embed-jobs)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed-jobs",
+          "text": "[Embed Jobs](../reference/embed-jobs)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/supported-languages",
+          "text": "[See supported languages here.](/docs/supported-languages)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed-jobs",
+          "text": "[Embed Jobs](../reference/embed-jobs)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed",
+          "text": "[Embed](../reference/embed)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/embed-jobs",
+          "text": "[Embed Jobs](../reference/embed-jobs)"
+        },
+        {
+          "url": "https://ai.azure.com/catalog/models/Cohere-Embed-V5-Pro",
+          "text": "[`Cohere-Embed-V5-Pro`](https://ai.azure.com/catalog/models/Cohere-Embed-V5-Pro)"
+        },
+        {
+          "url": "https://ai.azure.com/catalog/models/Cohere-Embed-V5-Fast",
+          "text": "[`Cohere-Embed-V5-Fast`](https://ai.azure.com/catalog/models/Cohere-Embed-V5-Fast)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank",
+          "text": "[Rerank](../reference/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank",
+          "text": "[Rerank](../reference/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank",
+          "text": "[Rerank](../reference/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank",
+          "text": "[Rerank](../reference/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/rerank",
+          "text": "[Rerank](../reference/rerank)"
+        },
+        {
+          "url": "https://docs.cohere.com/docs/reranking-best-practices",
+          "text": "[best practice guide](/docs/reranking-best-practices)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/reference/parse",
+          "text": "[Parse](../../v2/reference/parse)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/reference/create-audio-transcription",
+          "text": "[Audio Transcriptions](../../v2/reference/create-audio-transcription)"
+        },
+        {
+          "url": "https://docs.cohere.com/v2/reference/create-audio-transcription",
+          "text": "[Audio Transcriptions](../../v2/reference/create-audio-transcription)"
+        },
+        {
+          "url": "https://cohere.com/research/aya",
+          "text": "[Aya](https://cohere.com/research/aya)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://huggingface.co/collections/CohereLabs/tiny-aya",
+          "text": "[Hugging Face](https://huggingface.co/collections/CohereLabs/tiny-aya)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        },
+        {
+          "url": "https://docs.cohere.com/reference/chat",
+          "text": "[Chat](../reference/chat)"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "c4ai-aya-expanse-32b",
+      "name": "c4ai-aya-expanse-32b",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "c4ai-aya-expanse-32b",
+        "displayName": "c4ai-aya-expanse-32b",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "c4ai-aya-expanse-8b",
+      "name": "c4ai-aya-expanse-8b",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "c4ai-aya-expanse-8b",
+        "displayName": "c4ai-aya-expanse-8b",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "retired",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "c4ai-aya-vision-32b",
+      "name": "c4ai-aya-vision-32b",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "c4ai-aya-vision-32b",
+        "displayName": "c4ai-aya-vision-32b",
+        "limits": {
+          "contextWindow": 16000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "c4ai-aya-vision-8b",
+      "name": "c4ai-aya-vision-8b",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "c4ai-aya-vision-8b",
+        "displayName": "c4ai-aya-vision-8b",
+        "limits": {
+          "contextWindow": 16000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "retired",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere-transcribe-03-2026",
+      "name": "cohere-transcribe-03-2026",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere-transcribe-arabic-07-2026",
+      "name": "cohere-transcribe-arabic-07-2026",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.command-light-text-v14",
+      "name": "cohere.command-light-text-v14",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "cohere.command-light-text-v14",
+        "displayName": "cohere.command-light-text-v14",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.command-r-plus-v1:0",
+      "name": "cohere.command-r-plus-v1:0",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "cohere.command-r-plus-v1:0",
+        "displayName": "cohere.command-r-plus-v1:0",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.command-r-v1:0",
+      "name": "cohere.command-r-v1:0",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "cohere.command-r-v1:0",
+        "displayName": "cohere.command-r-v1:0",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.command-text-v14",
+      "name": "cohere.command-text-v14",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "cohere.command-text-v14",
+        "displayName": "cohere.command-text-v14",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.embed-english-v3",
+      "name": "cohere.embed-english-v3",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.embed-multilingual-v3",
+      "name": "cohere.embed-multilingual-v3",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "cohere.rerank-v3-5:0",
+      "name": "cohere.rerank-v3-5:0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command",
+      "name": "command",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command",
+        "displayName": "command",
+        "limits": {
+          "contextWindow": 4000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-a-03-2025",
+      "name": "command-a-03-2025",
+      "disposition": "existing",
+      "reason": "Official catalog table entry; per-model enrichment follows; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-a-03-2025",
+        "displayName": "command-a-03-2025",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-a-plus-05-2026",
+      "name": "command-a-plus-05-2026",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-a-plus-05-2026",
+        "displayName": "command-a-plus-05-2026",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 64000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-a-reasoning-08-2025",
+      "name": "command-a-reasoning-08-2025",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-a-reasoning-08-2025",
+        "displayName": "command-a-reasoning-08-2025",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 32000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "cohere-thinking",
+          "canDisable": true
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-a-translate-08-2025",
+      "name": "command-a-translate-08-2025",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-a-translate-08-2025",
+        "displayName": "command-a-translate-08-2025",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-a-vision-07-2025",
+      "name": "command-a-vision-07-2025",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-a-vision-07-2025",
+        "displayName": "command-a-vision-07-2025",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-light",
+      "name": "command-light",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-light",
+        "displayName": "command-light",
+        "limits": {
+          "contextWindow": 4000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r",
+      "name": "command-r",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r",
+        "displayName": "command-r",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r-03-2024",
+      "name": "command-r-03-2024",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r-03-2024",
+        "displayName": "command-r-03-2024",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r-08-2024",
+      "name": "command-r-08-2024",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r-08-2024",
+        "displayName": "command-r-08-2024",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r-plus",
+      "name": "command-r-plus",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r-plus",
+        "displayName": "command-r-plus",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r-plus-04-2024",
+      "name": "command-r-plus-04-2024",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r-plus-04-2024",
+        "displayName": "command-r-plus-04-2024",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "deprecated",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r-plus-08-2024",
+      "name": "command-r-plus-08-2024",
+      "disposition": "existing",
+      "reason": "Official catalog table entry; per-model enrichment follows; independently maintained definition retained; independently maintained definition retained; independently maintained definition retained",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r-plus-08-2024",
+        "displayName": "command-r-plus-08-2024",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "json-schema",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "command-r7b-12-2024",
+      "name": "command-r7b-12-2024",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "command-r7b-12-2024",
+        "displayName": "command-r7b-12-2024",
+        "limits": {
+          "contextWindow": 128000,
+          "maxOutputTokens": 4000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-english-light-v3.0",
+      "name": "embed-english-light-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-english-v3.0",
+      "name": "embed-english-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-multilingual-light-v3.0",
+      "name": "embed-multilingual-light-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-multilingual-v3.0",
+      "name": "embed-multilingual-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-v4.0",
+      "name": "embed-v4.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-v5.0-fast",
+      "name": "embed-v5.0-fast",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "embed-v5.0-pro",
+      "name": "embed-v5.0-pro",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "N/A",
+      "name": "N/A",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "N/A",
+        "displayName": "N/A",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "north-mini-code-1-0",
+      "name": "north-mini-code-1-0",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "north-mini-code-1-0",
+        "displayName": "north-mini-code-1-0",
+        "limits": {
+          "contextWindow": 256000,
+          "maxOutputTokens": 64000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "north-small-translate-1-0",
+      "name": "north-small-translate-1-0",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "north-small-translate-1-0",
+        "displayName": "north-small-translate-1-0",
+        "limits": {
+          "contextWindow": 16000,
+          "maxOutputTokens": 16000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "parse-v5.0",
+      "name": "parse-v5.0",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "parse-v5.0",
+        "displayName": "parse-v5.0",
+        "limits": {
+          "contextWindow": 8192,
+          "maxOutputTokens": 4096,
+          "verification": "conservative"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "The source does not publish all token ceilings; explicit conservative application limits are used. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "conservative"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "rerank-english-v3.0",
+      "name": "rerank-english-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "rerank-multilingual-v3.0",
+      "name": "rerank-multilingual-v3.0",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "rerank-v3.5",
+      "name": "rerank-v3.5",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "rerank-v4.0-fast",
+      "name": "rerank-v4.0-fast",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "rerank-v4.0-pro",
+      "name": "rerank-v4.0-pro",
+      "disposition": "excluded",
+      "reason": "Specialized media, embedding, reranking, or moderation endpoint",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "tiny-aya-earth",
+      "name": "tiny-aya-earth",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "tiny-aya-earth",
+        "displayName": "tiny-aya-earth",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "tiny-aya-fire",
+      "name": "tiny-aya-fire",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "tiny-aya-fire",
+        "displayName": "tiny-aya-fire",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "tiny-aya-global",
+      "name": "tiny-aya-global",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "tiny-aya-global",
+        "displayName": "tiny-aya-global",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "tiny-aya-water",
+      "name": "tiny-aya-water",
+      "disposition": "included",
+      "reason": "Official catalog table entry; per-model enrichment follows",
+      "sources": [
+        "https://docs.cohere.com/docs/models"
+      ],
+      "definition": {
+        "provider": "cohere",
+        "id": "tiny-aya-water",
+        "displayName": "tiny-aya-water",
+        "limits": {
+          "contextWindow": 8000,
+          "maxOutputTokens": 8000,
+          "verification": "verified"
+        },
+        "reasoning": {
+          "mode": "none"
+        },
+        "temperature": "supported",
+        "structuredOutput": "prompt",
+        "status": "active",
+        "metadata": {
+          "reviewedAt": "2026-10-04",
+          "revision": 1,
+          "sources": [
+            "https://docs.cohere.com/docs/models"
+          ],
+          "notes": "Published context and output limits captured from the serving provider. Account access and live generation have not been tested."
+        },
+        "apiStyle": "chat",
+        "readiness": {
+          "adapter": "supported",
+          "live": "untested",
+          "specifications": "verified"
+        }
+      },
+      "accountVisibility": "not-tested"
+    }
+  ]
+}

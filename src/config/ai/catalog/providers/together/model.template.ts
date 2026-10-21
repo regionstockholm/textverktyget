@@ -1,0 +1,2 @@
+import type { TogetherModelInput } from "./types.js";
+export const template: TogetherModelInput = { provider: "together", id: "replace-model-id", displayName: "New Together model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.together.ai/docs/serverless-models"], notes: "Distinguish serverless and dedicated endpoints." } };

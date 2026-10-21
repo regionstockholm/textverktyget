@@ -5,12 +5,14 @@
  * 1) the allowed task behavior settings
  */
 
-export type TaskOutputMode = "rewrite" | "summary" | "bullets";
+export type TaskWebSearchMode = "inherit" | "off" | "on";
+export const TASK_WEB_SEARCH_MODES: readonly TaskWebSearchMode[] = ["inherit", "off", "on"];
 
 export interface TaskSettings {
-  outputMode: TaskOutputMode;
   targetAudienceEnabled: boolean;
   rewritePlanEnabled: boolean;
+  reasoningEnabled: boolean;
+  webSearchMode: TaskWebSearchMode;
 }
 
 export interface TaskSettingsValidationResult {
@@ -19,16 +21,11 @@ export interface TaskSettingsValidationResult {
   settings: TaskSettings;
 }
 
-export const TASK_OUTPUT_MODES: readonly TaskOutputMode[] = [
-  "rewrite",
-  "summary",
-  "bullets",
-];
-
 export const DEFAULT_TASK_SETTINGS: TaskSettings = {
-  outputMode: "rewrite",
   targetAudienceEnabled: true,
   rewritePlanEnabled: true,
+  reasoningEnabled: true,
+  webSearchMode: "inherit",
 };
 
 function parseBoolean(value: unknown): boolean | "invalid" {
@@ -40,23 +37,13 @@ function parseBoolean(value: unknown): boolean | "invalid" {
 }
 
 export function validateAndNormalizeTaskSettings(input: {
-  outputMode?: unknown;
   targetAudienceEnabled?: unknown;
   rewritePlanEnabled?: unknown;
+  reasoningEnabled?: unknown;
+  webSearchMode?: unknown;
 }): TaskSettingsValidationResult {
   const errors: string[] = [];
   const settings: TaskSettings = { ...DEFAULT_TASK_SETTINGS };
-
-  if (input.outputMode !== undefined) {
-    if (
-      typeof input.outputMode === "string" &&
-      TASK_OUTPUT_MODES.includes(input.outputMode as TaskOutputMode)
-    ) {
-      settings.outputMode = input.outputMode as TaskOutputMode;
-    } else {
-      errors.push("outputMode must be one of rewrite, summary, bullets");
-    }
-  }
 
   if (input.targetAudienceEnabled !== undefined) {
     const parsed = parseBoolean(input.targetAudienceEnabled);
@@ -73,6 +60,23 @@ export function validateAndNormalizeTaskSettings(input: {
       errors.push("rewritePlanEnabled must be boolean");
     } else {
       settings.rewritePlanEnabled = parsed;
+    }
+  }
+
+  if (input.reasoningEnabled !== undefined) {
+    const parsed = parseBoolean(input.reasoningEnabled);
+    if (parsed === "invalid") {
+      errors.push("reasoningEnabled must be boolean");
+    } else {
+      settings.reasoningEnabled = parsed;
+    }
+  }
+
+  if (input.webSearchMode !== undefined) {
+    if (typeof input.webSearchMode === "string" && TASK_WEB_SEARCH_MODES.includes(input.webSearchMode as TaskWebSearchMode)) {
+      settings.webSearchMode = input.webSearchMode as TaskWebSearchMode;
+    } else {
+      errors.push("webSearchMode must be one of inherit, off, on");
     }
   }
 

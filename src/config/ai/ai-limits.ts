@@ -6,6 +6,7 @@
 
 import { assert } from "../../utils/safety-utils.js";
 import type { AIProvider } from "./ai-config.js";
+import { PROVIDERS, type ProviderId } from "./provider-registry.js";
 
 /**
  * Interface for AI rate limiting configuration
@@ -31,6 +32,7 @@ export interface ResourceLimitsConfig {
  */
 export const RATE_LIMITS: Readonly<Record<AIProvider, RateLimitingConfig>> =
   Object.freeze({
+    ...Object.fromEntries(Object.keys(PROVIDERS).map(id => [id, { REQUESTS_PER_MINUTE: 60, MAX_CONCURRENT_REQUESTS: 10, RETRY_COEFFICIENT: 2 }])) as Record<ProviderId, RateLimitingConfig>,
     "gemini-2.5-flash": {
       REQUESTS_PER_MINUTE: 10,
       MAX_CONCURRENT_REQUESTS: 10,
@@ -49,6 +51,7 @@ export const RATE_LIMITS: Readonly<Record<AIProvider, RateLimitingConfig>> =
 export const RESOURCE_LIMITS: Readonly<
   Record<AIProvider, ResourceLimitsConfig>
 > = Object.freeze({
+  ...Object.fromEntries(Object.keys(PROVIDERS).map(id => [id, { MAX_TEXT_LENGTH: 512 * 1024, TIMEOUT_MS: 180000, MAX_PROCESSING_TIME_MS: 300000 }])) as Record<ProviderId, ResourceLimitsConfig>,
   "gemini-2.5-flash": {
     MAX_TEXT_LENGTH: 1024 * 1024, // 1MB text input
     TIMEOUT_MS: 120000, // 2 minutes

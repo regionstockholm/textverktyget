@@ -1,5 +1,7 @@
 import { getPrismaClient } from "../../config/database/prisma-client.js";
 import { AI_PROVIDERS, type AIProvider } from "../../config/ai/ai-config.js";
+import { defaultProviderSettings, modelCapabilities, type ProviderId, type LlmSettings } from "../../config/ai/provider-registry.js";
+import { findModelDefinition } from "../../config/ai/catalog/index.js";
 import { getDefaultConfig } from "../../config/default-config-loader.js";
 import { getRolePrompt } from "../../prompts/role-prompt.js";
 import { getImportantRulesPrompt } from "../../prompts/important-rules-prompt.js";
@@ -9,7 +11,6 @@ import { getTaskPrompt } from "../../prompts/task-prompt.js";
 import { getRewritePlanPrompt } from "../../prompts/rewrite-plan-prompt.js";
 import { getTextQualityPrompt } from "../../prompts/quality-evaluation-prompt.js";
 import { getWordListUsagePrompt } from "../../prompts/word-list-usage-prompt.js";
-import { getRewriteFallbackPrompt } from "../../prompts/rewrite-fallback-prompt.js";
 import { buildUniqueTaskKeysFromLabels } from "../tasks/task-catalog-service.js";
 import {
   decryptSecretValue,
@@ -24,12 +25,11 @@ export type PromptName =
   | "task"
   | "rewritePlan"
   | "qualityEvaluation"
-  | "wordListUsage"
-  | "rewriteFallback";
+  | "wordListUsage";
 
-export type ProviderName = "gemini";
+export type ProviderName = ProviderId;
 
-export interface GeminiProviderConfig {
+export interface GeminiProviderConfig extends LlmSettings {
   model: string;
   temperature: number;
   maxOutputTokens: number;
@@ -40,7 +40,7 @@ export interface GeminiProviderConfig {
 
 export interface PromptParams {
   targetAudience?: string;
-  taskPromptMode?: "rewritePlanDraft";
+  taskPromptMode?: "rewritePlanDraft" | "sourceAnalysis";
   taskKey?: string;
 }
 
@@ -160,7 +160,7 @@ interface CacheEntry<T> {
 export class ConfigService {
   private readonly cacheTtlMs: number;
   private promptCache: CacheEntry<Map<string, string>> | null = null;
-  private providerCache: CacheEntry<GeminiProviderConfig> | null = null;
+  private providerCache = new Map<ProviderId, CacheEntry<GeminiProviderConfig>>();
   private secretsCache: CacheEntry<Map<string, string>> | null = null;
   private globalConfigCache: CacheEntry<GlobalConfig> | null = null;
 
@@ -170,7 +170,7 @@ export class ConfigService {
 
   refresh(): void {
     this.promptCache = null;
-    this.providerCache = null;
+    this.providerCache.clear();
     this.secretsCache = null;
     this.globalConfigCache = null;
   }
@@ -229,6 +229,9 @@ export class ConfigService {
           getTargetAudiencePrompt(audience);
         return withHeading(prompt, TARGET_AUDIENCE_HEADING);
       case "task":
+        if (params.taskPromptMode === "sourceAnalysis") {
+          return "KÄLLANALYS (INTERN STYRNING)\nGranska hela denna del av originaltexten. Inventera sakuppgifter, huvudbudskap, konsekvenser, villkor, datum, namn, citat och logiska samband. Ta även med viktig information i slutet. Bevara exakta uppgifter och citat; lägg inte till något. Ingen gräns på antal punkter: täck hela delen. Ange vad som är viktigast för målgruppen och den valda uppgiften, utan att låsa en slutlig disposition. Returnera endast källanteckningar för en senare gemensam prioritering.";
+        }
         if (params.taskPromptMode === "rewritePlanDraft") {
           const rewritePlan =
             overrides.get("rewritePlan") || getRewritePlanPrompt;
@@ -261,8 +264,6 @@ export class ConfigService {
         return overrides.get("qualityEvaluation") || getTextQualityPrompt;
       case "wordListUsage":
         return overrides.get("wordListUsage") || getWordListUsagePrompt;
-      case "rewriteFallback":
-        return overrides.get("rewriteFallback") || getRewriteFallbackPrompt;
       default:
         return "";
     }
@@ -286,12 +287,11 @@ export class ConfigService {
       qualityEvaluation:
         overrides.get("qualityEvaluation") || getTextQualityPrompt,
       wordListUsage: overrides.get("wordListUsage") || getWordListUsagePrompt,
-      rewriteFallback:
-        overrides.get("rewriteFallback") || getRewriteFallbackPrompt,
     };
   }
 
   private normalizeProvider(provider: string | null | undefined): AIProvider {
+    if (provider === "gemini-2.5-flash") return "gemini";
     if (
       provider &&
       Object.values(AI_PROVIDERS).includes(provider as AIProvider)
@@ -404,48 +404,61 @@ export class ConfigService {
   async getProviderConfig(
     provider: ProviderName = "gemini",
   ): Promise<GeminiProviderConfig> {
-    if (this.isCacheValid(this.providerCache)) {
-      return this.providerCache.value;
+    const cached = this.providerCache.get(provider) ?? null;
+    if (this.isCacheValid(cached)) {
+      return cached.value;
     }
 
     const prisma = getPrismaClient();
     type StoredProviderConfig = {
       model: string;
+      modelProfile?: string | null;
       temperature: number;
       maxOutputTokens: number;
       useWebSearch?: boolean;
       useThinking?: boolean;
+      contextWindow?: number | null;
+      taskModel?: string | null;
+      backgroundModel?: string | null;
       updatedAt: Date;
     };
     const storedConfig = (await prisma.providerConfig.findUnique({
       where: { provider },
     })) as StoredProviderConfig | null;
 
-    const defaultGeminiConfig = getDefaultConfig().settings.providers.gemini;
+    const defaultGeminiConfig = getDefaultConfig().settings.providers[provider] ?? defaultProviderSettings(provider);
     const defaultUseWebSearch = Boolean(defaultGeminiConfig.useWebSearch);
     const defaultUseThinking = Boolean(defaultGeminiConfig.useThinking);
 
     const mergedConfig: GeminiProviderConfig = storedConfig
       ? {
           model: storedConfig.model,
+          modelProfile: storedConfig.modelProfile ?? findModelDefinition(provider, storedConfig.model)?.id ?? null,
           temperature: storedConfig.temperature,
           maxOutputTokens: storedConfig.maxOutputTokens,
           useWebSearch: storedConfig.useWebSearch ?? defaultUseWebSearch,
           useThinking: storedConfig.useThinking ?? defaultUseThinking,
+          contextWindow: storedConfig.contextWindow ?? modelCapabilities(provider, storedConfig.model, storedConfig.modelProfile).contextWindow,
+          taskModel: storedConfig.taskModel,
+          backgroundModel: storedConfig.backgroundModel,
           updatedAt: storedConfig.updatedAt,
         }
       : {
           model: defaultGeminiConfig.model,
+          modelProfile: defaultGeminiConfig.modelProfile,
           temperature: defaultGeminiConfig.temperature,
           maxOutputTokens: defaultGeminiConfig.maxOutputTokens,
           useWebSearch: defaultUseWebSearch,
           useThinking: defaultUseThinking,
+          contextWindow: defaultGeminiConfig.contextWindow ?? modelCapabilities(provider, defaultGeminiConfig.model).contextWindow,
+          taskModel: defaultGeminiConfig.taskModel,
+          backgroundModel: defaultGeminiConfig.backgroundModel,
         };
 
-    this.providerCache = {
+    this.providerCache.set(provider, {
       value: mergedConfig,
       expiresAt: Date.now() + this.cacheTtlMs,
-    };
+    });
 
     return mergedConfig;
   }

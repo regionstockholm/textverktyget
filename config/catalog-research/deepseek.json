@@ -1,0 +1,758 @@
+{
+  "provider": "deepseek",
+  "capturedAt": "2026-10-04T08:22:40.617Z",
+  "sourceStatus": "complete",
+  "errors": [],
+  "evidence": [
+    {
+      "url": "https://api-docs.deepseek.com/quick_start/pricing",
+      "capturedAt": "2026-10-04T08:22:41.699Z",
+      "sha256": "210f102275ccf1a6542f08a3bc9e4b4c7c83278cb74b35217bffa112df6363b2",
+      "text": "On this pageModels & Pricing\nThe prices listed below are in units of per 1M tokens. A token, the smallest unit of text that the model recognizes, can be a word, a number, or even a punctuation mark. We will bill based on the total number of input and output tokens by the model.\nModel Details​\nMODEL | deepseek-flash(1) | deepseek-v4-pro | \nBASE URL (OpenAI Format) | https://api.deepseek.com | \nBASE URL (Anthropic Format) | https://api.deepseek.com/anthropic | \nMODEL VERSION | DeepSeek-V4.1-Flash | DeepSeek-V4-Pro-0813 | \nTHINKING MODE | Supports both non-thinking and thinking (default) modesSee Thinking Mode for how to switch | \nCONTEXT LENGTH | 1M | \nMAX OUTPUT | MAXIMUM: 384K | \nFEATURES | Json Output | ✓ | ✓ | \nTool Calls | ✓ | ✓ | \nResponses API | ✓ | ✓ | \nAnthropic API | ✓ | ✓ | \nChat Prefix Completion（Beta） | ✓ | ✓ | \nFIM Completion（Beta） | Non-thinking mode only | Non-thinking mode only | \nVision | ✓ | Not supported | \nPRICING(2) | 1M INPUT TOKENS(CACHE HIT) | OFF-PEAK | $0.003 | $0.022 | \nPEAK | $0.006 | $0.044 | \n1M INPUT TOKENS(CACHE MISS) | OFF-PEAK | $0.15 | $0.66 | \nPEAK | $0.3 | $1.32 | \n1M OUTPUT TOKENS | OFF-PEAK | $0.6 | $1.98 | \nPEAK | $1.2 | $3.96 | \nConcurrency Limit(3) | 2500 | 500 | \n(1) Use deepseek-flash as the model name. The legacy names deepseek-v4-flash and deepseek-v4-flash-vision-exp are still accepted, but the corresponding models have been retired, their requests are served by the DeepSeek-V4.1-Flash model and billed at the Flash price.\n(2) Off-peak rates are half of the peak rates. Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through Friday, excluding Chinese public holidays. All other hours are off-peak, including weekends and Chinese public holidays in full.\n(3) For more details on concurrency limits, please refer to Rate Limit & Isolation.\nDeduction Rules​\nThe expense = number of tokens × price.\nThe corresponding fees will be directly deducted from your topped-up balance or granted balance, with a preference for using the granted balance first when both balances are available.\nProduct prices may vary and DeepSeek reserves the right to adjust them. We recommend topping up based on your actual usage and regularly checking this page for the most recent pricing information.",
+      "links": [
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#__docusaurus_skipToContent_fallback",
+          "text": "Skip to main content"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "DeepSeek API Docs"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#",
+          "text": "Resources"
+        },
+        {
+          "url": "https://github.com/deepseek-ai/awesome-deepseek-integration/tree/main",
+          "text": "Integrations"
+        },
+        {
+          "url": "https://status.deepseek.com/",
+          "text": "API Status"
+        },
+        {
+          "url": "https://static.deepseek.com/faq/index.html?lang=en#/category/4",
+          "text": "FAQ"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#",
+          "text": "English"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing",
+          "text": "English"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing",
+          "text": "中文（中国）"
+        },
+        {
+          "url": "https://platform.deepseek.com/",
+          "text": "DeepSeek Platform"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing",
+          "text": "中"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "Quick Start"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/vision",
+          "text": "API Guides"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/api/create-chat-completion",
+          "text": "API Reference"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news260910",
+          "text": "News"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates",
+          "text": "Change Log"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "Your First API Call"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing",
+          "text": "Models & Pricing"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/token_usage",
+          "text": "Token & Token Usage"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/rate_limit",
+          "text": "Rate Limit & Isolation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/error_codes",
+          "text": "Error Codes"
+        },
+        {
+          "url": "https://deepseek-harness.github.io/deepseek-harness/en/guide/quickstart",
+          "text": "DeepSeek Harness"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code",
+          "text": "Claude Code"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/codex",
+          "text": "Codex"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/opencode",
+          "text": "OpenCode"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/openclaw",
+          "text": "OpenClaw"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/hermes",
+          "text": "Hermes"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/reasonix",
+          "text": "Reasonix"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/workbuddy",
+          "text": "WorkBuddy/CodeBuddy"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/qoder",
+          "text": "Qoder"
+        },
+        {
+          "url": "https://github.com/deepseek-ai/awesome-deepseek-agent/tree/main",
+          "text": "Contribute Your Agent Integrations"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": ""
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#model-details",
+          "text": "​"
+        },
+        {
+          "url": "https://api.deepseek.com/",
+          "text": "https://api.deepseek.com"
+        },
+        {
+          "url": "https://api.deepseek.com/anthropic",
+          "text": "https://api.deepseek.com/anthropic"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/thinking_mode",
+          "text": "Thinking Mode"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/json_mode",
+          "text": "Json Output"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/tool_calls",
+          "text": "Tool Calls"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/responses_api",
+          "text": "Responses API"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/anthropic_api",
+          "text": "Anthropic API"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/chat_prefix_completion",
+          "text": "Chat Prefix Completion（Beta）"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/fim_completion",
+          "text": "FIM Completion（Beta）"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/vision",
+          "text": "Vision"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/rate_limit",
+          "text": "Rate Limit & Isolation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#deduction-rules",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "PreviousYour First API Call"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/token_usage",
+          "text": "NextToken & Token Usage"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#model-details",
+          "text": "Model Details"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing#deduction-rules",
+          "text": "Deduction Rules"
+        },
+        {
+          "url": "mailto:api-service@deepseek.com",
+          "text": "Email"
+        },
+        {
+          "url": "https://discord.gg/Tc7c45Zzu5",
+          "text": "Discord"
+        },
+        {
+          "url": "https://twitter.com/deepseek_ai",
+          "text": "Twitter"
+        },
+        {
+          "url": "https://github.com/deepseek-ai",
+          "text": "GitHub"
+        }
+      ]
+    },
+    {
+      "url": "https://api-docs.deepseek.com/updates",
+      "capturedAt": "2026-10-04T08:22:42.392Z",
+      "sha256": "2922113bc4e0e970fa6d3c4065c3cff3ec661a4db03d671cc2310545c5b5bb71",
+      "text": "On this pageChange Log\nDate: 2026-09-10​\nDeepSeek-V4.1-Flash Release​\nToday, we officially release the DeepSeek-V4.1-Flash model. It is the smallest model in our new architecture family, with native multimodal visual understanding. The new architecture is designed for a higher capability ceiling, faster inference, higher throughput, and scaling to larger models.\nGPQA Diamond: 90.9\nHLE: 36.8 (39.1*)\nCodeforces (Rating): 3471\nMathArena Apex: 65.6\nTerminal-Bench 2.1: 90.6\nTerminal-Bench 3.0: 30.0\nTerminal-Bench 4.0: 31.2\nDeepSWE v1.1: 74.2\nProgramBench: 20.3\nNL2Repo-Bench: 65.4\nCyberGym: 88.1\nSEC-Bench Pro: 62.8\nExploitGym: 15.3\nHLE (w/tools): 63.9\nAutomation-Bench: 54.8\nAgents' Last Exam: 31.8\nChartography (w/tools): 78.9\nBabyVision (w/tools): 89.6\nZeroBench-main (w/tools): 49.0\n* Tested only on the pure-text subset of the HLE benchmark set.\nAPI changes\nDeepSeek V4.1 Flash is now available on the DeepSeek API with native multimodal support. Change the model name to deepseek-flash to call the latest V4.1 Flash model. The previous-generation models V4 Flash and V4 Flash Vision Exp have been retired; for compatibility, the model names deepseek-v4-flash and deepseek-v4-flash-vision-exp are temporarily routed to V4.1 Flash.\nIn response to user demand, we have decided to continue providing API services for DeepSeek V4 Pro after September 14, 2026, with the billing method remaining unchanged. We will provide further notice should there be any changes. Thank you for your understanding and support!\nAPI pricing adjustment\nWith the release of DeepSeek-V4.1-Flash, API prices have been reduced accordingly. For details, please refer to Models & Pricing.\nFor more details, please refer to this documentation.\nDate: 2026-08-21​\nDeepSeek-V4-Flash-Vision-Exp Release​\nToday, the new multimodal vision understanding model DeepSeek-V4-Flash-Vision-Exp is now available on the DeepSeek API platform. This is an experimental model that can be accessed by setting model='deepseek-v4-flash-vision-exp'.\nTerminal Bench 2.1: 83.9\nNL2Repo: 57.7\nDeepSWE: 59.3\nDSBench-Hard: 63.6\nAutomationBench (Public): 25.7\nApexBench (Pass@1): 36.5\nAgents' Last Exam: 27.3\nChartography: 64.3\nZeroBench (Pass@5): 35.0\n* For the Code Agent text tasks in the public benchmark sets, the DeepSeek family models were tested using the DeepSeek Harness minimal mode as the framework, with the max effort level, topp=0.95, and temperature=1.0; in the ApexBench and Agents' Last Exam evaluations, the text model DeepSeek-V4-Flash ignores the multimodal elements within them.\nIn terms of pure-text capabilities (agent, reasoning, world knowledge, etc.), DeepSeek-V4-Flash-Vision-Exp is on par with the official DeepSeek-V4-Flash.\nOn agent benchmarks that require visual understanding, DeepSeek-V4-Flash-Vision-Exp delivers a significant leap over DeepSeek-V4-Flash, bringing its multimodal agent capabilities close to Opus-4.8.\nFor usage details, please refer to the Vision guide.\nDate: 2026-08-13​\nDeepSeek-V4-Pro Update​\nThe GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API. The API calling method remains unchanged — simply set the model name to deepseek-v4-pro to use the latest version.\nSignificantly enhanced Agent capabilities\nThe GA version of DeepSeek V4 Pro greatly enhances agent capabilities, with particularly significant performance improvements in production environments.\nHLE (wo / w tools): 42.7/60.0\nTerminal Bench 2.1: 87.9\nNL2Repo: 61.5\nCybergym: 83.3\nDeepSWE: 62.7\nToolathlon-Verified: 74.1\nAgents' Last Exam: 25.7\nAutomationBench (Public): 31.8\nDSBench-FullStack: 71.1\nDSBench-Hard: 67.2\nNative support for the Responses API\nThe DeepSeek API now natively supports the OpenAI Responses API format and is specifically adapted for Codex. Users can refer to the official documentation and complete the Codex configuration with a one-click configuration script.\nMore flexible thinking effort control\nThe thinking modes of V4-Pro and V4-Flash now support three thinking effort levels: low / high / max. In real-world usage, users can flexibly choose based on task complexity: use low for simple tasks, high for daily Agent tasks, and max for more complex scenarios. For setup instructions, please refer to the official API documentation: Thinking Mode.\nAPI Pricing Adjustment\nWith the official release of the DeepSeek V4 model family, we will update and adjust API pricing. To allocate resources more reasonably, we will adopt peak/off-peak pricing, with off-peak prices set at half of the peak-hour prices, encouraging users to schedule their tasks based on actual usage. The new prices will take effect at 16:00 (UTC Time) on August 16, 2026.\nFor more details, please refer to this documentation.\nDate: 2026-07-31​\nDeepSeek-V4-Flash Update​\nThe official release of the DeepSeek-V4-Flash API is now in public beta. The API calling method remains unchanged — simply set the model name to deepseek-v4-flash to use the latest version.\nSignificantly enhanced agent capabilities, with benchmark results far exceeding V4-Pro-Preview:\nTerminal Bench 2.1: 82.7\nNL2Repo: 54.2\nCybergym: 76.7\nDeepSWE: 54.4\nToolathlon verified: 70.3\nAgent Last Exam: 25.2\nAutomation Bench (Public): 25.1\nDSBench-FullStack: 68.7\nDSBench-Hard: 59.6\nNote 1: For the Code Agent tasks in the public benchmark sets, the official DeepSeek-V4-Flash was tested using the DeepSeek Harness minimal mode (to be released soon) as the framework, with the max effort level, topp=0.95, and temperature=1.0\nNote 2: DSBench-FullStack is an internal full-stack development test set, and DSBench-Hard is an internal Coding Agent hard-problem test set\nThe official V4-Flash natively supports the Responses API format and is specifically adapted for Codex. For the specific configuration, please refer to the documentation.\nDeepSeek-V4-Flash-0731 keeps the same model architecture and size as DeepSeek-V4-Flash-Preview, and was only re-post-trained.\nNote: This update only upgrades the DeepSeek-V4-Flash API. The DeepSeek-V4-Pro API and the APP/WEB models are unchanged.\nThe official release of DeepSeek-V4-Pro will follow soon.\nDate: 2026-04-24​\nDeepSeek-V4​\nThe DeepSeek API now supports V4-Pro and V4-Flash, available via both the OpenAI ChatCompletions interface and the Anthropic interface. To access the new models, the base_url remains unchanged, and the model parameter should be set to deepseek-v4-pro or deepseek-v4-flash.\nThe two legacy API model names, deepseek-chat and deepseek-reasoner, will be discontinued in three months (2026-07-24). During the current period, these two model names point to the non-thinking mode and thinking mode of deepseek-v4-flash, respectively.\nFor more details, please refer to this documentation.\nDate: 2025-12-01​\nDeepSeek-V3.2​\nBoth deepseek-chat and deepseek-reasoner have been upgraded to DeepSeek-V3.2.\ndeepseek-chat corresponds to DeepSeek-V3.2's non-thinking mode\ndeepseek-reasoner corresponds to DeepSeek-V3.2's thinking mode\nDeepSeek-V3.2-Speciale​\nDeepSeek-V3.2-Speciale is served via a temporary endpoint: base_url=\"https://api.deepseek.com/v3.2_speciale_expires_on_20251215\". Same pricing as V3.2, no tool calls, available until Dec 15th, 2025, 15:59 (UTC Time).\nFor more details, please refer to this documentation.\nDate: 2025-09-29​\nDeepSeek-V3.2-Exp​\nBoth deepseek-chat and deepseek-reasoner have been upgraded to DeepSeek-V3.2-Exp.\ndeepseek-chat corresponds to DeepSeek-V3.2-Exp's non-thinking mode\ndeepseek-reasoner corresponds to DeepSeek-V3.2-Exp's thinking mode\nFor more details, please refer to this documentation.\nDate: 2025-09-22​\nDeepSeek-V3.1-Terminus​\nBoth deepseek-chat and deepseek-reasoner have been upgraded to DeepSeek-V3.1-Terminus. deepseek-chat corresponds to DeepSeek-V3.1-Terminus's non-thinking mode, while deepseek-reasoner corresponds to its thinking mode.\nThis update maintains the model's original capabilities while addressing issues reported by users, including:\nLanguage consistency: Reduced occurrences of Chinese-English mixing and occasional abnormal characters;\nAgent capabilities: Further optimized the performance of the Code Agent and Search Agent.\nDate: 2025-08-21​\nDeepSeek-V3.1​\nBoth deepseek-chat and deepseek-reasoner have been upgraded to DeepSeek-V3.1. deepseek-chat corresponds to DeepSeek-V3.1's non-thinking mode, while deepseek-reasoner corresponds to its thinking mode.\nKey updates in DeepSeek-V3.1:\nHybrid reasoning architecture: A single model supports both thinking mode and non-thinking mode\nImproved reasoning efficiency: Compared to DeepSeek-R1-0528, DeepSeek-V3.1-Think provides answers in significantly less time\nEnhanced agent capabilities: With post-training optimization, the new model achieves major improvements in tool usage and intelligent agent tasks\nSWE-bench Verified: 66.0\nSWE-bench Multilingual: 54.5\nTerminal-bench: 31.3\nDate: 2025-05-28​\ndeepseek-reasoner​\ndeepseek-reasoner Model Upgraded to DeepSeek-R1-0528:\nEnhanced Reasoning Capabilities\nSignificant benchmark improvements (Pass@1)\nAIME 2025: 70.0 → 87.5 (+17.5)\nGPQA: 71.5 → 81.0 (+9.5)\nLCB_v6: 63.5 → 73.3 (+9.8)\nAider: 57.0 → 71.6 (+14.6)\nNote: Complex reasoning tasks may consume more tokens compared to legacy R1 version.\nOptimized Front-end Development\nGenerated web pages and games now feature improved aesthetics.\nReduced Hallucinations\nSignificantly suppressed hallucination issues present in legacy R1 version.\nJSON Output & Function Calling Support\nFunction call performance:\nTau-bench score: 53.5 (Airline) / 63.9 (Retail)\nDate: 2025-03-24​\ndeepseek-chat​\ndeepseek-chat Model Upgraded to DeepSeek-V3-0324:\nEnhanced Reasoning Capabilities\nSignificant improvements in benchmark performance:\nMMLU-Pro: 75.9 → 81.2 (+5.3)\nGPQA: 59.1 → 68.4 (+9.3)\nAIME: 39.6 → 59.4 (+19.8)\nLiveCodeBench: 39.2 → 49.2 (+10.0)\nOptimized Front-End Web Development\nImproved accuracy in code generation\nMore aesthetically pleasing web pages and game front-ends\nUpgraded Chinese Writing Proficiency\nEnhanced style and content quality:\nAligned with the R1 writing style\nBetter quality in medium-to-long-form writing\nFeature Enhancements\nImproved multi-turn interactive rewriting\nOptimized translation quality and letter writing\nImproved Chinese Search Capabilities\nEnhanced report analysis requests with more detailed outputs\nFunction Calling Improvements\nIncreased accuracy in Function Calling, fixing issues from previous V3 versions\nDate: 2025-01-20​\ndeepseek-reasoner​\ndeepseek-reasoner is our new model DeepSeek-R1. You can invoke DeepSeek-V3 by specifying model='deepseek-reasoner'.\nFor details, please refer to: DeepSeek-R1 Release\nFor guides, please refer to: Thinking Mode\nDate: 2024-12-26​\ndeepseek-chat​\nThe deepseek-chat model has been upgraded to DeepSeek-V3. The API remains unchanged. You can invoke DeepSeek-V3 by specifying model='deepseek-chat'.\nFor details, please refer to: introducing DeepSeek-V3\nDate: 2024-12-10​\ndeepseek-chat​\nThe deepseek-chat model has been upgraded to DeepSeek-V2.5-1210, with improvements across various capabilities. Relevant benchmarking results include:\nMathematical: Performance on the MATH-500 benchmark has improved from 74.8% to 82.8% .\nCoding: Accuracy on the LiveCodebench (08.01 - 12.01) benchmark has increased from 29.2% to 34.38% .\nWriting and Reasoning: Corresponding improvements have been observed in internal test datasets.\nAdditionally, the new version of the model has optimized the user experience for file upload and webpage summarization functionalities.\nDate: 2024-09-05​\ndeepseek-coder & deepseek-chat Upgraded to DeepSeek V2.5 Model​\nThe DeepSeek V2 Chat and DeepSeek Coder V2 models have been merged and upgraded into the new model, DeepSeek V2.5.\nFor backward compatibility, API users can access the new model through either deepseek-coder or deepseek-chat.\nThe new model significantly surpasses the previous versions in both general capabilities and code abilities.\nThe new model better aligns with human preferences and has been optimized in various areas such as writing tasks and instruction following:\nArenaHard win rate improved from 68.3% to 76.3%\nAlpacaEval 2.0 LC win rate increased from 46.61% to 50.52%\nMT-Bench score rose from 8.84 to 9.02\nAlignBench score increased from 7.88 to 8.04\nThe new model has further enhanced its code generation capabilities based on the original Coder model, optimized for common programming application scenarios, and achieved the following results on the standard test set:\nHumanEval: 89%\nLiveCodeBench (January-September): 41%\nDate: 2024-08-02​\nAPI Launches Context Caching on Disk Technology​\nThe DeepSeek API has innovatively adopted hard disk caching, reducing prices by another order of magnitude.\nFor more details on the update, please refer to the documentation Context Caching is Available 2024/08/02.\nDate: 2024-07-25​\nNew API Features​\nUpdate API /chat/completions\nJSON Mode\nFunction Calling\nChat Prefix Completion（Beta）\n8K max_tokens（Beta）\nNew API /completions\nFIM Completion（Beta）\nFor more details, please check the documentation New API Features 2024/07/25\nDate: 2024-07-24​\ndeepseek-coder​\nThe deepseek-coder model has been upgraded to DeepSeek-Coder-V2-0724.\nDate: 2024-06-28​\ndeepseek-chat​\nThe deepseek-chat model has been upgraded to DeepSeek-V2-0628.\nModel's reasoning capabilities have improved, as shown in relevant benchmarks:\nCoding: HumanEval Pass@1 79.88% -> 84.76%\nMathematics: MATH ACC@1 55.02% -> 71.02%\nReasoning: BBH 78.56% -> 83.40%\nIn the Arena-Hard evaluation, the win rate against GPT-4-0314 increased from 41.6% to 68.3%.\nThe model's role-playing capabilities have significantly enhanced, allowing it to act as different characters as requested during conversations.\nDate: 2024-06-14​\ndeepseek-coder​\nThe deepseek-coder model has been upgraded to DeepSeek-Coder-V2-0614, significantly enhancing its coding capabilities. It has reached the level of GPT-4-Turbo-0409 in code generation, code understanding, code debugging, and code completion. Additionally, it possesses excellent mathematical and reasoning abilities, and its general capabilities are on par with DeepSeek-V2-0517.\nDate: 2024-05-17​\ndeepseek-chat​\nThe deepseek-chat model has been upgraded to DeepSeek-V2-0517. The model has seen a significant improvement in following instructions, with the IFEval Benchmark Prompt-Level accuracy jumping from 63.9% to 77.6%. Additionally, on API end, we have optimized model ability to follow instruction filled in the ``system\" part. This optimization has significantly elevated the user experience across a variety of tasks, including immersive translation, Retrieval-Augmented Generation (RAG), and more.\nThe model's accuracy in outputting JSON format has been enhanced. In our internal test set, the JSON parsing rate increased from 78% to 85%. By introducing appropriate regular expressions, the JSON parsing rate was further improved to 97%.",
+      "links": [
+        {
+          "url": "https://api-docs.deepseek.com/updates#__docusaurus_skipToContent_fallback",
+          "text": "Skip to main content"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "DeepSeek API Docs"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#",
+          "text": "Resources"
+        },
+        {
+          "url": "https://github.com/deepseek-ai/awesome-deepseek-integration/tree/main",
+          "text": "Integrations"
+        },
+        {
+          "url": "https://status.deepseek.com/",
+          "text": "API Status"
+        },
+        {
+          "url": "https://static.deepseek.com/faq/index.html?lang=en#/category/4",
+          "text": "FAQ"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#",
+          "text": "English"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates",
+          "text": "English"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/zh-cn/updates",
+          "text": "中文（中国）"
+        },
+        {
+          "url": "https://platform.deepseek.com/",
+          "text": "DeepSeek Platform"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/zh-cn/updates",
+          "text": "中"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": "Quick Start"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/vision",
+          "text": "API Guides"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/api/create-chat-completion",
+          "text": "API Reference"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news260910",
+          "text": "News"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates",
+          "text": "Change Log"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates",
+          "text": "Change Log"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/",
+          "text": ""
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-09-10",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v41-flash-release",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing",
+          "text": "Models & Pricing"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news260910",
+          "text": "this documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-08-21",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-flash-vision-exp-release",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/vision",
+          "text": "Vision guide"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-08-13",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-pro-update",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/codex",
+          "text": "official documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/thinking_mode",
+          "text": "Thinking Mode"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing",
+          "text": "update and adjust API pricing"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news260813",
+          "text": "this documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-07-31",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-flash-update",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/quick_start/agent_integrations/codex",
+          "text": "documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-04-24",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news260424",
+          "text": "this documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-12-01",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32-speciale",
+          "text": "​"
+        },
+        {
+          "url": "https://api.deepseek.com/v3.2_speciale_expires_on_20251215",
+          "text": "https://api.deepseek.com/v3.2_speciale_expires_on_20251215"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news251201",
+          "text": "this documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-09-29",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32-exp",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news250929",
+          "text": "this documentation"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-09-22",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v31-terminus",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-08-21",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v31",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-05-28",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-reasoner",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-03-24",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-01-20",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-reasoner-1",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news250120",
+          "text": "DeepSeek-R1 Release"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/guides/thinking_mode",
+          "text": "Thinking Mode"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-12-26",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-1",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news1226",
+          "text": "introducing DeepSeek-V3"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-12-10",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-2",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-09-05",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder--deepseek-chat-upgraded-to-deepseek-v25-model",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-08-02",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#api-launches-context-caching-on-disk-technology",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news0802",
+          "text": "Context Caching is Available 2024/08/02"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-07-25",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#new-api-features",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/news/news0725",
+          "text": "New API Features 2024/07/25"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-07-24",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-06-28",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-3",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-06-14",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder-1",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-05-17",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-4",
+          "text": "​"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-09-10",
+          "text": "Date: 2026-09-10"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v41-flash-release",
+          "text": "DeepSeek-V4.1-Flash Release"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-08-21",
+          "text": "Date: 2026-08-21"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-flash-vision-exp-release",
+          "text": "DeepSeek-V4-Flash-Vision-Exp Release"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-08-13",
+          "text": "Date: 2026-08-13"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-pro-update",
+          "text": "DeepSeek-V4-Pro Update"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-07-31",
+          "text": "Date: 2026-07-31"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4-flash-update",
+          "text": "DeepSeek-V4-Flash Update"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2026-04-24",
+          "text": "Date: 2026-04-24"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v4",
+          "text": "DeepSeek-V4"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-12-01",
+          "text": "Date: 2025-12-01"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32",
+          "text": "DeepSeek-V3.2"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32-speciale",
+          "text": "DeepSeek-V3.2-Speciale"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-09-29",
+          "text": "Date: 2025-09-29"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v32-exp",
+          "text": "DeepSeek-V3.2-Exp"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-09-22",
+          "text": "Date: 2025-09-22"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v31-terminus",
+          "text": "DeepSeek-V3.1-Terminus"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-08-21",
+          "text": "Date: 2025-08-21"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-v31",
+          "text": "DeepSeek-V3.1"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-05-28",
+          "text": "Date: 2025-05-28"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-reasoner",
+          "text": "deepseek-reasoner"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-03-24",
+          "text": "Date: 2025-03-24"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat",
+          "text": "deepseek-chat"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2025-01-20",
+          "text": "Date: 2025-01-20"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-reasoner-1",
+          "text": "deepseek-reasoner"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-12-26",
+          "text": "Date: 2024-12-26"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-1",
+          "text": "deepseek-chat"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-12-10",
+          "text": "Date: 2024-12-10"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-2",
+          "text": "deepseek-chat"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-09-05",
+          "text": "Date: 2024-09-05"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder--deepseek-chat-upgraded-to-deepseek-v25-model",
+          "text": "deepseek-coder & deepseek-chat Upgraded to DeepSeek V2.5 Model"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-08-02",
+          "text": "Date: 2024-08-02"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#api-launches-context-caching-on-disk-technology",
+          "text": "API Launches Context Caching on Disk Technology"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-07-25",
+          "text": "Date: 2024-07-25"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#new-api-features",
+          "text": "New API Features"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-07-24",
+          "text": "Date: 2024-07-24"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder",
+          "text": "deepseek-coder"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-06-28",
+          "text": "Date: 2024-06-28"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-3",
+          "text": "deepseek-chat"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-06-14",
+          "text": "Date: 2024-06-14"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-coder-1",
+          "text": "deepseek-coder"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#date-2024-05-17",
+          "text": "Date: 2024-05-17"
+        },
+        {
+          "url": "https://api-docs.deepseek.com/updates#deepseek-chat-4",
+          "text": "deepseek-chat"
+        },
+        {
+          "url": "mailto:api-service@deepseek.com",
+          "text": "Email"
+        },
+        {
+          "url": "https://discord.gg/Tc7c45Zzu5",
+          "text": "Discord"
+        },
+        {
+          "url": "https://twitter.com/deepseek_ai",
+          "text": "Twitter"
+        },
+        {
+          "url": "https://github.com/deepseek-ai",
+          "text": "GitHub"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "deepseek-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "disposition": "existing",
+      "reason": "Current model ID explicitly published in pricing table",
+      "sources": [
+        "https://api-docs.deepseek.com/quick_start/pricing"
+      ],
+      "accountVisibility": "not-tested"
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "name": "DeepSeek V4 Pro",
+      "disposition": "existing",
+      "reason": "Current model ID explicitly published in pricing table",
+      "sources": [
+        "https://api-docs.deepseek.com/quick_start/pricing"
+      ],
+      "accountVisibility": "not-tested"
+    }
+  ]
+}

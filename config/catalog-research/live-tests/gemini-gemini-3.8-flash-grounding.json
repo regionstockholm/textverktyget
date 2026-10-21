@@ -1,0 +1,11 @@
+{
+  "provider": "gemini",
+  "model": "gemini-3.8-flash",
+  "testedAt": "2026-10-05T08:15:03.669Z",
+  "generation": "passed",
+  "qualityJson": "passed",
+  "grounding": "passed",
+  "groundingSourcesReturned": true,
+  "latencyMs": 6030,
+  "profileCount": 30
+}

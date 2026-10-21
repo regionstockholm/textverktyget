@@ -1,3 +1,4 @@
+# All crawlers, including search engines and AI bots, must not crawl this site.
+# robots.txt is advisory: it does not enforce access control or guarantee deindexing.
 User-agent: *
-   Disallow: /
-   
+Disallow: /

@@ -3,32 +3,12 @@
  * Core text extraction functionality using office-text-extractor
  */
 
-import { getTextExtractor } from "office-text-extractor";
+import childProcess from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { assert } from "../../utils/safety-utils.js";
 import { timeLimits } from "../../config/shared-config.js";
 
-const extractor = getTextExtractor();
-
-/**
- * Creates a promise that rejects after a timeout
- * @param timeout - Timeout in milliseconds
- * @returns Promise that rejects after timeout
- * @private
- */
-function createTimeoutPromise(timeout: number): Promise<never> {
-  assert(typeof timeout === "number", "Timeout must be a number");
-  assert(timeout > 0, "Timeout must be positive");
-
-  return new Promise((_, reject) => {
-    setTimeout(() => {
-      reject(
-        new Error(
-          "Document processing timed out. The file may be too complex.",
-        ),
-      );
-    }, timeout);
-  });
-}
+let activeExtractions = 0;
 
 /**
  * Extracts raw text from a document using office-text-extractor
@@ -39,32 +19,41 @@ function createTimeoutPromise(timeout: number): Promise<never> {
 export async function extractRawText(buffer: Buffer): Promise<string> {
   assert(Buffer.isBuffer(buffer), "Input must be a buffer");
 
-  // Race the extraction against the timeout
-  const text = await Promise.race([
-    extractor.extractText({
-      input: buffer,
-      type: "buffer",
-    }),
-    createTimeoutPromise(timeLimits.maxTimeoutDuration),
-  ]);
-
-  assert(typeof text === "string", "Extracted text must be a string");
-  console.log(
-    `[TextExtractor] Raw extracted text length: ${text.length} characters`,
-  );
-
-  return text;
+  if (activeExtractions >= 2) throw new Error("Document processing busy. Try again shortly.");
+  activeExtractions++;
+  try {
+    return await new Promise<string>((resolve, reject) => {
+      const child = childProcess.execFile(process.execPath, [
+        // shortcut: V8's heap limit excludes native allocations; use OS/container memory limits for hostile PDFs.
+        "--max-old-space-size=256", fileURLToPath(new URL("./extract-process.js", import.meta.url)),
+      ], {
+        timeout: timeLimits.maxTimeoutDuration,
+        killSignal: "SIGKILL",
+        maxBuffer: 20 * 1024 * 1024,
+        encoding: "utf8",
+        env: { PATH: process.env.PATH, NODE_ENV: process.env.NODE_ENV },
+      }, (error, stdout) => {
+        if (error) reject(new Error("Document processing failed, timed out or exceeded safety limits. No partial text will be used."));
+        else resolve(stdout);
+      });
+      child.stdin!.on("error", () => {}); // Early child exit is reported by execFile's callback.
+      child.stdin!.end(buffer);
+    });
+  } finally {
+    activeExtractions--;
+  }
 }
 
 /**
  * Validates the extracted text length
  * @param text - Extracted text to validate
- * @throws Error if text is too large
+ * @throws Error if no readable text was extracted
  */
 export function validateTextLength(text: string): void {
   assert(typeof text === "string", "Text must be a string");
 
-  // No upper limit - chunking will handle large texts
+  assert(text.trim().length > 0, "Dokumentet gav ingen läsbar text. Skannade dokument kräver OCR.");
+  // Model context limits are checked later against the entire extracted text.
   console.log(
     `[TextExtractor] Text length validated: ${text.length} characters`,
   );

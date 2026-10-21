@@ -1,0 +1,2 @@
+import type { VertexModelInput } from "./types.js";
+export const template: VertexModelInput = { provider: "vertex", id: "replace-model-id", displayName: "New Vertex model", limits: { contextWindow: 8192, maxOutputTokens: 4096, verification: "conservative" }, reasoning: { mode: "none" }, temperature: "supported", structuredOutput: "prompt", status: "draft", metadata: { reviewedAt: "2026-10-02", revision: 1, sources: ["https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models"], notes: "Record Cloud-specific retirement and regional availability." } };

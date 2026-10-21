@@ -20,7 +20,7 @@ const DIMENSION_INSTRUCTIONS: Record<keyof QualitySubscoresArtifact, string> = {
   priorityOrder:
     "Placera det viktigaste först. Se till att kärnbudskap och konsekvens kommer före bakgrund.",
   plainLanguage:
-    "Använd kortare meningar, enklare ord och tydliga övergångar utan byråkratiskt språk. Om uppgiften är lättläst ska radbrytningar och styckesindelning också bli tydliga.",
+    "Använd enklare ord och tydliga övergångar utan byråkratiskt språk. Följ den valda uppgiftens krav på språk, radbrytningar och styckesindelning.",
   taskFit: "Följ uppgiftens formatkrav exakt, inklusive omfång och struktur.",
   audienceFit:
     "Anpassa formuleringar och fokus till målgruppen utan att förlora saklighet.",

@@ -12,6 +12,7 @@ import { timeLimits } from "../config/shared-config.js";
 import { config } from "../config/app-config.js";
 import configService from "../services/config/config-service.js";
 import { readRuntimeInteger } from "../utils/runtime-number.js";
+import { apiRateLimitKey } from "../utils/api/rate-limit-key.js";
 
 // Extend Express Request interface to include rateLimit only (session removed)
 declare module "express" {
@@ -77,6 +78,7 @@ function createApiLimiterConfig(): any {
   const remainingTimeSeconds = Math.ceil(windowMs / 1000);
 
   return {
+    keyGenerator: apiRateLimitKey,
     windowMs,
     max: resolvedGlobalRateLimit.max,
     message: {
@@ -86,10 +88,8 @@ function createApiLimiterConfig(): any {
     standardHeaders: true,
     legacyHeaders: false,
     handler: createRateLimitHandler(ERROR_MESSAGES.API),
-    // Rate limiting applies to all requests now (no authentication to skip)
+    // Rate limiting applies to authenticated and anonymous requests.
     skip: (): boolean => false,
-    // Don't trust proxies for local development
-    trustProxy: false,
   };
 }
 
@@ -184,7 +184,6 @@ function logRateLimiterConfig(name: string, rateLimiterConfig: any): void {
   console.log(`[API Rate Limiter] ${name} configuration:`, {
     windowMs: rateLimiterConfig.windowMs,
     max: rateLimiterConfig.max,
-    trustProxy: rateLimiterConfig.trustProxy,
   });
 }
 

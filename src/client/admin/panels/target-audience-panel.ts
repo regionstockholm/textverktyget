@@ -18,7 +18,6 @@ export type TargetAudiencePanel = {
   init(): void;
   loadCatalog(): Promise<void>;
   loadSelectedPrompt(): Promise<void>;
-  updateEasyReadLabels(): void;
   getAudienceMeta(label: string): TargetAudienceMeta | undefined;
 };
 
@@ -71,20 +70,6 @@ export function initTargetAudiencePanel(
     }
   };
 
-  const updateEasyReadLabels = (): void => {
-    const audienceValue = refs.easyReadTargetAudienceSelect.value;
-    const meta = audienceIndex.get(audienceValue);
-    if (!meta) {
-      refs.easyReadTargetAudienceGroup.textContent = "";
-      refs.easyReadTargetAudiencePromptLabel.textContent =
-        "Prompt för vald målgrupp";
-      return;
-    }
-
-    refs.easyReadTargetAudienceGroup.textContent = `Kategori: ${meta.group}`;
-    refs.easyReadTargetAudiencePromptLabel.textContent = `Prompt för ${meta.label}`;
-  };
-
   const getAudienceMeta = (label: string): TargetAudienceMeta | undefined =>
     audienceIndex.get(label);
 
@@ -101,10 +86,8 @@ export function initTargetAudiencePanel(
   function refreshCatalogUi(): void {
     rebuildAudienceIndex();
     fillAudienceSelect(refs.targetAudienceSelect);
-    fillAudienceSelect(refs.easyReadTargetAudienceSelect);
     fillCategorySelects();
     updateTargetAudienceLabels();
-    updateEasyReadLabels();
   }
 
   function rebuildAudienceIndex(): void {
@@ -236,7 +219,6 @@ export function initTargetAudiencePanel(
       }),
     );
     refs.targetAudienceSelect.value = audienceValue;
-    refs.easyReadTargetAudienceSelect.value = audienceValue;
     refs.targetAudienceCategoryForItemSelect.value = nextCategory;
     updateTargetAudienceLabels();
   }
@@ -430,7 +412,6 @@ export function initTargetAudiencePanel(
     try {
       await saveCatalog(reordered);
       refs.targetAudienceSelect.value = selected.label;
-      refs.easyReadTargetAudienceSelect.value = selected.label;
       showButtonHint(
         direction === "up" ? refs.targetAudienceMoveUpButton : refs.targetAudienceMoveDownButton,
         "Flyttad.",
@@ -561,7 +542,6 @@ export function initTargetAudiencePanel(
 
   async function selectCreatedAudience(label: string, category: string): Promise<void> {
     refs.targetAudienceSelect.value = label;
-    refs.easyReadTargetAudienceSelect.value = label;
     refs.targetAudienceCategoryForItemSelect.value = category;
     state.lastTargetAudience = "";
     await loadSelectedPrompt();
@@ -569,18 +549,14 @@ export function initTargetAudiencePanel(
 
   async function selectFirstAudienceAfterDelete(): Promise<void> {
     state.lastTargetAudience = "";
-    state.lastEasyToReadTargetAudience = "";
     const firstLabel = sortAudiences(state.targetAudienceCatalog.audiences)[0]?.label ?? "";
     if (!firstLabel) {
       refs.targetAudiencePrompt.value = "";
-      refs.easyReadTargetAudiencePrompt.value = "";
       updateTargetAudienceLabels();
-      updateEasyReadLabels();
       return;
     }
 
     refs.targetAudienceSelect.value = firstLabel;
-    refs.easyReadTargetAudienceSelect.value = firstLabel;
     await loadSelectedPrompt();
   }
 
@@ -613,7 +589,6 @@ export function initTargetAudiencePanel(
     init,
     loadCatalog,
     loadSelectedPrompt,
-    updateEasyReadLabels,
     getAudienceMeta,
   };
 }

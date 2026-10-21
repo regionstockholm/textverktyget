@@ -576,13 +576,14 @@ br {
 
 /* Header and footer */
 %shared-header-footer-styles {
-  img.logo-header,
-  img.logo-footer {
+  .logo-header,
+  .logo-footer {
     display: block;
   }
 
-  img.logo-header {
-    max-width: 176px;
+  .logo-header {
+    width: 179px;
+    height: 2.5rem;
 
     @media screen and (max-width: 64rem) {
       max-width: 108px;
@@ -609,17 +610,6 @@ header {
 
   @media screen and (min-width: 64rem) {
     height: 8rem;
-  }
-
-  .beta-flag {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    max-height: 90px;
-
-    @media screen and (max-width: 64rem) {
-      display: none;
-    }
   }
 }
 
@@ -929,15 +919,6 @@ label:has(input:focus-visible) {
 
 .file-icon {
   min-width: 31px;
-}
-
-.file-name {
-  max-width: 16rem;
-  word-break: break-word;
-}
-
-.file-size {
-  min-width: 5rem;
 }
 
 .absolute {
@@ -1949,4 +1930,56 @@ body:has(dialog[open]) {
 
 .hidden {
   display: none;
+}
+
+.beta-header {
+  clear: right;
+  background-color: #ffc000;
+
+  .beta-content-container {
+    top: calc(0.25rem * 3);
+    min-height: calc(0.25rem * 16);
+
+    .beta-content {
+      padding-block: calc(0.25rem * 4);
+      max-width: 50rem;
+    }
+
+    .beta-flag-container {
+      display: block;
+      height: 100%;
+      max-width: fit-content;
+      position: absolute;
+      width: 100%;
+      top: calc(0.25rem * 3);
+    }
+
+    .beta-flag {
+      max-height: 90px;
+
+      @media screen and (max-width: 64rem) {
+        display: none;
+      }
+    }
+
+    .beta-text {
+      padding-left: calc(0.25rem * 28);
+    }
+  }
+}
+
+.verksamhet-container {
+  column-gap: 7rem;
+}
+
+.verksamhet-namn {
+  border-color: var(--grey-800);
+  border-left-style: solid;
+  border-left-width: 1px;
+  color: var(--grey-800);
+  font-size: var(--text-2xl);
+  line-height: 1.2;
+  min-height: 4rem;
+  padding-left: 1.5rem;
+  text-decoration-thickness: 0.8;
 }
