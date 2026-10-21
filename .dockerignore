@@ -87,6 +87,3 @@ uploads/
 
 # TypeScript
 *.tsbuildinfo
-
-# Local development
-local-dev/

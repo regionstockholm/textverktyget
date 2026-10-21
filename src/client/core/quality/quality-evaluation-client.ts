@@ -359,6 +359,7 @@ async function handleQualityRetry(
   clickCount: number,
   attemptNumber: number,
   result: any,
+  submissionValues: FormValues,
   abortSignal?: AbortSignal,
 ): Promise<void> {
   const nextAttempt = attemptNumber + 1;
@@ -375,6 +376,7 @@ async function handleQualityRetry(
     nextAttempt,
     result.qualityEvaluationId,
     abortSignal,
+    submissionValues,
   );
 }
 
@@ -394,6 +396,7 @@ export async function processSummaryWithQuality(
   attemptNumber: number = 1,
   previousQualityId?: number,
   abortSignal?: AbortSignal,
+  submissionValues?: FormValues,
 ): Promise<void> {
   console.log(
     `[TextQuality] Starting attempt ${attemptNumber}/${currentMaxAttempts} (${clickCount})`,
@@ -418,7 +421,8 @@ export async function processSummaryWithQuality(
 
   try {
     // Get selected values and add attempt information
-    const formValues: FormValues = getSelectedValues();
+    submissionValues ??= getSelectedValues();
+    const formValues: FormValues = { ...submissionValues };
     const processId = createClientProcessId();
     formValues.processId = processId;
     formValues.attemptNumber = attemptNumber;
@@ -492,6 +496,7 @@ export async function processSummaryWithQuality(
           clickCount,
           attemptNumber,
           result,
+          submissionValues,
           abortSignal,
         );
       }

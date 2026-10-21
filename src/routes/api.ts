@@ -170,38 +170,31 @@ router.get(
       res.flushHeaders();
     }
 
-    const sendSnapshot = (): void => {
-      const snapshot = getSummarizeProgress(normalizedProcessId);
-      if (snapshot) {
-        writeSseEvent(res, "stage", snapshot);
-      }
+    const close = (): void => {
+      unsubscribe();
+      clearInterval(heartbeatId);
+      clearTimeout(startupTimeout);
+      clearTimeout(lifetimeTimeout);
+      req.off("close", close);
+      if (!res.writableEnded) res.end();
     };
-
-    const unsubscribe = subscribeSummarizeProgress(
-      normalizedProcessId,
-      (snapshot) => {
-        writeSseEvent(res, "stage", snapshot);
-        if (snapshot.isTerminal) {
-          unsubscribe();
-          clearInterval(heartbeatId);
-          res.end();
-        }
-      },
-    );
-
     const heartbeatId = setInterval(() => {
       res.write(": heartbeat\n\n");
     }, 15000);
-
-    sendSnapshot();
-
-    req.on("close", () => {
-      unsubscribe();
-      clearInterval(heartbeatId);
-      if (!res.writableEnded) {
-        res.end();
-      }
-    });
+    // The browser opens its stream just before submitting the job.
+    const startupTimeout = setTimeout(() => {
+      if (!getSummarizeProgress(normalizedProcessId)) close();
+    }, 30000);
+    // shortcut: progress streams last at most 30 minutes; extend for longer supported jobs.
+    const lifetimeTimeout = setTimeout(close, 30 * 60 * 1000);
+    const sendSnapshot = (snapshot: NonNullable<ReturnType<typeof getSummarizeProgress>>): void => {
+      writeSseEvent(res, "stage", snapshot);
+      if (snapshot.isTerminal) close();
+    };
+    const unsubscribe = subscribeSummarizeProgress(normalizedProcessId, sendSnapshot);
+    req.on("close", close);
+    const snapshot = getSummarizeProgress(normalizedProcessId);
+    if (snapshot) sendSnapshot(snapshot);
   },
 );
 

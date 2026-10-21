@@ -4,7 +4,7 @@
 #
 # Build Stage
 #
-FROM node:22-slim AS builder
+FROM node:22-slim AS build
 
 # Install build dependencies
 RUN apt-get update \
@@ -29,6 +29,10 @@ COPY . .
 ENV NODE_ENV=production
 RUN pnpm run build
 
+FROM build AS test
+CMD ["node", "scripts/test.mjs"]
+
+FROM build AS builder
 # Remove dev dependencies and clean cache
 RUN pnpm prune --prod
 
@@ -63,6 +67,7 @@ COPY --from=builder --chown=textverktyg:nodejs /app/config ./config
 
 # Copy entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/database-url.mjs /usr/local/bin/database-url.mjs
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Create directories with proper permissions

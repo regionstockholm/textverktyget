@@ -81,7 +81,6 @@ documentation/
 scripts/*
 !scripts/test.mjs
 !scripts/docker-up.sh
-local-dev/
 
 # Ad-hoc local scratch/output files
 *.now

@@ -6,16 +6,9 @@ const DEFAULT_CONFIG_MASTER_KEYS = new Set([
 ]);
 const MIN_CONFIG_MASTER_KEY_LENGTH = 32;
 
-function isProductionRuntime(): boolean {
-  return process.env.NODE_ENV === "production";
-}
-
-function isLocalDevelopmentOverride(): boolean {
-  return process.env.LOCAL_DEV === "true";
-}
-
 function hasUnsafeAdminApiKey(value: string | undefined): boolean {
-  return !value || DEFAULT_ADMIN_API_KEYS.has(value.trim().toLowerCase());
+  return !value || DEFAULT_ADMIN_API_KEYS.has(value.trim().toLowerCase()) ||
+    (process.env.LOCAL_DEV !== "true" && value.trim().length < 32);
 }
 
 function hasUnsafeConfigMasterKey(value: string | undefined): boolean {
@@ -28,13 +21,13 @@ function hasUnsafeConfigMasterKey(value: string | undefined): boolean {
 
 export function assertSafeAdminCredentialsForStartup(): void {
   const sharedAccess = isCloudflareEnabled() || isUserLoginEnabled();
-  if (!sharedAccess && (!isProductionRuntime() || isLocalDevelopmentOverride())) {
+  if (!sharedAccess && process.env.LOCAL_DEV === "true") {
     return;
   }
 
   const failures: string[] = [];
   if (hasUnsafeAdminApiKey(process.env.ADMIN_API_KEY)) {
-    failures.push("ADMIN_API_KEY must be changed from the local default");
+    failures.push("ADMIN_API_KEY must be non-default and at least 32 characters when LOCAL_DEV=false");
   }
 
   if (hasUnsafeConfigMasterKey(process.env.CONFIG_MASTER_KEY)) {

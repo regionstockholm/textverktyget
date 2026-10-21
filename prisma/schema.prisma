@@ -12,6 +12,7 @@ generator client {
 }
 
 model PromptTemplate {
+  // One active version per name is enforced by the partial unique index in migrations.
   id        Int      @id @default(autoincrement())
   name      String
   content   String

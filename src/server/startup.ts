@@ -90,6 +90,7 @@ async function bootstrapDatabaseDefaults(): Promise<void> {
     }
   } catch (error) {
     console.error("[Startup] Failed to ensure task prompt defaults:", error);
+    throw error;
   }
 }
 

@@ -36,15 +36,10 @@ export async function applyDefaultConfigIfDatabaseEmpty(
       prisma.ordlistaEntry.count(),
     ]);
 
-  const hasInitializedConfig = globalCount > 0 || providerCount > 0;
-  const hasAuxiliaryData = promptCount > 0 || ordlistaCount > 0;
-  const hasTaskCatalog = taskCount > 0;
-
-  const shouldRebuildFromDefault =
-    !hasInitializedConfig &&
-    (!hasAuxiliaryData || hasTaskCatalog);
-
-  if (!shouldRebuildFromDefault) {
+  if (promptCount + globalCount + providerCount + taskCount + ordlistaCount > 0) {
+    if (!globalCount || !providerCount) {
+      throw new Error("Configuration is incomplete. Restore the missing settings from backup; existing data was not changed.");
+    }
     return {
       applied: false,
       reason: "already-initialized",
@@ -61,12 +56,6 @@ export async function applyDefaultConfigIfDatabaseEmpty(
     [];
 
   await prisma.$transaction(async (tx) => {
-    if (taskCount > 0 || promptCount > 0 || ordlistaCount > 0) {
-      await tx.promptTemplate.deleteMany({});
-      await tx.taskDefinition.deleteMany({});
-      await tx.ordlistaEntry.deleteMany({});
-    }
-
     await tx.globalConfig.upsert({
       where: { configKey: GLOBAL_CONFIG_KEY },
       create: {

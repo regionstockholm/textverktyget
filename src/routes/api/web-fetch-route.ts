@@ -64,6 +64,7 @@ function extractFormattedContent(element: any, $: any): string {
 /** Preserve the original selective import, including Region Stockholm's layout. */
 export function extractWebText(html: string, url: string): string {
   const $ = cheerio.load(html);
+  $("br").replaceWith("\n");
   $(
     'script, style, nav, header, footer, aside, .advertisement, .ads, .social-media, .sidebar, .menu, .navigation, .breadcrumb, .cookie-banner, [class*="ad-"], [id*="ad-"], [class*="ads-"], [id*="ads-"]',
   ).remove();

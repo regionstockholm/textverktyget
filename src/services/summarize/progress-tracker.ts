@@ -53,7 +53,7 @@ const listenersByProcessId = new Map<string, Set<ProgressListener>>();
 
 function cleanupExpiredEntries(nowMs: number): void {
   for (const [processId, entry] of progressByProcessId.entries()) {
-    if (nowMs - entry.updatedAtMs > PROGRESS_TTL_MS) {
+    if (nowMs - entry.updatedAtMs > PROGRESS_TTL_MS && !listenersByProcessId.get(processId)?.size) {
       progressByProcessId.delete(processId);
       listenersByProcessId.delete(processId);
     }

@@ -1,4 +1,6 @@
 # Generate separate random secrets before first start; there is no default admin key.
+# Password policy only; the application always runs in Docker.
+# false requires an ADMIN_API_KEY of at least 32 characters.
 LOCAL_DEV=true
 COMPOSE_PROJECT_NAME=textverktyget
 APP_PORT=3000

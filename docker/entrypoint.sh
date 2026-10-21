@@ -1,10 +1,8 @@
 #!/bin/sh
 set -e
 
-if [ -z "$DATABASE_URL" ]; then
-  echo "DATABASE_URL is not set" >&2
-  exit 1
-fi
+DATABASE_URL=$(node /usr/local/bin/database-url.mjs)
+export DATABASE_URL
 
 max_attempts=${DB_WAIT_ATTEMPTS:-30}
 sleep_seconds=${DB_WAIT_DELAY_SECONDS:-2}

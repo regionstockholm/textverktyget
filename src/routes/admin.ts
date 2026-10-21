@@ -412,6 +412,7 @@ async function importBackupPayload(
   let importedPromptCount = 0;
 
   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
     await tx.globalConfig.upsert({
       where: { configKey: GLOBAL_CONFIG_KEY },
       create: {
@@ -668,6 +669,7 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
 
     const created = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
+        await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
         const task = await createTaskDefinition(
           {
             label,
@@ -879,6 +881,7 @@ router.delete(
       }
 
       await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
         await tx.taskDefinition.delete({ where: { key: existing.key } });
 
         await tx.promptTemplate.updateMany({
@@ -1101,6 +1104,7 @@ router.put(
       const actor = getActor(req);
       const result = await prisma.$transaction(
         async (tx: Prisma.TransactionClient) => {
+          await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
           const latestPrompt = await tx.promptTemplate.findFirst({
             where: { name: promptName },
             orderBy: { version: "desc" },
@@ -1188,6 +1192,7 @@ router.put(
 
       const result = await prisma.$transaction(
         async (tx: Prisma.TransactionClient) => {
+          await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
           const latestPrompt = await tx.promptTemplate.findFirst({
             where: { name: promptName },
             orderBy: { version: "desc" },
@@ -1535,6 +1540,7 @@ router.post(
       }
 
       await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await tx.$executeRaw`LOCK TABLE prompt_templates IN SHARE ROW EXCLUSIVE MODE`;
         await tx.promptTemplate.updateMany({
           where: { name: promptName, isActive: true },
           data: { isActive: false },

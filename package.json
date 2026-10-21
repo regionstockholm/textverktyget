@@ -2,7 +2,6 @@
   "name": "textverktyg",
   "version": "0.1.0",
   "description": "Tool for processing text with GenAI",
-  "main": "server.js",
   "type": "module",
   "packageManager": "pnpm@11.0.9",
   "pnpm": {
@@ -17,20 +16,7 @@
     ]
   },
   "scripts": {
-    "start": "node --env-file=.env server.js",
-    "build": "NODE_ENV=${NODE_ENV:-production} pnpm exec prisma generate && NODE_ENV=${NODE_ENV:-production} pnpm exec tsc && NODE_ENV=${NODE_ENV:-production} node build.mjs",
-    "dev": "pnpm run build && pnpm start",
-    "dev:watch": "pnpm exec prisma generate && pnpm exec tsc --watch",
-    "build:local": "NODE_ENV=development pnpm exec prisma generate && NODE_ENV=development pnpm exec tsc && NODE_ENV=development node build.mjs",
-    "build:local:win": "set NODE_ENV=development&& pnpm exec prisma generate && pnpm exec tsc && node build.mjs",
-    "dev:local": "node local-dev/local-server.js",
-    "clean": "rm -rf dist public/script/*.js public/script/*.map",
-    "test": "node scripts/test.mjs",
-    "test:nodb": "rm -rf dist && pnpm exec prisma generate && pnpm exec tsc && node build.mjs && DATABASE_URL= node --test --test-concurrency=1 \"dist/tests/**/*.test.js\"",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev && prisma generate",
-    "catalog:research": "pnpm exec tsc && node dist/config/ai/catalog-maintenance/cli.js",
-    "catalog:smoke": "pnpm exec tsc && node dist/config/ai/catalog-maintenance/smoke.js",
+    "build": "prisma generate && tsc && node build.mjs",
     "postinstall": "prisma generate"
   },
   "keywords": [

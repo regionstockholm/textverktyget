@@ -6,7 +6,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { join } from "path";
-import { apiLimiter } from "../middleware/api-rate-limiter.js";
+import { getPrismaClient } from "../config/database/prisma-client.js";
 import { safeReadFile } from "../utils/file/file-reader.js";
 import {
   generateSecureNonce,
@@ -101,35 +101,19 @@ router.get(
 );
 
 /**
- * GET /api/content
- * API endpoint for fetching application content
- */
-router.get(
-  "/api/content",
-  apiLimiter,
-  async (_req: Request, res: Response): Promise<void> => {
-    try {
-      const contentPath = join(process.cwd(), "src", "views", "content.html");
-      const content = await safeReadFile(contentPath, "utf8");
-      res.send(content);
-    } catch (error) {
-      console.error("Error reading content file:", error);
-
-      const errorResponse = {
-        error: "Error loading content",
-      };
-
-      res.status(500).json(errorResponse);
-    }
-  },
-);
-
-/**
  * GET /health
- * Docker and monitoring need this endpoint in both local and production mode.
+ * Docker readiness includes a working database.
  */
-router.get("/health", (_req: Request, res: Response): void => {
+router.get("/health", async (_req: Request, res: Response): Promise<void> => {
+  let deadline: ReturnType<typeof setTimeout> | undefined;
+  res.setHeader("Cache-Control", "no-store");
   try {
+    await Promise.race([
+      getPrismaClient().$queryRaw`SELECT 1`,
+      new Promise<never>((_resolve, reject) => {
+        deadline = setTimeout(() => reject(new Error("Database readiness timeout")), 2000);
+      }),
+    ]);
     res.status(200).json({
       status: "healthy",
       timestamp: new Date().toISOString(),
@@ -147,6 +131,8 @@ router.get("/health", (_req: Request, res: Response): void => {
       timestamp: new Date().toISOString(),
       error: "Service unavailable",
     });
+  } finally {
+    clearTimeout(deadline);
   }
 });
 

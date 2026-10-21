@@ -49,7 +49,6 @@ export function shouldRunRewriteDraft(options: ProcessingOptions): boolean {
   return getRewritePlanTaskKey(options) !== null;
 }
 
-const isLocalDev = process.env.LOCAL_DEV === "true";
 const DEFAULT_MAX_QUALITY_ATTEMPTS = config.qualityControl.maxAttempts;
 
 function readRuntimeNumber(
@@ -76,24 +75,6 @@ function readRuntimeBoolean(value: unknown, fallback: boolean): boolean {
   }
 
   return value;
-}
-
-function logRewritePlanDraftPreview(draft: string): void {
-  if (!isLocalDev) {
-    return;
-  }
-
-  const trimmedDraft = draft.trim();
-  if (!trimmedDraft) {
-    return;
-  }
-
-  const lines = trimmedDraft.split(/\r?\n/);
-  const previewLines = lines.slice(0, 100);
-  const preview = previewLines.join("\n");
-  const truncated = lines.length > previewLines.length ? " (truncated)" : "";
-
-  console.log(`[RewritePlan] Draft preview${truncated}:\n${preview}`);
 }
 
 /**
@@ -347,7 +328,6 @@ async function maybeGenerateRewritePlanDraft(
     generateRewritePlanDraft(text, processingOptions, maxParts),
   );
   processingOptions.rewritePlanDraft = rewritePlanDraft;
-  logRewritePlanDraftPreview(rewritePlanDraft);
   logger.debug("process.rewrite.draft.generated", {
     ...logContext,
     processStatus: "running",

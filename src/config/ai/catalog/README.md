@@ -27,10 +27,16 @@ and public serving APIs; read-only authenticated inventories are optional. No
 runtime module imports this tooling. Research snapshots live under
 `config/catalog-research/` and are excluded from Docker runtime images.
 
-`pnpm catalog:research` proposes snapshots. `--accounts` additionally uses configured
-environment credentials for read-only model listing; run the compiled CLI with
-Node's `--env-file=.env` to load those credentials. Request headers and API keys are
-never saved in snapshots. `--providers=<comma-separated IDs>` selects sources.
+Build the Docker tooling image and run research from the project directory:
+
+```sh
+docker build --target test -t textverktyget-tests .
+docker run --rm --env-file .env -v "./src:/app/src" -v "./config:/app/config" textverktyget-tests node dist/config/ai/catalog-maintenance/cli.js
+```
+
+`--accounts` additionally uses configured environment credentials for read-only
+model listing. Request headers and API keys are never saved in snapshots.
+`--providers=<comma-separated IDs>` selects sources.
 `--from-snapshot --apply` emits one typed `researched-*.ts` file per eligible model
 and an explicit `inventory.ts` master index. Independently maintained model files
 and external custom overrides remain authoritative and are not overwritten.
@@ -55,7 +61,7 @@ separate from model specification and adapter compatibility.
 3. Fill in limits and request policy from current provider documentation.
 4. Register it explicitly in the provider's `index.ts`. Draft templates never appear in the UI.
 5. Increment `metadata.revision` when changing a definition and update its review date/notes/sources.
-6. Run TypeScript, catalog tests, and the Docker build. Rebuild/recreate the app to deploy it.
+6. Run the Docker test stack (including TypeScript and catalog tests). Rebuild/recreate the app to deploy it.
 
 Adding a model using an already supported request policy does not require an
 admin markup or transport change. A genuinely new API policy needs adapter
@@ -110,10 +116,10 @@ quality JSON calls never enable search. Enabling the tool does not force a searc
 When Google returns grounding sources, cited HTTP(S) source links are retained
 in the plain-text response. Provider HTML is not inserted into answer text.
 
-An explicit live grounding check is available after compiling:
+An explicit live grounding check is available in the tooling image:
 
 ```sh
-node --env-file=.env dist/config/ai/catalog-maintenance/smoke.js --provider=gemini --model=gemini-3.8-flash --grounding
+docker run --rm --env-file .env -v "./config:/app/config" textverktyget-tests node dist/config/ai/catalog-maintenance/smoke.js --provider=gemini --model=gemini-3.8-flash --grounding
 ```
 
 The check requires returned grounding source links and saves separate

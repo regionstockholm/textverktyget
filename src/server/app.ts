@@ -22,7 +22,7 @@ import configureHelmet from "../config/security/helmet-config.js";
 
 // Import custom middleware
 import { setSecurityHeaders } from "../routes/static/middleware/security-headers.js";
-import { developmentLogger } from "../middleware/logger.js";
+import { requestLogger } from "../middleware/logger.js";
 import { config } from "../config/app-config.js";
 import { isCloudflareEnabled } from "../config/security/access-config.js";
 import { configureSession } from "../config/security/session-config.js";
@@ -71,7 +71,7 @@ export function createApp(): Application {
   configureProxy(app);
   configureHelmet(app);
 
-  app.use(developmentLogger);
+  app.use(requestLogger);
   console.log("Request logging enabled");
 
   configureBodyParsing(app);

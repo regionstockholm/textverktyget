@@ -148,7 +148,8 @@ POSTGRES_PASSWORD=ett_slumpmässigt_databaslösenord
 
 `ADMIN_API_KEY` är lösenordet för att komma åt administratörsläget. Du kan
 välja ett eget lösenord om du vill det, så länge du endast kör textverktyget
-lokalt på din dator.
+lokalt på din dator med `LOCAL_DEV=true`. Med `LOCAL_DEV=false` krävs minst
+32 tecken. Använd en slumpmässigt skapad nyckel för en delad installation.
 
 För att skapa slumpmässiga nycklar kan du exempelvis använda [Online Random
 string generator](https://pinetools.com/random-string-generator) för att skapa
@@ -165,6 +166,8 @@ APP_PORT=3000
 USER_LOGIN_ENABLED=false
 CLOUDFLARE_ENABLED=false
 ```
+
+`LOCAL_DEV` styr lösenordskraven, inte hur appen startas. Appen körs alltid i Docker.
 
 Låt `DATABASE_URL` vara tom när du använder medföljande Compose-fil. Compose
 skapar rätt anslutning till databasen. Spara filen och förvara adminnyckeln
@@ -294,7 +297,8 @@ värddatorn. Vanlig `docker compose up -d` aktiverar inte extrakopian.
 1. Installera [Docker Engine med Compose](https://docs.docker.com/engine/install/)
    på servern.
 2. Hämta projektet och skapa `.env` enligt stegen ovan.
-3. Sätt `LOCAL_DEV=false`. Behåll eller skapa starka, separata hemligheter.
+3. Sätt `LOCAL_DEV=false`. Adminnyckeln måste vara minst 32 tecken. Behåll eller
+   skapa starka, separata hemligheter.
 4. Välj en ledig port på servern, exempelvis:
 
    ```dotenv
@@ -355,6 +359,10 @@ Databasmigrationer körs automatiskt. En omstart med `docker compose restart`
 läser inte in ändrade miljövariabler. Byt inte databaslösenord eller
 krypteringsnyckel genom att bara skriva över dem i `.env`.
 
+Vid stopp väntar appen upp till två minuter på pågående förfrågningar. Därefter
+avbryts de. Saknas delar av en befintlig konfiguration stoppas starten i stället
+för att ersätta sparade inställningar med standardvärden; återställ från backup.
+
 Se [säkerhetskopiering och återställning](https://github.com/regionstockholm/textverktyget/wiki/Drift-och-driftsättning)
 innan du flyttar eller uppgraderar en installation med viktiga data.
 
@@ -374,6 +382,20 @@ innan du flyttar eller uppgraderar en installation med viktiga data.
 
 Fler säkra kontroller finns i [Felsökning](https://github.com/regionstockholm/textverktyget/wiki/Felsökning).
 Ta bort hemligheter och känslig text innan du delar loggar.
+
+## Bygga och testa ändringar
+
+Node, pnpm och byggverktyg körs inne i Docker. Installera dem inte på värddatorn.
+Bygg och kör hela testsviten, inklusive databas- och återställningstester, med:
+
+```sh
+docker compose -p textverktyget-tests -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from tests
+docker compose -p textverktyget-tests -f docker-compose.test.yml down
+```
+
+Testdatabasen är separat, saknar publicerad port och ligger i tillfälligt minne.
+Testerna läser inte installationens `.env` eller använder dess datavolymer.
+Använd inte teststacken mot en databas med riktiga data.
 
 ## Mer information och kontakt
 

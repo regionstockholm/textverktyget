@@ -16,7 +16,9 @@ services:
       - LOCAL_DEV=${LOCAL_DEV:-false}
       - HOST=0.0.0.0
       - PORT=3000
-      - DATABASE_URL=postgresql://textverktyg:${POSTGRES_PASSWORD:?}@postgres:5432/textverktyg
+      # The entrypoint URL-encodes the password before constructing DATABASE_URL.
+      - DATABASE_URL=
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?}
     depends_on:
       postgres:
         condition: service_healthy
@@ -27,6 +29,7 @@ services:
       # Docker creates this writable directory; no host mkdir/chown needed.
       - textverktyg_logs:/app/logs
     restart: unless-stopped
+    stop_grace_period: 130s
 
   postgres:
     image: postgres:16
