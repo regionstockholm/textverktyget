@@ -1,0 +1,11 @@
+# Used by scripts/docker-up.sh only after checking the existing host directory.
+services:
+  app:
+    environment:
+      SUBMISSION_LOG_MIRROR_DIRECTORY: /app/host-logs
+    volumes:
+      - type: bind
+        source: ./logs
+        target: /app/host-logs
+        bind:
+          create_host_path: false

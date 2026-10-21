@@ -234,7 +234,7 @@ projektmappen:
 
 | Det du vill göra                   | Kommando                                    |
 | ---------------------------------- | ------------------------------------------- |
-| Starta igen                        | `docker compose up -d`                      |
+| Starta igen                        | `docker compose up -d`                   |
 | Stoppa                             | `docker compose down`                       |
 | Se status                          | `docker compose ps`                         |
 | Visa appens senaste loggar         | `docker compose logs --tail=100 app`        |
@@ -244,6 +244,50 @@ projektmappen:
 Vanligt stopp och ombyggnad behåller alla sparade inställningar och användare.
 **Använd inte `docker compose down -v` för felsökning. Det raderar bland annat
 databas, konton, inställningar och textloggfiler.**
+
+### Textloggar och valfri kopia i projektmappen
+
+Inskickade texter sparas både i databasen (för CSV-export i adminpanelen) och
+som dagliga `ÅÅÅÅ-MM-DD.jsonl` i Docker-volymen `textverktyg_logs`, monterad på
+`/app/logs`. Varje rad innehåller `username`, `time_utc` och `text`.
+Drift- och felloggar visas separat med `docker compose logs app`.
+
+Starta med `sh scripts/docker-up.sh` för att även använda en **befintlig**
+`./logs` som extra fillogg. Skriptet bygger imagen och kontrollerar sedan med
+containerns användare att mappen går att läsa, skriva och söka i. Om kontrollen
+lyckas används `docker-compose.host-logs.yml` för att montera den på
+`/app/host-logs`. Annars startar appen med enbart ordinarie lagring och skriver
+ut varför extrakopian inte aktiverades. Skriptet skapar inte värdmappen och
+ändrar inte dess behörigheter.
+
+Startskriptet kräver `sh` (Linux/macOS eller WSL). De befintliga Windows-bat-
+skripten använder fortsatt enbart ordinarie lagring.
+
+På en Linux-server kan du förbereda mappen med:
+
+```sh
+mkdir -p logs
+sudo chown 1001:1001 logs
+sudo chmod 750 logs
+sh scripts/docker-up.sh
+```
+
+Appen kör som UID/GID `1001:1001`. Nya loggfiler får behörighet `600`; du kan
+behöva `sudo` för att läsa dem på värddatorn. Docker Desktop hanterar
+bind-mount-behörigheter annorlunda; startskriptets kontroll avgör åtkomsten.
+Du kan exempelvis följa dagens logg med
+`sudo tail -f "logs/$(date -u +%F).jsonl"` efter första inskickade texten.
+
+Extrakopian får endast **nya** loggrader, inte historik från Docker-volymen.
+Båda filloggarna gallras vid start och varje timme enligt samma lagringstid:
+30 dagar som standard, med möjlighet att ändra i adminpanelen eller via
+`SUBMISSION_LOG_RETENTION_DAYS`. Fel i extrakopian varnas om i driftloggen men
+stoppar inte inskickningar eller ordinarie loggning. Behandla filerna som
+känsliga uppgifter: de innehåller inskickade texter och användarnamn.
+
+Kör startskriptet igen för att kontrollera en tillagd mapp eller ändrade
+behörigheter. En automatisk containeromstart gör ingen ny kontroll på
+värddatorn. Vanlig `docker compose up -d` aktiverar inte extrakopian.
 
 ## Kör på en server
 
@@ -257,7 +301,7 @@ databas, konton, inställningar och textloggfiler.**
    APP_PORT=8080
    ```
 
-5. Kör `docker compose up -d --build` och kontrollera `docker compose ps`.
+5. Kör `sh scripts/docker-up.sh` och kontrollera `docker compose ps`.
 
 Appen nås nu på `http://127.0.0.1:8080` **från servern själv**.
 Kontrolladressen är `http://127.0.0.1:8080/health`.
