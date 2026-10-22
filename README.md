@@ -11,7 +11,7 @@ ordlista. Grundinställningarna utgår från Region Stockholm som avsändare. De
 
 ## Innehåll
 
-- [Promptar] (#promptar)
+- [Promptar](#promptar)
 - [Så fungerar verktyget](#så-fungerar-verktyget)
 - [Innan du börjar](#innan-du-börjar)
 - [Kom igång på din dator](#kom-igång-på-din-dator)
