@@ -11,6 +11,7 @@ ordlista. Grundinställningarna utgår från Region Stockholm som avsändare. De
 
 ## Innehåll
 
+- [Promptar] (#promptar)
 - [Så fungerar verktyget](#så-fungerar-verktyget)
 - [Innan du börjar](#innan-du-börjar)
 - [Kom igång på din dator](#kom-igång-på-din-dator)
@@ -21,6 +22,10 @@ ordlista. Grundinställningarna utgår från Region Stockholm som avsändare. De
 - [Uppdatera och säkerhetskopiera](#uppdatera-och-säkerhetskopiera)
 - [Om något inte fungerar](#om-något-inte-fungerar)
 - [Mer information och kontakt](#mer-information-och-kontakt)
+
+## Promptar
+
+Promptarna går att läsa i sin helhet i [documentation/textverktyget-readable-prompts.md](https://github.com/regionstockholm/textverktyget/blob/main/documentation/textverktyget-readable-prompts.md).
 
 ## Så fungerar verktyget
 
