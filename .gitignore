@@ -74,9 +74,6 @@ Thumbs.db
 .tmp/
 .temp/
 
-# Documentation
-documentation/
-
 # Tests
 scripts/*
 !scripts/test.mjs
