@@ -80,5 +80,5 @@ USER_LOGIN_ENABLED=false
 SESSION_SECRET=
 # Blank: HTTP locally, secure cookies through Cloudflared. Set true for other HTTPS deployments.
 COOKIE_SECURE=
-# Minimum 90 days; admin Textlogg overrides this until reset to .env.
-SUBMISSION_LOG_RETENTION_DAYS=90
+# Minimum 30 days; admin Textlogg overrides this until reset to .env.
+SUBMISSION_LOG_RETENTION_DAYS=30
