@@ -62,7 +62,7 @@ export function initUserBackupPanel({ request }: Pick<AdminContext, "request">, 
   });
 
   restore.addEventListener("click", () => {
-    if (!backup || !window.confirm(`Återställ ${backup.users.length} användare? Användarlistan måste vara tom. Alla gamla användarsessioner avslutas.`)) return;
+    if (!backup || !window.confirm(`Återställ ${backup.users.length} användare? Användarlistan måste vara tom. Alla sessioner avslutas, även adminsessionen. Logga in igen efter återställning.`)) return;
     restore.disabled = true;
     file.disabled = true;
     void request<{ imported: number }>("POST", "/admin/user-backup/import", backup)

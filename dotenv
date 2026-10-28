@@ -76,9 +76,10 @@ LOCAL_LLM_API_KEY=
 # DATABASE_SSL_MODE=require
 # Optional access gateway. Restart after changing these switches.
 USER_LOGIN_ENABLED=false
-# Required when login is enabled: generate a cryptographically random secret.
+# Required for admin and user sessions, even when USER_LOGIN_ENABLED=false.
+# Generate a separate cryptographically random secret of at least 32 characters.
 SESSION_SECRET=
 # Blank: HTTP locally, secure cookies through Cloudflared. Set true for other HTTPS deployments.
 COOKIE_SECURE=
-# Minimum 30 days; admin Textlogg overrides this until reset to .env.
-SUBMISSION_LOG_RETENTION_DAYS=30
+# Minimum 90 days; admin Textlogg overrides this until reset to .env.
+SUBMISSION_LOG_RETENTION_DAYS=90

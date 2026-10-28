@@ -101,7 +101,7 @@
             <div class="blue-bg colored-bg-padding flex flex-column gap-4" id="user-backup-panel">
               <h3>Säkerhetskopiera användare</h3>
               <p>Hämta en säkerhetskopia innan databasen tas bort. Filen innehåller användarnamn och lösenordshashar, inte läsbara lösenord. Efter återställning fungerar samma lösenord igen. Inställningar och textloggar ingår inte.</p>
-              <p class="admin-warning">Förvara filen säkert utanför applikationen. Återställning kräver en tom användarlista och avslutar alla gamla användarsessioner. Administratörens nyckel säkerhetskopieras inte.</p>
+              <p class="admin-warning">Förvara filen säkert utanför applikationen. Återställning kräver en tom användarlista och avslutar alla sessioner, även adminsessionen. Logga in igen efter återställning. Administratörens nyckel säkerhetskopieras inte.</p>
               <button type="button" id="user-backup-download" class="filled-white outline-blue large-button">Hämta användarbackup</button>
               <label for="user-backup-file">Välj användarbackup (JSON, högst 1 MiB och 5 000 användare)</label>
               <input type="file" id="user-backup-file" accept=".json,application/json" />

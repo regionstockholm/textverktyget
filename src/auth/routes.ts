@@ -2,12 +2,13 @@ import express from "express";
 import { createAuthCooldown } from "../middleware/auth-cooldown.js";
 import { authenticateUser, findUserById, toSafeUser } from "./user-service.js";
 import { requireSameOrigin } from "./auth-middleware.js";
+import { parseLoginBody } from "./login-body.js";
 
 const router = express.Router();
 const loginCooldown = createAuthCooldown();
 
 router.use((_req, res, next) => { res.setHeader("Cache-Control", "no-store"); next(); });
-router.post("/login", requireSameOrigin, loginCooldown.middleware, async (req, res) => {
+router.post("/login", requireSameOrigin, loginCooldown.check, parseLoginBody, loginCooldown.middleware, async (req, res) => {
   const username = typeof req.body?.username === "string" ? req.body.username.trim() : "";
   const password = typeof req.body?.password === "string" ? req.body.password : "";
   if (!username || username.length > 100 || !password || Buffer.byteLength(password) > 72) {

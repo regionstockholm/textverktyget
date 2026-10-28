@@ -38,9 +38,9 @@ export function appendSubmissionLog(submission: Submission, directory = submissi
     await initializeSubmissionLogFiles(directory);
     const time = submission.createdAt.toISOString();
     const line = JSON.stringify({ username: submission.username, time_utc: time, text: submission.text }) + "\n";
-    const append = (target: string) => appendFile(join(target, `${time.slice(0, 10)}.jsonl`), line, { encoding: "utf8", mode: 0o600 });
-    await append(directory);
-    await mirrorLogFiles(append);
+    const append = (target: string, mode: number) => appendFile(join(target, `${time.slice(0, 10)}.jsonl`), line, { encoding: "utf8", mode });
+    await append(directory, 0o600);
+    await mirrorLogFiles(target => append(target, 0o640));
   });
 }
 

@@ -149,6 +149,7 @@ med egna värden:
 ADMIN_API_KEY=en_egen_slumpmässig_hemlighet
 CONFIG_MASTER_KEY=en_annan_slumpmässig_hemlighet
 POSTGRES_PASSWORD=ett_slumpmässigt_databaslösenord
+SESSION_SECRET=en_separat_slumpmässig_hemlighet_minst_32_tecken
 ```
 
 `ADMIN_API_KEY` är lösenordet för att komma åt administratörsläget. Du kan
@@ -271,20 +272,42 @@ ut varför extrakopian inte aktiverades. Skriptet skapar inte värdmappen och
 Startskriptet kräver `sh` (Linux/macOS eller WSL). De befintliga Windows-bat-
 skripten använder fortsatt enbart ordinarie lagring.
 
-På en Linux-server kan du förbereda mappen med:
+På en Linux-server med vanlig Docker (utan rootless-läge eller UID-remappning)
+kan du ge din vanliga användare läsåtkomst via en separat grupp. Kör från
+projektmappen som din vanliga VPS-användare, inte från ett root-skal:
 
 ```sh
-mkdir -p logs
-sudo chown 1001:1001 logs
-sudo chmod 750 logs
-sh scripts/docker-up.sh
+sudo groupadd --system textlogs
+sudo usermod -aG textlogs "$(id -un)"
+sudo mkdir -p logs
+sudo chown 1001:textlogs logs
+sudo chmod 2750 logs
 ```
 
-Appen kör som UID/GID `1001:1001`. Nya loggfiler får behörighet `600`; du kan
-behöva `sudo` för att läsa dem på värddatorn. Docker Desktop hanterar
+Skapa inte gruppen igen om den redan finns. Logga ut och in så att
+gruppmedlemskapet aktiveras, och kör sedan `sh scripts/docker-up.sh`.
+
+Appen kör som UID/GID `1001:1001` och äger mappen. `2750` låter appen skriva
+och gallra filer, medan gruppen kan lista och läsa dem. Setgid-biten (`2`)
+gör att nya filer ärver gruppen `textlogs`. Nya värdkopior skapas med `640`
+(gruppläsning), medan primärloggarna i Docker-volymen behåller `600`.
+En restriktiv process-umask kan begränsa behörigheterna ytterligare.
+
+Befintliga filer ändras inte automatiskt. För att även kunna läsa gamla
+JSONL-värdkopior, kör:
+
+```sh
+sudo find logs -maxdepth 1 -type f -name '*.jsonl' \
+  -exec chown 1001:textlogs {} + \
+  -exec chmod 640 {} +
+```
+
+Du kan därefter följa dagens logg utan sudo med
+`tail -f "logs/$(date -u +%F).jsonl"` efter första inskickade texten.
+Gruppen får inte ändra loggarna. Använd inte `chmod 777`.
+För rootless Docker eller UID-remappning måste värdens mappade UID kontrolleras
+först; använd inte `chown 1001` utan den kontrollen. Docker Desktop hanterar
 bind-mount-behörigheter annorlunda; startskriptets kontroll avgör åtkomsten.
-Du kan exempelvis följa dagens logg med
-`sudo tail -f "logs/$(date -u +%F).jsonl"` efter första inskickade texten.
 
 Extrakopian får endast **nya** loggrader, inte historik från Docker-volymen.
 Båda filloggarna gallras vid start och varje timme enligt samma lagringstid:
@@ -335,9 +358,15 @@ mot internet som en genväg.
 - **Annan HTTPS-proxy eller driftplattform:** kan användas efter anpassning
   och granskning av proxyförtroende, cookies, klient-IP och åtkomstskydd.
   Det finns ingen färdig konfiguration för alla sådana miljöer.
+- **Adminsessioner:** sätt alltid `SESSION_SECRET` till en separat slumpmässig
+  hemlighet på minst 32 tecken, även utan användarkonton. Adminnyckeln anges
+  endast i `.env` som `ADMIN_API_KEY`; användarkonton ger aldrig adminbehörighet.
+  Adminsessioner lagras i PostgreSQL, gäller högst en timme och förstörs vid
+  utloggning. Byte av adminnyckel ogiltigförklarar befintlig adminbehörighet.
+  Admin och användare delar sessionscookie: inloggning eller utloggning i det
+  ena flödet avslutar också sessionen i det andra. Efter denna uppdatering
+  måste administratörer logga in igen. Återskapa app-containern efter ändringar.
 - **Med eller utan användarkonton:** `USER_LOGIN_ENABLED=true` kräver inloggning.
-  Sätt också `SESSION_SECRET` till en separat slumpmässig hemlighet på minst
-  32 tecken, exempelvis med genereringskommandot ovan, och återskapa app-containern.
   Med `USER_LOGIN_ENABLED=false` kan alla som når tjänsten använda den och
   förbruka AI-kvot.
   Ett användarkonto ger inte tillgång till adminpanelen.

@@ -22,6 +22,18 @@ export function createAuthCooldown(now: () => number = Date.now) {
     res.status(429).json({ success: false, error: "Too many sign-in attempts. Try again later.", retryAfterSeconds });
   }
 
+  function isBlocked(req: Request, res: Response, time: number): boolean {
+    const state = clients.get(keyFor(req));
+    if (state && state.blockedUntil > time) { reject(res, state.blockedUntil - time); return true; }
+    if (state?.busy) { reject(res, 1000); return true; }
+    return false;
+  }
+
+  // Check before body parsing without reserving a slot that an aborted upload could leave busy.
+  const check = (req: Request, res: Response, next: NextFunction): void => {
+    if (!isBlocked(req, res, now())) next();
+  };
+
   const middleware = (req: Request, res: Response, next: NextFunction): void => {
     const time = now();
     if (time - lastSweep >= 60_000) {
@@ -36,9 +48,8 @@ export function createAuthCooldown(now: () => number = Date.now) {
       clients.delete(key);
       state = undefined;
     }
-    if (state && state.blockedUntil > time) { reject(res, state.blockedUntil - time); return; }
     // Serialize authentication per client: parallel guesses cannot slip past the threshold.
-    if (state?.busy) { reject(res, 1000); return; }
+    if (isBlocked(req, res, time)) return;
     if (!state) {
       // Never evict an active cooldown to make room for a new client.
       if (clients.size >= MAX_CLIENTS) {
@@ -89,5 +100,5 @@ export function createAuthCooldown(now: () => number = Date.now) {
     if (state) state.busy = false;
   };
 
-  return { middleware, failure, success, unavailable };
+  return { check, middleware, failure, success, unavailable };
 }

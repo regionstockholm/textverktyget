@@ -3,25 +3,23 @@ import connectPgSimple from "connect-pg-simple";
 import type { Application } from "express";
 import { Pool } from "pg";
 import { getConfiguredDatabaseUrl, getPostgresSslConfig } from "../database/postgres-connection-options.js";
-import { isUserLoginEnabled, useSecureSessionCookie } from "./access-config.js";
+import { useSecureSessionCookie } from "./access-config.js";
 
+const PgSession = connectPgSimple(session);
 let sessionPool: Pool | null = null;
-let sessionStore: { close(): void | Promise<void> } | null = null;
+let sessionStore: InstanceType<typeof PgSession> | null = null;
 
 export function configureSession(app: Application): void {
-  if (!isUserLoginEnabled()) return;
   const databaseUrl = getConfiguredDatabaseUrl();
   const secret = process.env.SESSION_SECRET?.trim();
   if (!databaseUrl || !secret || secret.length < 32) {
-    throw new Error("Login requires DATABASE_URL and SESSION_SECRET (at least 32 characters)");
+    throw new Error("Admin and user sessions require DATABASE_URL and SESSION_SECRET (at least 32 characters)");
   }
   const secure = useSecureSessionCookie();
-  sessionPool = new Pool({ connectionString: databaseUrl, ssl: getPostgresSslConfig(databaseUrl) });
-  const PgSession = connectPgSimple(session);
-  const store = new PgSession({ pool: sessionPool, tableName: "user_sessions", createTableIfMissing: false, pruneSessionInterval: 900 });
-  sessionStore = store;
+  sessionPool ??= new Pool({ connectionString: databaseUrl, ssl: getPostgresSslConfig(databaseUrl) });
+  sessionStore ??= new PgSession({ pool: sessionPool, tableName: "user_sessions", createTableIfMissing: false, pruneSessionInterval: 900 });
   app.use(session({
-    store,
+    store: sessionStore,
     secret,
     name: "sessionId",
     resave: false,

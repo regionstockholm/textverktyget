@@ -17,6 +17,7 @@ if [ -d logs ]; then
     echo "Host log copy enabled: ./logs"
   else
     echo "WARNING: ./logs is not accessible to the container user; using the Docker log volume only." >&2
+    echo "See README: Textloggar och valfri kopia i projektmappen (owner UID 1001, shared log group, directory mode 2750)." >&2
   fi
 else
   echo "No ./logs directory; using the Docker log volume only."

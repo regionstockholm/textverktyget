@@ -138,9 +138,9 @@ export async function startup(port: unknown): Promise<http.Server> {
   }
 
   const app = createApp();
+  if (!databaseConnected) throw new Error("Admin and user sessions require a working database");
+  await assertSessionStoreReady();
   if (isUserLoginEnabled()) {
-    if (!databaseConnected) throw new Error("Login requires a working database");
-    await assertSessionStoreReady();
     await getPrismaClient().user.findFirst({ select: { id: true } });
   }
   await initializeSubmissionLogging();
