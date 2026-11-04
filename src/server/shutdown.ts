@@ -2,6 +2,7 @@ import { closeDatabase } from "../config/database/db-connection.js";
 import { disconnectPrismaClient } from "../config/database/prisma-client.js";
 import { closeSessionStore } from "../config/security/session-config.js";
 import { stopSubmissionLogging } from "../services/submission-log-service.js";
+import { stopAccessLogging } from "../services/access-log-service.js";
 import type { Server } from "node:http";
 
 type ShutdownReason =
@@ -16,6 +17,7 @@ let shutdownPromise: Promise<void> | undefined;
 
 async function closeDatabaseConnections(): Promise<void> {
   stopSubmissionLogging();
+  stopAccessLogging();
   await Promise.allSettled([closeDatabase(), disconnectPrismaClient(), closeSessionStore()]);
 }
 

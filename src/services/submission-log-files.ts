@@ -1,6 +1,7 @@
 import { constants } from "node:fs";
 import { access, appendFile, mkdir, readdir, unlink } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import { swedishTime } from "../utils/swedish-time.js";
 
 type Submission = { username: string; text: string; createdAt: Date };
 let fileQueue: Promise<void> = Promise.resolve();
@@ -34,31 +35,41 @@ async function mirrorLogFiles(operation: (directory: string) => Promise<void>): 
 }
 
 export function appendSubmissionLog(submission: Submission, directory = submissionLogDirectory()): Promise<void> {
+  return appendDailyLog({ username: submission.username, time_swedish: swedishTime(submission.createdAt), text: submission.text }, submission.createdAt, "", directory);
+}
+
+export function appendAccessLog(event: { username: string; session_ref: string; event: "login" | "logout"; time: Date }, directory = submissionLogDirectory()): Promise<void> {
+  return appendDailyLog({ username: event.username, session_ref: event.session_ref, event: event.event, time_swedish: swedishTime(event.time) }, event.time, "access-", directory);
+}
+
+function appendDailyLog(record: Record<string, string>, date: Date, prefix: string, directory: string): Promise<void> {
   return enqueue(async () => {
     await initializeSubmissionLogFiles(directory);
-    const time = submission.createdAt.toISOString();
-    const line = JSON.stringify({ username: submission.username, time_utc: time, text: submission.text }) + "\n";
-    const append = (target: string, mode: number) => appendFile(join(target, `${time.slice(0, 10)}.jsonl`), line, { encoding: "utf8", mode });
-    await append(directory, 0o600);
-    await mirrorLogFiles(target => append(target, 0o640));
+    const time = swedishTime(date);
+    const line = JSON.stringify(record) + "\n";
+    const append = (target: string) => appendFile(join(target, `${prefix}${time.slice(0, 10)}.jsonl`), line, { encoding: "utf8", mode: 0o600 });
+    await append(directory);
+    await mirrorLogFiles(append);
   });
 }
 
-export function pruneSubmissionLogFiles(cutoff: Date, directory = submissionLogDirectory()): Promise<void> {
+export function pruneSubmissionLogFiles(cutoff: Date, directory = submissionLogDirectory(), prefix: "" | "access-" = ""): Promise<void> {
   return enqueue(async () => {
     await initializeSubmissionLogFiles(directory);
-    await pruneDirectory(cutoff, directory);
-    await mirrorLogFiles(target => pruneDirectory(cutoff, target));
+    await pruneDirectory(cutoff, directory, prefix);
+    await mirrorLogFiles(target => pruneDirectory(cutoff, target, prefix));
   });
 }
 
-async function pruneDirectory(cutoff: Date, directory: string): Promise<void> {
+async function pruneDirectory(cutoff: Date, directory: string, prefix: string): Promise<void> {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
-    if (!entry.isFile() || !/^\d{4}-\d{2}-\d{2}\.jsonl$/.test(entry.name)) continue;
-    const date = entry.name.slice(0, 10);
+    if (!entry.isFile() || !entry.name.startsWith(prefix)) continue;
+    const name = entry.name.slice(prefix.length);
+    if (!/^\d{4}-\d{2}-\d{2}\.jsonl$/.test(name)) continue;
+    const date = name.slice(0, 10);
     const start = new Date(`${date}T00:00:00.000Z`);
     if (!Number.isFinite(start.getTime()) || start.toISOString().slice(0, 10) !== date) continue;
-    // Keep the entire boundary day: even its final submission must reach retention age.
+    // UTC end conservatively preserves the boundary day for both legacy UTC and Swedish filenames.
     if (start.getTime() + 86400000 <= cutoff.getTime()) {
       await unlink(join(directory, entry.name));
     }

@@ -55,6 +55,7 @@ import { requireModelDefinition } from "../config/ai/catalog/index.js";
 import { registerAdminUserRoutes } from "./admin/users-routes.js";
 import { registerUserBackupRoutes } from "./admin/user-backup-routes.js";
 import { registerSubmissionLogRoutes } from "./admin/submission-log-routes.js";
+import { registerAccessLogRoutes } from "./admin/access-log-routes.js";
 
 const router = express.Router();
 const prisma = getPrismaClient();
@@ -611,6 +612,7 @@ router.use(requireAdminAuth);
 registerAdminUserRoutes(router);
 registerUserBackupRoutes(router);
 registerSubmissionLogRoutes(router);
+registerAccessLogRoutes(router);
 registerAdminAiRoutes(router);
 
 router.get("/tasks", async (_req: Request, res: Response): Promise<void> => {

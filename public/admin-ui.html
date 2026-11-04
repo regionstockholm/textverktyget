@@ -79,7 +79,7 @@
               <a href="#api-keys" data-view-target="api-keys" hidden>API-nycklar</a>
               <p class="admin-nav-group">Administration</p>
               <a href="#users" data-view-target="users" __USERS_NAV_HIDDEN__>Användare</a>
-              <a href="#submission-log" data-view-target="submission-log">Textlogg</a>
+              <a href="#submission-log" data-view-target="submission-log">Loggar</a>
               <a href="#backup" data-view-target="backup">Backup</a>
               <a class="admin-nav-back" href="/">Till textverktyget &rarr;</a>
             </div>
@@ -101,7 +101,7 @@
             <div class="blue-bg colored-bg-padding flex flex-column gap-4" id="user-backup-panel">
               <h3>Säkerhetskopiera användare</h3>
               <p>Hämta en säkerhetskopia innan databasen tas bort. Filen innehåller användarnamn och lösenordshashar, inte läsbara lösenord. Efter återställning fungerar samma lösenord igen. Inställningar och textloggar ingår inte.</p>
-              <p class="admin-warning">Förvara filen säkert utanför applikationen. Återställning kräver en tom användarlista och avslutar alla sessioner, även adminsessionen. Logga in igen efter återställning. Administratörens nyckel säkerhetskopieras inte.</p>
+              <p class="admin-warning">Förvara filen säkert utanför applikationen. Återställning kräver en tom användarlista och avslutar alla gamla användarsessioner. Administratörens nyckel säkerhetskopieras inte.</p>
               <button type="button" id="user-backup-download" class="filled-white outline-blue large-button">Hämta användarbackup</button>
               <label for="user-backup-file">Välj användarbackup (JSON, högst 1 MiB och 5 000 användare)</label>
               <input type="file" id="user-backup-file" accept=".json,application/json" />
@@ -112,14 +112,21 @@
           <section id="view-submission-log" data-view="submission-log" class="flex flex-column gap-6" hidden>
             <div class="blue-bg colored-bg-padding flex flex-column gap-4">
               <h2>Textlogg</h2>
-              <p>Loggen sparar användarnamn, UTC-tid och inskickad text. Utan inloggning används default_user. Minsta lagringstid är 30 dagar. Äldre poster rensas automatiskt varje timme. Minskad lagringstid kan ta bort äldre poster permanent.</p>
+              <p>Loggen sparar användarnamn, svensk tid (Europe/Stockholm, med sommar-/vintertid) och inskickad text. Utan inloggning används default_user. Minsta lagringstid är 90 dagar. Äldre poster rensas automatiskt varje timme. Minskad lagringstid kan ta bort äldre poster permanent.</p>
               <p id="submission-log-settings-status" role="status"></p>
               <label for="submission-log-days">Lagringstid (dagar)</label>
-              <input id="submission-log-days" type="number" min="30" max="36500" step="1" required />
+              <input id="submission-log-days" type="number" min="90" max="36500" step="1" required />
               <button type="button" id="submission-log-save" class="filled-blue outline-blue large-button">Spara överstyrning</button>
               <button type="button" id="submission-log-reset" class="filled-white outline-blue large-button">Använd .env-inställning</button>
               <button type="button" id="submission-log-export" class="filled-white outline-blue large-button">Hämta CSV</button>
               <p class="admin-warning">CSV innehåller känslig text. Exporterade filer omfattas inte av serverns automatiska rensning. Fält som kan tolkas som kalkylbladsformler får ett skyddande apostrofprefix.</p>
+            </div>
+            <div class="blue-bg colored-bg-padding flex flex-column gap-4">
+              <h2>Inloggningslogg</h2>
+              <p>Registreras först när en giltig session öppnat verktyget. Sparas separat från inskickade texter i 90 dagar och gallras vid start och varje timme. Textloggens lagringsinställning påverkar inte denna logg.</p>
+              <p>CSV innehåller en rad per session: användarnamn, antal inloggningar under de senaste 90 dagarna samt svensk tid för inloggning och eventuell aktiv utloggning. Tom utloggningstid betyder inte att användaren fortfarande är online. Stängd webbläsare eller utgången session registreras inte som utloggning.</p>
+              <button type="button" id="access-log-export" class="filled-white outline-blue large-button">Exportera inloggningar (CSV)</button>
+              <p class="admin-warning">CSV innehåller personuppgifter. Förvara exporter säkert; de omfattas inte av serverns automatiska rensning.</p>
             </div>
           </section>
           <section

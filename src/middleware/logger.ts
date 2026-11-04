@@ -6,6 +6,7 @@
  */
 
 import type { Request, Response, NextFunction } from "express";
+import { swedishTime } from "../utils/swedish-time.js";
 
 /**
  * Simple request logger
@@ -26,6 +27,6 @@ export const requestLogger = (
     return;
   }
   // Log request details with ISO timestamp
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log(`${swedishTime(new Date())} - ${req.method} ${req.url}`);
   next();
 };

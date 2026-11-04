@@ -23,11 +23,14 @@ export function initSubmissionLogPanel({ request, feedback }: AdminContext) {
       if (days.reportValidity()) void save(Number(days.value));
     });
     document.getElementById("submission-log-reset")?.addEventListener("click", () => { void save(null); });
-    document.getElementById("submission-log-export")?.addEventListener("click", event => {
+    for (const [id, name, warning] of [
+      ["submission-log-export", "submission-log", "CSV exporterad. Filen innehåller känslig text; hantera den säkert."],
+      ["access-log-export", "access-log", "CSV exporterad. Filen innehåller användarnamn och inloggningstider; hantera den säkert."],
+    ] as const) document.getElementById(id)?.addEventListener("click", event => {
       const button = event.currentTarget as HTMLButtonElement;
       button.disabled = true;
       void (async () => {
-        const response = await fetch("/admin/submission-log/export.csv", {
+        const response = await fetch(`/admin/${name}/export.csv`, {
           credentials: "same-origin", cache: "no-store",
         });
         handleAdminSessionExpiry(response);
@@ -35,12 +38,12 @@ export function initSubmissionLogPanel({ request, feedback }: AdminContext) {
         const url = URL.createObjectURL(await response.blob());
         const link = document.createElement("a");
         link.href = url;
-        link.download = "submission-log.csv";
+        link.download = `${name}.csv`;
         document.body.append(link);
         link.click();
         link.remove();
         setTimeout(() => URL.revokeObjectURL(url), 60_000);
-        feedback.setStatus("CSV exporterad. Filen innehåller känslig text; hantera den säkert.");
+        feedback.setStatus(warning);
       })().catch(showError).finally(() => { button.disabled = false; });
     });
   }

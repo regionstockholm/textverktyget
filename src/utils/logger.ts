@@ -1,3 +1,5 @@
+import { swedishTime } from "./swedish-time.js";
+
 export type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
 
 export type ProcessStatus =
@@ -35,7 +37,7 @@ function shouldLog(level: LogLevel): boolean {
 
 function toEntry(level: LogLevel, event: string, context?: LogContext): LogEntry {
   return {
-    timestamp: new Date().toISOString(),
+    timestamp: swedishTime(new Date()),
     level,
     event,
     pid: process.pid,

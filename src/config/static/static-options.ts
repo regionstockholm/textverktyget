@@ -97,8 +97,8 @@ const getStaticOptions = (): StaticOptions => ({
     }
 
     // Set cache control headers
-    const isAdminScript = /^admin-(?:ui|login)\.js$/.test(path.basename(filePath));
-    res.setHeader("Cache-Control", isAdminScript ? "no-cache, no-transform" : getCacheControlHeader());
+    const isAuthScript = /^(?:admin-(?:ui|login)|logout)\.js$/.test(path.basename(filePath));
+    res.setHeader("Cache-Control", isAuthScript ? "no-cache, no-transform" : getCacheControlHeader());
 
     // Set secure MIME types to prevent content-sniffing attacks
     setMimeTypeHeader(res, filePath);

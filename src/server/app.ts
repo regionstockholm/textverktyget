@@ -34,23 +34,19 @@ import { userBackupImportParser } from "../routes/admin/user-backup-routes.js";
  */
 function configureBodyParsing(app: Application): void {
   app.post("/admin/user-backup/import", userBackupImportParser);
-  const bodyParsers = express.Router();
-  // Login routes apply their own small parsers after the authentication throttle.
-  bodyParsers.post(["/auth/login", "/admin/login"], (_req, _res, next) => next("router"));
   const parseJson = express.json({ limit: config.security.maxFileSize });
   // Document JSON is parsed after authentication/rate limiting, with base64 overhead.
-  bodyParsers.use((req, res, next) => {
+  app.use((req, res, next) => {
     if (req.method === "POST" && req.path.toLowerCase().replace(/\/+$/, "") === "/upload/process-document") next();
     else parseJson(req, res, next);
   });
 
-  bodyParsers.use(
+  app.use(
     express.urlencoded({
       extended: true,
       limit: config.security.maxFileSize,
     }),
   );
-  app.use(bodyParsers);
 }
 
 /**

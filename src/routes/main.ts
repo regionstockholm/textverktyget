@@ -44,6 +44,8 @@ router.get(
     try {
       const indexPath = join(process.cwd(), "public", "index.html");
       let indexHtml = await safeReadFile(indexPath, "utf8");
+      indexHtml = indexHtml.replace("<body", `<body data-user-login-enabled="${isUserLoginEnabled()}"`);
+      res.setHeader("Cache-Control", "no-store");
 
       // Clean up initialization elements
       indexHtml = indexHtml.replace('<div class="initialize"></div>', "");

@@ -141,6 +141,18 @@ model SubmissionLog {
   @@map("submission_logs")
 }
 
+// Independent of accounts and submitted text; never store the authenticating session ID.
+model AccessLog {
+  id         Int       @id @default(autoincrement())
+  sessionRef String    @unique @map("session_ref")
+  username   String
+  loginAt    DateTime  @default(now()) @map("login_at") @db.Timestamptz(3)
+  logoutAt   DateTime? @map("logout_at") @db.Timestamptz(3)
+
+  @@index([loginAt, id])
+  @@map("access_logs")
+}
+
 model SubmissionLogSettings {
   key           String   @id
   retentionDays Int?     @map("retention_days")

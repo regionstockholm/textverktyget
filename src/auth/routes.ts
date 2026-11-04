@@ -1,14 +1,14 @@
 import express from "express";
 import { createAuthCooldown } from "../middleware/auth-cooldown.js";
 import { authenticateUser, findUserById, toSafeUser } from "./user-service.js";
-import { requireSameOrigin } from "./auth-middleware.js";
-import { parseLoginBody } from "./login-body.js";
+import { requireSameOrigin, requireUserSession } from "./auth-middleware.js";
+import { recordAccessLogin, recordAccessLogout } from "../services/access-log-service.js";
 
 const router = express.Router();
 const loginCooldown = createAuthCooldown();
 
 router.use((_req, res, next) => { res.setHeader("Cache-Control", "no-store"); next(); });
-router.post("/login", requireSameOrigin, loginCooldown.check, parseLoginBody, loginCooldown.middleware, async (req, res) => {
+router.post("/login", requireSameOrigin, loginCooldown.middleware, async (req, res) => {
   const username = typeof req.body?.username === "string" ? req.body.username.trim() : "";
   const password = typeof req.body?.password === "string" ? req.body.password : "";
   if (!username || username.length > 100 || !password || Buffer.byteLength(password) > 72) {
@@ -46,11 +46,32 @@ router.get("/check", async (req, res) => {
   }
 });
 
-router.post("/logout", requireSameOrigin, (req, res) => {
-  req.session.destroy(error => {
-    res.clearCookie("sessionId", { path: "/" });
-    res.status(error ? 503 : 200).json({ success: !error });
-  });
+router.post("/session-start", requireSameOrigin, requireUserSession, async (req, res) => {
+  try {
+    if (!req.session.accessLogRecorded) {
+      await recordAccessLogin(req.sessionID, res.locals.submissionUsername);
+      req.session.accessLogRecorded = true;
+      await new Promise<void>((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
+    }
+    res.json({ success: true });
+  } catch {
+    console.error("Access-log login confirmation failed");
+    res.status(503).json({ success: false, error: "Session logging unavailable" });
+  }
+});
+
+router.post("/logout", requireSameOrigin, async (req, res) => {
+  const sessionId = req.sessionID;
+  try {
+    await new Promise<void>((resolve, reject) => req.session.destroy(error => error ? reject(error) : resolve()));
+  } catch {
+    res.status(503).json({ success: false });
+    return;
+  }
+  res.clearCookie("sessionId", { path: "/" });
+  try { await recordAccessLogout(sessionId); }
+  catch { console.error("Access-log logout recording failed; session was destroyed"); }
+  res.json({ success: true });
 });
 
 export default router;

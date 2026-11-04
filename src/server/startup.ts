@@ -9,6 +9,7 @@ import { assertSafeAdminCredentialsForStartup } from "../config/security/admin-c
 import { isUserLoginEnabled } from "../config/security/access-config.js";
 import { assertSessionStoreReady } from "../config/security/session-config.js";
 import { initializeSubmissionLogging } from "../services/submission-log-service.js";
+import { initializeAccessLogging } from "../services/access-log-service.js";
 import { getPrismaClient } from "../config/database/prisma-client.js";
 
 const DEFAULT_PORT = 3000;
@@ -138,12 +139,13 @@ export async function startup(port: unknown): Promise<http.Server> {
   }
 
   const app = createApp();
-  if (!databaseConnected) throw new Error("Admin and user sessions require a working database");
-  await assertSessionStoreReady();
   if (isUserLoginEnabled()) {
+    if (!databaseConnected) throw new Error("Login requires a working database");
+    await assertSessionStoreReady();
     await getPrismaClient().user.findFirst({ select: { id: true } });
   }
   await initializeSubmissionLogging();
+  await initializeAccessLogging();
   await initializeBackgroundServices();
   await setupRoutes(app);
 

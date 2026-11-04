@@ -68,6 +68,11 @@ export type UserSession = Prisma.UserSessionModel
  */
 export type SubmissionLog = Prisma.SubmissionLogModel
 /**
+ * Model AccessLog
+ * 
+ */
+export type AccessLog = Prisma.AccessLogModel
+/**
  * Model SubmissionLogSettings
  * 
  */

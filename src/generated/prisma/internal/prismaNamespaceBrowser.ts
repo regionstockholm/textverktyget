@@ -61,6 +61,7 @@ export const ModelName = {
   User: 'User',
   UserSession: 'UserSession',
   SubmissionLog: 'SubmissionLog',
+  AccessLog: 'AccessLog',
   SubmissionLogSettings: 'SubmissionLogSettings',
   TextQualityControl: 'TextQualityControl'
 } as const
@@ -209,6 +210,17 @@ export const SubmissionLogScalarFieldEnum = {
 } as const
 
 export type SubmissionLogScalarFieldEnum = (typeof SubmissionLogScalarFieldEnum)[keyof typeof SubmissionLogScalarFieldEnum]
+
+
+export const AccessLogScalarFieldEnum = {
+  id: 'id',
+  sessionRef: 'sessionRef',
+  username: 'username',
+  loginAt: 'loginAt',
+  logoutAt: 'logoutAt'
+} as const
+
+export type AccessLogScalarFieldEnum = (typeof AccessLogScalarFieldEnum)[keyof typeof AccessLogScalarFieldEnum]
 
 
 export const SubmissionLogSettingsScalarFieldEnum = {
