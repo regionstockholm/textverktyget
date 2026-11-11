@@ -1,16 +1,30 @@
 import { fileLimits } from "../../../config/shared-config.js";
 import { assert } from "../../safety/assertions.js";
 
+export class TextTooShortError extends Error {
+  readonly actualLength: number;
+  readonly minLength: number;
+
+  constructor(actualLength: number, minLength: number) {
+    super(`Text is too short (${actualLength} < ${minLength})`);
+    this.name = "TextTooShortError";
+    this.actualLength = actualLength;
+    this.minLength = minLength;
+  }
+}
+
 export function validateSummaryInput(text: string): void {
   assert(typeof text === "string", "Text must be a string");
-  assert(text.length > 0, "Text cannot be empty");
-  assert(
-    text.length >= fileLimits.minTextLength,
-    `Text is too short (${text.length} < ${fileLimits.minTextLength})`,
-  );
+  if (text.length < fileLimits.minTextLength) {
+    throw new TextTooShortError(text.length, fileLimits.minTextLength);
+  }
 }
 
 export function getSummarizationErrorMessage(error: Error): string {
+  if (error instanceof TextTooShortError) {
+    return `Texten är för kort. Skriv minst ${error.minLength} tecken (nu ${error.actualLength}).`;
+  }
+
   if (error.message.includes("Service Unavailable")) {
     return "Servern är för tillfället överbelastad. Försök igen om en stund.";
   }
