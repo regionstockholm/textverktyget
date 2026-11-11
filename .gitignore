@@ -81,3 +81,6 @@ scripts/*
 
 # Ad-hoc local scratch/output files
 *.now
+
+# Corporate proxy cert file
+docker/no-extra-ca.pem
