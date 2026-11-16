@@ -97,7 +97,7 @@ export async function buildSystemMessage({
   message +=
     taskPromptMode
       ? "Returnera endast den begärda interna analysen, inte en sluttext. Här är hela underlaget som ska granskas:"
-      : "Ge mig ENDAST den slutgiltiga versionen av den bearbetade texten UTAN dina kommentarer. Följ omskrivningsutkastets disposition när ett utkast finns; uppgiftsprompten styr format och omfång. Här är texten som ska skrivas om:";
+      : 'Returnera den färdigbearbetade texten. Om underlaget har brister som kräver manuell hantering, lägg till avsnittet "Manuella åtgärder för redaktören" allra sist enligt klarspråksreglerna. Utelämna avsnittet när inga manuella åtgärder behövs. Ge inga andra kommentarer. Följ omskrivningsutkastets disposition när ett utkast finns; uppgiftsprompten styr format och omfång för den bearbetade texten. Eventuella manuella åtgärder redovisas separat efter texten. Här är texten som ska skrivas om:';
 
   return message;
 }
