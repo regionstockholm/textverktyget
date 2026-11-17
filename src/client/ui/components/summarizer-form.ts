@@ -15,6 +15,18 @@ export type TaskCatalogItem = {
 };
 
 const taskPrompts = new Map<string, { original: string; current: string }>();
+const PROMPT_STORAGE_PREFIX = "textverktyg_task_prompt_";
+
+function loadSavedPrompt(taskKey: string): string | null {
+  try { return localStorage.getItem(PROMPT_STORAGE_PREFIX + taskKey); } catch { return null; }
+}
+
+function savePrompt(taskKey: string, original: string, current: string): void {
+  try {
+    if (current === original) localStorage.removeItem(PROMPT_STORAGE_PREFIX + taskKey);
+    else localStorage.setItem(PROMPT_STORAGE_PREFIX + taskKey, current);
+  } catch { /* Storage may be disabled. */ }
+}
 
 type TargetAudienceCategoryPayload = {
   name: string;
@@ -112,12 +124,14 @@ function createTaskOption(
   heading.textContent = `Prompt: ${task.label}`;
 
   const textarea = document.createElement("textarea");
-  textarea.value = task.prompt;
+  textarea.value = taskPrompts.get(task.key)?.current ?? task.prompt;
   textarea.maxLength = 100000;
   textarea.setAttribute("aria-label", `Prompt för ${task.label}`);
   textarea.addEventListener("input", () => {
     const prompt = taskPrompts.get(task.key);
-    if (prompt) prompt.current = textarea.value;
+    if (!prompt) return;
+    prompt.current = textarea.value;
+    savePrompt(task.key, prompt.original, prompt.current);
   });
 
   const reset = document.createElement("button");
@@ -128,6 +142,7 @@ function createTaskOption(
     textarea.value = task.prompt;
     const prompt = taskPrompts.get(task.key);
     if (prompt) prompt.current = task.prompt;
+    savePrompt(task.key, task.prompt, task.prompt);
   });
 
   const edit = document.createElement("button");
@@ -208,7 +223,10 @@ function renderTaskOptions(tasks: TaskCatalogItem[]): void {
   taskPrompts.clear();
 
   sortedTasks.forEach((task, index) => {
-    taskPrompts.set(task.key, { original: task.prompt, current: task.prompt });
+    taskPrompts.set(task.key, {
+      original: task.prompt,
+      current: loadSavedPrompt(task.key) ?? task.prompt,
+    });
     const checked = previousSelection
       ? previousSelection === task.key
       : index === 0;
