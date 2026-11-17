@@ -40,6 +40,7 @@ export async function sendSummarizationRequest(
     const requestBody = {
       text: text,
       taskKey: formValues.taskKey,
+      taskPrompt: formValues.taskPrompt,
       processId: formValues.processId,
       targetAudience: formValues.targetAudience,
       checkboxContent: formValues.checkboxContent,
