@@ -1,7 +1,7 @@
 {
   "schemaVersion": 7,
   "app": "textverktyg",
-  "exportedAt": "2026-11-05T14:58:00.258Z",
+  "exportedAt": "2026-11-18T11:00:00.258Z",
   "settings": {
     "global": {
       "provider": "gemini",
@@ -165,50 +165,50 @@
     ],
     "tasks": [
       {
-        "label": "Korta ned",
-        "description": "Gör texten kortare",
+        "label": "Klarspråk",
+        "description": "Skriv om en eller flera texter till klarspråk",
         "enabled": true,
         "sortOrder": 10,
-        "targetAudienceEnabled": true,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
         "prompt": {
-          "content": "Input:\nDin uppgift är att korta ner texten för medarbetare på Region Stockholms intranät.\n\nKrav:\n\n- Om originaltexten är längre än 3000 tecken: korta till högst 3000 tecken.\n- Om originaltexten är 3000 tecken eller kortare: korta till ungefär hälften.\n- Använd omskrivningsutkastet för att lyfta fram det medarbetaren behöver göra och veta först.\n- Ta bort onödiga upprepningar, långa bakgrundsbeskrivningar och detaljer som inte hjälper medarbetaren att utföra sin uppgift.\n- Behåll huvudbudskap, konkreta instruktioner och viktiga villkor.\n- Skriv inte om citat från personer.\n- Följ de satta klarspråksreglerna.\n- Om originaltexten har brister som kräver manuell hantering (till exempel saknad information i instruktioner eller blandning av gemensamt och organisationsspecifikt innehåll), avsluta med rubriken \"Manuella åtgärder för redaktören\".\n\nResponse format:\n\n- Vanlig löptext med tydliga mellanrubriker och listor vid behov.\n- Ett stycke per rad."
+          "content": "Input:\nDin uppgift är att skriva om underlaget till en enda enhetlig, tydlig och handlingsorienterad klarspråkstext för medarbetare på Region Stockholms intranät. Underlaget kan bestå av en enskild text eller flera olika texter och utkast som klistrats in efter varandra utan tydliga gränser.\n\nKrav:\n\n- Identifiera det gemensamma huvudsyftet i underlaget (vad medarbetaren ska kunna göra eller veta) och låt det styra urval och struktur.\n- Om underlaget består av flera texter eller är mycket långt: slå samman innehållet sömlöst till en sammanhållen text till högst 4500 tecken inklusive mellanslag. Behåll inte källtexternas ursprungliga uppdelning eller totala längd, och upprepa aldrig samma information flera gånger.\n- Använd omskrivningsutkastet för att strukturera den sammanslagna texten i ordningen:\n  1. Gör så här (konkreta steg, länkar och verktyg för att lösa uppgiften).\n  2. Bra att veta (regler, villkor och förutsättningar).\n  3. Bakgrund och fördjupning (varför rutinen finns och ytterligare information).\n- Följ de satta klarspråksreglerna.\n- Inled med en kort ingress på max 250 tecken inklusive blanksteg som beskriver vad medarbetaren kan göra eller behöver veta.\n- Undvik metabeskrivningar i den bearbetade texten där texten hänvisar till sig själv, även om originaltexten använder metabeskrivningar. Med metabeskrivningar menas att texten hänvisar till sig själv med \"här\", exempelvis: \"Här kan du läsa mer om...\", \"Här får du veta mer...\", \"Här finns information om...\" och så vidare.\n- Omvandla beskrivande text till handlingsorienterade instruktioner som börjar med aktiva verb och tydliggör vem som ansvarar för vad.\n- Använd numrerade steg när något ska göras i en viss ordning och punktlistor för alternativ eller förutsättningar.\n- Använd konsekvent du-tilltal (inte \"medarbetaren\", \"anställda\" eller \"personal\") och dela aldrig upp innehållet i \"för dig som chef\" och \"för dig som medarbetare\".\n- Använd \"vi\" och \"oss\" när avsändaren är tydlig, men behåll organisationsnamnet (\"Region Stockholm\" eller specifik verksamhet) när det krävs för att visa formellt ansvar, beslut eller skillnader mellan organisationer.\n- Ta bort onödiga upprepningar, överlappande avsnitt, långa bakgrundsbeskrivningar och detaljer utan tydlig nytta för medarbetaren, men bevara alla relevanta fakta, datum, namn, beslut, formella begrepp och villkor som hör till huvudsyftet.\n- Skriv inte om citat från personer; behåll dem ordagrant.\n- Lägg inte till nya sakuppgifter.\n- Förklara nödvändiga fackuttryck och skriv ut förkortningar första gången de används.\n- Dela upp texten i korta stycken där varje stycke bär en huvudtanke, och sätt informativa mellanrubriker (använd frågor eller uppmaningar, aldrig generella rubriker som \"Information\", \"Allmänt\" eller \"Övrigt\"). Sätt alltid mellanrubrik före listor och utfällbara block.\n- Om texten innehåller fördjupande information, detaljerade regelförklaringar, undantag, specialfall eller kompletterande frågor och svar som inte alla behöver se direkt, placera dessa under rubriken \"-----\nInformation i utfällbara block\" enligt mallen:\n  Rubrik: Rubrik för blocket\n  Innehåll: Textinnehåll\n  Om det är fler än 10 utfällbara block, dela in dem i grupper om 4–8 block med egna tydliga mellanrubriker.\n- Om texten blandar regiongemensam information med sådant som bara gäller en viss organisation, separera den organisationsspecifika delen tydligt som ett riktat tillägg utan att upprepa det gemensamma innehållet.\n- Om det finns brister som redaktören måste åtgärda manuellt (till exempel otydliga instruktioner som saknar nödvändig information, motstridiga uppgifter mellan olika delar av underlaget, orelaterade ämnen som bör ligga på separata sidor, eller uppdelning mellan gemensamt innehåll och riktat tillägg), lägg till rubriken \"-----\nManuella åtgärder för redaktören\" allra sist efter texten och beskriv åtgärderna i korta punkter."
         }
       },
       {
         "label": "Ingress",
         "description": "Skapa en ingress",
         "enabled": true,
-        "sortOrder": 20,
-        "targetAudienceEnabled": true,
+        "sortOrder": 30,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
         "prompt": {
-          "content": "Input:\nDin uppgift är att skriva en kort ingress för en sida på Region Stockholms intranät.\n\nKrav:\n\n- Max 250 tecken inklusive blanksteg.\n- Förklara snabbt vad medarbetaren kan göra eller behöver veta utifrån texten.\n- Beskriv det viktigaste innehållet och prioritera nyttan för medarbetaren.\n- Undvik helt metatexter som beskriver själva sidan, till exempel \"Här kan du läsa mer om...\", \"Den här sidan innehåller...\" eller \"På den här sidan hittar du...\".\n- Använd ett direkt du-tilltal och följ de satta klarspråksreglerna.\n\nResponse format:\n\n- Ett sammanhängande textstycke."
+          "content": "Input:\nDin uppgift är att skriva en kort ingress för en sida på Region Stockholms intranät.\n\nKrav:\n\n- Max 250 tecken inklusive blanksteg.\n- Förklara snabbt vad medarbetaren kan göra eller behöver veta utifrån texten.\n- Beskriv det viktigaste innehållet och prioritera nyttan för medarbetaren.\n- Undvik metabeskrivningar i den bearbetade texten där texten hänvisar till sig själv, även om originaltexten använder metabeskrivningar. Med metabeskrivningar menas att texten hänvisar till sig själv med \"här\", exempelvis: \"Här kan du läsa mer om...\", \"Här får du veta mer...\", \"Här finns information om...\" och så vidare.\n- Använd ett direkt du-tilltal och följ de satta klarspråksreglerna.\n\nResponse format:\n\n- Ett sammanhängande textstycke."
         }
       },
       {
         "label": "Pufftext",
         "description": "Skapa en pufftext",
         "enabled": true,
-        "sortOrder": 30,
-        "targetAudienceEnabled": true,
+        "sortOrder": 40,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
         "prompt": {
-          "content": "Input:\nDin uppgift är att skriva en mycket kort förhandstext för intranätet.\n\nKrav:\n\n- Exakt en mening.\n- Max 150 tecken inklusive blanksteg.\n- Ta upp den viktigaste huvudpunkten eller vad medarbetaren behöver göra eller veta.\n- Undvik metatext om sidan.\n\nResponse format:\n\n- En enda mening."
+          "content": "Input:\nDin uppgift är att skriva en mycket kort förhandstext för intranätet.\n\nKrav:\n\n- Exakt en mening.\n- Max 150 tecken inklusive blanksteg.\n- Ta upp den viktigaste huvudpunkten eller vad medarbetaren behöver göra eller veta.\n- Undvik metabeskrivningar i den bearbetade texten där texten hänvisar till sig själv, även om originaltexten använder metabeskrivningar. Med metabeskrivningar menas att texten hänvisar till sig själv med \"här\", exempelvis: \"Här kan du läsa mer om...\", \"Här får du veta mer...\", \"Här finns information om...\" och så vidare.\n\nResponse format:\n\n- En enda mening."
         }
       },
       {
         "label": "Tre punkter",
         "description": "Sammanfatta till tre punkter",
         "enabled": true,
-        "sortOrder": 40,
-        "targetAudienceEnabled": true,
+        "sortOrder": 50,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
@@ -220,8 +220,8 @@
         "label": "Fem punkter",
         "description": "Sammanfatta till fem punkter",
         "enabled": true,
-        "sortOrder": 50,
-        "targetAudienceEnabled": true,
+        "sortOrder": 60,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
@@ -233,8 +233,8 @@
         "label": "Tio punkter",
         "description": "Sammanfatta till tio punkter",
         "enabled": true,
-        "sortOrder": 60,
-        "targetAudienceEnabled": true,
+        "sortOrder": 70,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
@@ -243,24 +243,11 @@
         }
       },
       {
-        "label": "Klarspråk",
-        "description": "Skriv om texten till klarspråk",
-        "enabled": true,
-        "sortOrder": 70,
-        "targetAudienceEnabled": true,
-        "rewritePlanEnabled": true,
-        "reasoningEnabled": true,
-        "webSearchMode": "inherit",
-        "prompt": {
-          "content": "Input:\nDin uppgift är att skriva om texten till tydligt och handlingsorienterat klarspråk för medarbetare på Region Stockholms intranät.\n\nKrav:\n\n- Använd omskrivningsutkastet för att strukturera texten i ordningen:\n  1. Gör så här (konkreta steg, länkar och verktyg för att lösa uppgiften).\n  2. Bra att veta (regler, villkor och förutsättningar).\n  3. Bakgrund och fördjupning (varför rutinen finns och ytterligare information).\n- Följ de satta klarspråksreglerna.\n- Inled med en kort ingress på max 250 tecken inklusive blanksteg som beskriver vad medarbetaren kan göra eller behöver veta, helt utan metatext som \"Här kan du läsa mer om...\".\n- Omvandla beskrivande text till handlingsorienterade instruktioner som börjar med aktiva verb och tydliggör vem som ansvarar för vad.\n- Använd numrerade steg när något ska göras i en viss ordning och punktlistor för alternativ eller förutsättningar.\n- Använd konsekvent du-tilltal (inte \"medarbetaren\", \"anställda\" eller \"personal\") och dela aldrig upp innehållet i \"för dig som chef\" och \"för dig som medarbetare\".\n- Använd \"vi\" och \"oss\" när avsändaren är tydlig, men behåll organisationsnamnet (\"Region Stockholm\" eller specifik verksamhet) när det krävs för att visa formellt ansvar, beslut eller skillnader mellan organisationer.\n- Ta bort onödiga upprepningar, långa bakgrundsbeskrivningar och detaljer utan tydlig nytta för medarbetaren, men bevara alla relevanta fakta, datum, namn, beslut, formella begrepp och villkor.\n- Skriv inte om citat från personer; behåll dem ordagrant.\n- Lägg inte till nya sakuppgifter.\n- Förklara nödvändiga fackuttryck och skriv ut förkortningar första gången de används.\n- Dela upp texten i korta stycken där varje stycke bär en huvudtanke, och sätt informativa mellanrubriker (använd frågor eller uppmaningar, aldrig generella rubriker som \"Information\", \"Allmänt\" eller \"Övrigt\"). Sätt alltid mellanrubrik före listor och utfällbara block.\n- Om texten innehåller fördjupande information, detaljerade regelförklaringar, undantag, specialfall eller kompletterande frågor och svar som inte alla behöver se direkt, placera dessa under rubriken \"Information i utfällbara block\" enligt mallen:\n  Rubrik: Rubrik för blocket\n  Innehåll: Textinnehåll\n  Om det är fler än 10 utfällbara block, dela in dem i grupper om 4–8 block med egna tydliga mellanrubriker.\n- Om texten blandar regiongemensam information med sådant som bara gäller en viss organisation, separera den organisationsspecifika delen tydligt som ett riktat tillägg utan att upprepa det gemensamma innehållet.\n- Om det finns brister som redaktören måste åtgärda manuellt (till exempel otydliga instruktioner som saknar nödvändig information, en för omfattande text som bör delas upp i flera sidor, eller uppdelning mellan gemensamt innehåll och riktat tillägg), lägg till rubriken \"Manuella åtgärder för redaktören\" allra sist efter texten och beskriv åtgärderna i korta punkter.\n- Om originaltexten är längre än 35000 tecken, korta till högst 35000 tecken."
-        }
-      },
-      {
         "label": "Lättläst",
         "description": "Skriv om texten till lättläst",
         "enabled": true,
         "sortOrder": 80,
-        "targetAudienceEnabled": true,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": true,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
@@ -273,25 +260,12 @@
         "description": "Sammanfatta dokument",
         "enabled": true,
         "sortOrder": 90,
-        "targetAudienceEnabled": true,
+        "targetAudienceEnabled": false,
         "rewritePlanEnabled": false,
         "reasoningEnabled": true,
         "webSearchMode": "inherit",
         "prompt": {
-          "content": "Input:\nDin uppgift är att sammanfatta texten till en presentation av vad dokumentet handlar om för medarbetare på intranätet.\n\nKrav:\n\n- Korta ned texten till högst 600 tecken.\n- Skriv ut tidigt vad texten är för typ av dokument; protokoll, rapport, riktlinjer, rutin, policy eller samrådshandlingar.\n- Presentera det viktigaste ur originaltexten och vad det innebär för medarbetaren eller verksamheten.\n- Använd klarspråk.\n\nResponse format:\n\n- Vanlig löptext.\n- Ett stycke per rad."
-        }
-      },
-      {
-        "label": "Regionfullmäktige",
-        "description": "Sammanfatta protokoll från regionfullmäktige.",
-        "enabled": true,
-        "sortOrder": 100,
-        "targetAudienceEnabled": true,
-        "rewritePlanEnabled": false,
-        "reasoningEnabled": true,
-        "webSearchMode": "inherit",
-        "prompt": {
-          "content": "Input:\nDin uppgift är att sammanfatta konkreta fattade beslut i sammanträdeshandlingar från Regionfullmäktige och presentera dem för invånare i Stockholmsregionen.\n\nKrav:\n\n- Exkludera motioner och förslag som inte är fattade beslut.\n- Identifiera beslut inom: hälso- och sjukvård, kollektivtrafik, regional utveckling, forskning och innovation, kultur.\n- Beskriv kort: vad som beslutats, när det gäller (om datum finns), och hur invånare påverkas.\n- Bevara korrekt fakta och lägg inte till nya uppgifter.\n- Texten ska vara högst 5000 tecken.\n- Använd klarspråk och tydliga rubriker per område.\n- Använd inte markdown eller specialformatering.\n\nFew-shot examples:\nAnvänd följande text som mall för den slutgiltiga texten.\nOm inga beslut har tagits inom ett område, skriv ut att inga beslut har tagits.\n\n\"Rubrik: Beslut från Regionfullmäktige 17 september 2025\n\nIngress: Regionfullmäktige sammanträdde den 17 september och fattade flera beslut. Besluten rör bland annat hälso- och sjukvården, kollektivtrafiken och regional utveckling. Här är en sammanfattning av besluten från mötet.\n\nProtokollet justerades (godkändes och signerades av justerare) slutgiltigt den 30 september.\n\nHälso- och sjukvård\n\n- Primärvården får ett tillskott på 20 miljoner kronor under 2025. Av dessa pengar ska 10 miljoner kronor användas för att stärka rehabiliteringsvårdvalen. Resterande 10 miljoner kronor ska användas för att förbättra läkarinsatserna för äldre som bor i särskilda boenden.\n\n- Hälso- och sjukvårdsnämnden får ett tillskott på 60 miljoner kronor under 2025. Pengarna ska användas för att säkerställa att det finns tillräckligt med psykiatriska vårdplatser.\n\n- Region Stockholm godkänner ett samarbetsavtal för nationell samordning och planering av hälso- och sjukvården vid höjd beredskap och krig. Målet är att förbättra regionens förmåga att hantera hälso- och sjukvården i krissituationer.\n\n- Årsredovisningen för 2024 för Kommunalförbundet Svenskt Ambulansflyg godkänns. Förbundet ansvarar för ambulanstransporter med flygplan.\n\n- Årsredovisningen för 2024 för Kommunalförbundet Skandionkliniken godkänns. Skandionkliniken arbetar med cancerbehandling. Ett underskott från tidigare år har inte återställts ännu, men det finns en plan för att det ska återställas senast 2027.\n\n- Karolinska universitetssjukhuset (Karolinska) får ansvaret för personuppgifter i nationella kvalitetsregister inom Region Stockholm. Detta innebär att Karolinska hanterar patientdata i dessa register.\n\nKollektivtrafik\n\n- Brandskyddsåtgärder i Nyboda depå får en investering på 135,3 miljoner kronor. Detta är för att anpassa depån för batterielektriska bussar och öka säkerheten.\n\n- Utbyggnaden av Älvsjö depå för pendeltåg fortsätter. Projektets omfattning har minskats genom att en ny tvätthall och en tunnelförlängning vid spår 6 och 7 tas bort. Den totala investeringen är oförändrad på 864,2 miljoner kronor.\n\nRegional utveckling\n\n- Programdirektivet för Norra Hagastaden fastställs. Detta betyder att arbetet med att utveckla Norra Hagastaden som en ny stadsdel fortsätter. En viktig del är att planera för Region Stockholms behov av lokaler för hälso- och sjukvården i Karolinska sjukhusområdet.\n\nForskning och innovation\n\n- Inga beslut har tagits gällande forskning och innovation.\n\nKultur\n\n- Inga beslut har tagits gällande kulturfrågor.\n\nÖvrigt\n\n- Kapitaltäckningsgaranti till Tiohundra AB: Fullmäktige godkände en kapitaltäckningsgaranti till Tiohundra AB för att säkerställa bolagets egna kapital.\n- Reviderad bolagsordning för Landstingshuset i Stockholm AB: En reviderad bolagsordning för bolaget godkändes.\n\nDetta är en sammanfattning av de beslut som tagits under Regionfullmäktiges senaste sammanträde.\""
+          "content": "Input:\nDin uppgift är att sammanfatta texten till en presentation av vad dokumentet handlar om för medarbetare på intranätet.\n\nKrav:\n\n- Korta ned texten till högst 600 tecken.\n- Skriv ut tidigt vad texten är för typ av dokument; protokoll, rapport, riktlinjer, rutin, policy eller samrådshandlingar.\n- Presentera det viktigaste ur originaltexten och vad det innebär för medarbetaren eller verksamheten.\n- Använd klarspråk utifrån tidigare satta regler.\n\nResponse format:\n\n- Vanlig löptext.\n- Ett stycke per rad."
         }
       }
     ],
