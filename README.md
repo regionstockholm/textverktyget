@@ -25,7 +25,9 @@ ordlista. Grundinställningarna utgår från Region Stockholm som avsändare. De
 
 ## Promptar
 
-Promptarna går att läsa i sin helhet i [documentation/textverktyget-readable-prompts.md](https://github.com/regionstockholm/textverktyget/blob/main/documentation/textverktyget-readable-prompts.md).
+Promptarna går att läsa i sin helhet:
+- [Standardpromptar (riktat mot invånare i Region Stockholm)](https://github.com/regionstockholm/textverktyget/blob/main/documentation/textverktyget-readable-prompts.md).
+- [Region Stockholms intranät (utformat för texter på Region Stockholms intranät)](https://github.com/regionstockholm/textverktyget/blob/main/documentation/textverktyget-readable-prompts.md).
 
 ## Så fungerar verktyget
 
