@@ -79,6 +79,13 @@ router.get(
   async (_req: Request, res: Response): Promise<void> => {
     try {
       const tasks = await listTaskDefinitions({ enabledOnly: true });
+      const prompts = await prisma.promptTemplate.findMany({
+        where: {
+          name: { in: tasks.map((task) => `task:${task.key}`) },
+          isActive: true,
+        },
+        orderBy: { version: "desc" },
+      });
       res.set("Cache-Control", "no-store");
       sendSuccess(
         res,
@@ -88,6 +95,7 @@ router.get(
           description: task.description,
           sortOrder: task.sortOrder,
           promptName: `task:${task.key}`,
+          prompt: prompts.find((prompt) => prompt.name === `task:${task.key}`)?.content ?? "",
           settings: {
             targetAudienceEnabled: task.targetAudienceEnabled,
             rewritePlanEnabled: task.rewritePlanEnabled,

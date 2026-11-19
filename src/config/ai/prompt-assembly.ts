@@ -28,6 +28,7 @@ async function buildOrdlistaUsagePrompt(): Promise<string> {
 
 export async function buildSystemMessage({
   taskKey,
+  taskPrompt: customTaskPrompt,
   taskPromptMode,
   senderIntent,
   targetAudience,
@@ -54,10 +55,12 @@ export async function buildSystemMessage({
   });
   const rulesPrompt = await configService.getPrompt("importantRules");
   const ordlistaUsagePrompt = await buildOrdlistaUsagePrompt();
-  const taskPrompt = await configService.getPrompt("task", {
-    taskKey: typeof taskKey === "string" ? taskKey : undefined,
-    taskPromptMode,
-  });
+  const taskPrompt = !taskPromptMode && customTaskPrompt
+    ? customTaskPrompt
+    : await configService.getPrompt("task", {
+        taskKey: typeof taskKey === "string" ? taskKey : undefined,
+        taskPromptMode,
+      });
 
   let message = rolePrompt;
   message += "\n\n";
@@ -86,7 +89,7 @@ export async function buildSystemMessage({
   message += taskPrompt;
 
   if (taskPromptMode) {
-    const selectedTask = await configService.getPrompt("task", { taskKey });
+    const selectedTask = customTaskPrompt || await configService.getPrompt("task", { taskKey });
     message += `\n\nVALD UPPGIFT (kontext för analysen, utför inte sluttexten nu):\n${selectedTask}`;
     message += "\n\nGranska hela underlaget, även slutet. Ursprunglig placering är inte ett mått på vikt. Prioritera efter målgruppens behov och vald uppgift. Behåll ordningen om den redan fungerar; ändra annars dispositionen globalt.";
   } else if (repairInstructions?.trim()) {

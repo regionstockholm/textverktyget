@@ -8,6 +8,7 @@ import type { QualityStatus } from "../../../types/quality-status.js";
 
 export type FormValues = {
   taskKey?: string;
+  taskPrompt?: string;
   processId?: string;
   targetAudience: string;
   checkboxContent: string[];
