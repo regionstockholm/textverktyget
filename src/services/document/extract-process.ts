@@ -12,6 +12,10 @@ try {
     chunks.push(chunk);
   }
   const buffer = Buffer.concat(chunks);
+  // Plain text is handled separately; the library must not decode corrupt documents as text.
+  const isPdf = buffer.subarray(0, 5).equals(Buffer.from("%PDF-"));
+  const isOffice = buffer.length >= 4 && buffer.readUInt32LE(0) === 0x04034b50;
+  if (!isPdf && !isOffice) throw new Error("Unknown document format");
   assertBoundedOfficeArchive(buffer);
   const text = await getTextExtractor().extractText({ input: buffer, type: "buffer" });
   if (typeof text !== "string" || Buffer.byteLength(text) > 20 * 1024 * 1024) throw new Error("Extracted text exceeds 20 MiB");
