@@ -9,6 +9,7 @@
  */
 export interface ProcessingOptions {
   taskKey?: string;
+  taskPrompt?: string;
   taskPromptMode?: "rewritePlanDraft" | "sourceAnalysis";
   paragraphCount?: number | string;
   senderIntent?: string;

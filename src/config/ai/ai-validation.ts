@@ -72,6 +72,20 @@ export function validateSummarizeRequest(body: any): ValidationResult {
     };
   }
 
+  if (
+    body.taskPrompt !== undefined &&
+    (typeof body.taskPrompt !== "string" ||
+      body.taskPrompt.trim().length === 0 ||
+      body.taskPrompt.length > 100000)
+  ) {
+    return {
+      valid: false,
+      status: 400,
+      error: "Invalid task prompt",
+      message: "Uppgiftens prompt måste innehålla mellan 1 och 100 000 tecken.",
+    };
+  }
+
   // Validate target audience when sent
   if (body.targetAudience !== undefined && typeof body.targetAudience !== "string") {
     return {

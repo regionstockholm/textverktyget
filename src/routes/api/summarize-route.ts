@@ -294,6 +294,7 @@ export async function handleSummarizeRequest(
           text,
           {
             taskKey: taskDefinition.key,
+            taskPrompt: req.body.taskPrompt,
             targetAudience: resolvedTargetAudience,
             checkboxContent: Array.isArray(checkboxContent)
               ? checkboxContent.join(", ")

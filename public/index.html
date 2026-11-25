@@ -18,7 +18,7 @@ A big thank you to:
 
     <title>Textverktyg BETA - Region Stockholm</title>
 
-    <link rel="preload" href="/css/app-main.css" as="style" />
+    <link rel="preload" href="/css/app-main.css?v=prompt-editor-2" as="style" />
     <link
       rel="preload"
       href="fonts/InterRSVariableVF.woff2"
@@ -26,9 +26,9 @@ A big thank you to:
       type="font/woff2"
       crossorigin
     />
-    <link rel="preload" href="/script/app-main.js" as="script" />
+    <link rel="preload" href="/script/app-main.js?v=prompt-editor-2" as="script" />
 
-    <link rel="stylesheet" href="css/app-main.css" />
+    <link rel="stylesheet" href="/css/app-main.css?v=prompt-editor-2" />
     <link rel="icon" href="img/favicon.ico" type="image/x-icon" sizes="16x16" />
   </head>
 
@@ -278,6 +278,7 @@ A big thank you to:
                 ></div>
               </fieldset>
             </form>
+            <div id="task-prompt-editors" hidden></div>
           </div>
 
           <div class="grid-wrapper grid-main-application gap-4">
@@ -965,7 +966,7 @@ A big thank you to:
       </div>
     </footer>
 
-    <script type="module" src="/script/app-main.js"></script>
+    <script type="module" src="/script/app-main.js?v=prompt-editor-2"></script>
     <script type="module" src="/script/logout.js?v=access-log-1"></script>
   </body>
 </html>
